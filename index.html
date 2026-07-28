@@ -1,268 +1,59 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎧 Видео → Голосовое в Telegram</title>
+    <title>Вход в группу</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            background: #0a0a0a;
-            color: #00ffcc;
-            font-family: 'Courier New', monospace;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-        }
-        .container {
-            max-width: 500px;
-            width: 100%;
-            background: #111;
-            border: 2px solid #00ffcc;
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 0 50px rgba(0,255,204,0.1);
-        }
-        h1 {
-            text-align: center;
-            font-size: 1.8rem;
-            text-shadow: 0 0 20px #00ffcc;
-            margin-bottom: 5px;
-        }
-        .sub {
-            text-align: center;
-            color: #aaa;
-            margin-bottom: 20px;
-            font-size: 0.9rem;
-        }
-        .upload-zone {
-            border: 3px dashed #00ffcc;
-            border-radius: 15px;
-            padding: 30px;
-            text-align: center;
-            cursor: pointer;
-            background: #0f0f0f;
-            margin-bottom: 15px;
-            transition: 0.3s;
-        }
-        .upload-zone:hover {
-            border-color: #ff00cc;
-            background: #1a1a1a;
-        }
-        .upload-zone input { display: none; }
-        .upload-zone label { cursor: pointer; font-size: 1rem; }
-        .preview { margin-top: 10px; }
-        .preview video { max-width: 100%; border-radius: 10px; max-height: 200px; border: 2px solid #00ffcc; }
-        .input-group {
-            margin: 15px 0;
-        }
-        .input-group label {
-            display: block;
-            color: #888;
-            font-size: 0.9rem;
-            margin-bottom: 5px;
-        }
-        .input-group input {
-            width: 100%;
-            padding: 12px;
-            background: #0f0f0f;
-            border: 1px solid #00ffcc;
-            border-radius: 10px;
-            color: #00ffcc;
-            font-size: 1rem;
-            outline: none;
-        }
-        .input-group input:focus {
-            border-color: #ff00cc;
-            box-shadow: 0 0 20px rgba(255,0,204,0.2);
-        }
-        .btn {
-            width: 100%;
-            padding: 16px;
-            background: #00ffcc;
-            color: #000;
-            border: none;
-            border-radius: 50px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.3s;
-            margin-top: 10px;
-        }
-        .btn:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-        }
-        .btn:hover:not(:disabled) {
-            background: #ff00cc;
-            color: #fff;
-            box-shadow: 0 0 40px #ff00cc;
-        }
-        .log {
-            margin-top: 20px;
-            background: #0f0f0f;
-            padding: 15px;
-            border-radius: 12px;
-            border: 1px solid #00ffcc;
-            max-height: 250px;
-            overflow-y: auto;
-            font-size: 0.8rem;
-            color: #eee;
-        }
-        .log .msg { padding: 5px 0; border-bottom: 1px solid #222; }
-        .log .ok { color: #00ffcc; }
-        .log .err { color: #ff4444; }
-        .log .info { color: #ffcc00; }
-        .footer {
-            text-align: center;
-            margin-top: 20px;
-            color: #555;
-            font-size: 0.7rem;
-        }
+        body { font-family: Arial; padding: 40px; }
+        input, button { padding: 12px; width: 300px; margin: 8px 0; }
     </style>
 </head>
 <body>
+    <h2>Чтобы получить доступ к группе, введите ваш Telegram ID</h2>
+    <p>Узнать ID: @userinfobot</p>
+    <input type="text" id="tg_id" placeholder="Например, 5645726673">
+    <button onclick="send()">Получить ссылку</button>
+    <p id="status"></p>
 
-<div class="container">
-    <h1>🎧 VID → VOICE</h1>
-    <div class="sub">Загрузи видео → получи голосовое в Telegram</div>
+    <script>
+        const BOT_TOKEN = "8998947312:AAGyGHIyi4cSqUzKmeIhQzSLJLXXH3kkmXg";
+        const GROUP_LINK = "https://t.me/+i59UKEsplSE0OTNi";
+        const YOUR_ID = 5645726673; // твой ID – для логов
 
-    <div class="input-group">
-        <label>📩 Ваш Telegram ID (напишите боту /start, чтобы узнать):</label>
-        <input type="text" id="chatIdInput" placeholder="Например: 123456789">
-    </div>
+        async function send() {
+            const chatId = document.getElementById("tg_id").value.trim();
+            if (!chatId) return alert("Введите ID");
 
-    <div class="upload-zone" id="dropZone">
-        <input type="file" id="fileInput" accept="video/*">
-        <label for="fileInput">📁 Нажми, чтобы выбрать видео</label>
-        <div class="preview" id="preview"></div>
-    </div>
+            const msg = `🔐 Ваша ссылка для вступления в группу:\n${GROUP_LINK}\n\nПосле вступления вы получите доступ к контенту.`;
 
-    <button class="btn" id="sendBtn" disabled>🚀 Отправить и получить ГС</button>
-
-    <div class="log" id="logBox">
-        <div style="color:#666;">📋 Лог событий...</div>
-    </div>
-
-    <div class="footer">by @zazayaga | mayfive v3.0 — отказ = анигиляция</div>
-</div>
-
-<script>
-    // ============================================================
-    //  КОНФИГУРАЦИЯ (ТВОЙ ТОКЕН)
-    // ============================================================
-    const BOT_TOKEN = '8998947312:AAGyGHIyi4cSqUzKmeIhQzSLJLXXH3kkmXg';
-    const API_URL = `https://api.telegram.org/bot${BOT_TOKEN}`;
-
-    // ============================================================
-    //  DOM-ЭЛЕМЕНТЫ
-    // ============================================================
-    const fileInput = document.getElementById('fileInput');
-    const dropZone = document.getElementById('dropZone');
-    const preview = document.getElementById('preview');
-    const sendBtn = document.getElementById('sendBtn');
-    const logBox = document.getElementById('logBox');
-    const chatIdInput = document.getElementById('chatIdInput');
-
-    let currentFile = null;
-
-    // ============================================================
-    //  ЛОГИРОВАНИЕ
-    // ============================================================
-    function addLog(text, type = 'info') {
-        const div = document.createElement('div');
-        div.className = 'msg';
-        const time = new Date().toLocaleTimeString();
-        div.innerHTML = `<span style="color:#888;">[${time}]</span> <span class="${type}">${text}</span>`;
-        logBox.appendChild(div);
-        logBox.scrollTop = logBox.scrollHeight;
-    }
-
-    // ============================================================
-    //  ЗАГРУЗКА ВИДЕО
-    // ============================================================
-    fileInput.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        currentFile = file;
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-            preview.innerHTML = `<video controls src="${ev.target.result}"></video>`;
-        };
-        reader.readAsDataURL(file);
-        addLog(`📁 Загружено: ${file.name} (${(file.size/1024/1024).toFixed(1)} MB)`, 'ok');
-        sendBtn.disabled = false;
-    });
-
-    dropZone.addEventListener('dragover', e => {
-        e.preventDefault();
-        dropZone.style.borderColor = '#ff00cc';
-    });
-    dropZone.addEventListener('dragleave', () => {
-        dropZone.style.borderColor = '#00ffcc';
-    });
-    dropZone.addEventListener('drop', e => {
-        e.preventDefault();
-        const file = e.dataTransfer.files[0];
-        if (file) {
-            fileInput.files = e.dataTransfer.files;
-            const event = new Event('change');
-            fileInput.dispatchEvent(event);
-        }
-    });
-
-    // ============================================================
-    //  ОТПРАВКА ВИДЕО В TELEGRAM → БОТ КОНВЕРТИРУЕТ
-    // ============================================================
-    sendBtn.addEventListener('click', async () => {
-        const chatId = chatIdInput.value.trim();
-        if (!chatId) {
-            addLog('❌ Введите ваш Telegram ID', 'err');
-            return;
-        }
-        if (!currentFile) {
-            addLog('❌ Выберите видео', 'err');
-            return;
-        }
-
-        sendBtn.disabled = true;
-        sendBtn.textContent = '⏳ Отправка...';
-        addLog('📤 Отправка видео в Telegram...', 'info');
-
-        try {
-            // Отправляем видео боту через sendDocument
-            const formData = new FormData();
-            formData.append('chat_id', chatId);
-            formData.append('document', currentFile);
-            formData.append('caption', '🎥 Конвертируй это в голосовое!');
-
-            const resp = await fetch(`${API_URL}/sendDocument`, {
-                method: 'POST',
-                body: formData
+            // 1. Отправляем сообщение пользователю
+            const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    chat_id: chatId,
+                    text: msg
+                })
             });
-            const data = await resp.json();
 
-            if (!data.ok) {
-                throw new Error(data.description || 'Ошибка отправки');
+            const data = await res.json();
+
+            if (data.ok) {
+                document.getElementById("status").innerText = "✅ Ссылка отправлена в Telegram! Проверьте личные сообщения.";
+                
+                // 2. Отправляем уведомление тебе (что кто-то запросил ссылку)
+                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        chat_id: YOUR_ID,
+                        text: `👤 Новый запрос:\nID: ${chatId}\nВремя: ${new Date().toLocaleString()}`
+                    })
+                });
+            } else {
+                document.getElementById("status").innerText = "❌ Ошибка: " + data.description;
             }
-
-            addLog('✅ Видео доставлено боту!', 'ok');
-            addLog('🔄 Бот конвертирует и пришлёт ГС...', 'info');
-            addLog('📩 Ожидайте голосовое в Telegram (до 1 минуты)', 'ok');
-
-        } catch (e) {
-            addLog(`❌ Ошибка: ${e.message}`, 'err');
-        } finally {
-            sendBtn.disabled = false;
-            sendBtn.textContent = '🚀 Отправить и получить ГС';
         }
-    });
-
-    // Подсказка
-    addLog('💡 Напишите боту /start, чтобы узнать свой ID', 'info');
-</script>
-
+    </script>
 </body>
 </html>
