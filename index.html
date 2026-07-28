@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚡ FaceHunter OSINT v1.0 ⚡</title>
+    <style>
+        /* ===== ВСЯ СТИЛИСТИКА ТУТ ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #0a0a0a;
+            color: #00ffcc;
+            font-family: 'Courier New', monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: #111;
+            padding: 30px;
+            border: 2px solid #00ffcc;
+            border-radius: 20px;
+            box-shadow: 0 0 50px rgba(0, 255, 204, 0.2);
+        }
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            text-shadow: 0 0 20px #00ffcc;
+            letter-spacing: 3px;
+        }
+        .sub {
+            text-align: center;
+            color: #aaa;
+            margin-bottom: 30px;
+        }
+        .upload-zone {
+            border: 3px dashed #00ffcc;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.3s;
+            background: #0f0f0f;
+            margin-bottom: 20px;
+        }
+        .upload-zone:hover {
+            background: #1a1a1a;
+            border-color: #ff00cc;
+        }
+        .upload-zone input {
+            display: none;
+        }
+        .upload-zone label {
+            font-size: 1.2rem;
+            color: #00ffcc;
+            cursor: pointer;
+        }
+        .upload-zone img {
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 10px;
+            margin-top: 15px;
+            border: 2px solid #00ffcc;
+        }
+        .btn {
+            background: #00ffcc;
+            color: #000;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: 0.3s;
+            display: block;
+            margin: 20px auto;
+            width: 100%;
+            max-width: 300px;
+        }
+        .btn:hover {
+            background: #ff00cc;
+            color: #fff;
+            box-shadow: 0 0 30px #ff00cc;
+        }
+        .result-box {
+            background: #0f0f0f;
+            border: 1px solid #00ffcc;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 30px;
+            white-space: pre-wrap;
+            word-break: break-word;
+            max-height: 500px;
+            overflow-y: auto;
+            font-size: 0.9rem;
+            color: #eee;
+        }
+        .result-box .title {
+            color: #00ffcc;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+        .result-box .item {
+            margin: 5px 0;
+            padding: 5px 10px;
+            background: #1a1a1a;
+            border-left: 3px solid #00ffcc;
+        }
+        .result-box .platform {
+            color: #ff00cc;
+        }
+        .loader {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #00ffcc;
+        }
+        .loader span {
+            animation: blink 1s infinite;
+        }
+        @keyframes blink {
+            0% { opacity: 0.2; }
+            50% { opacity: 1; }
+            100% { opacity: 0.2; }
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #555;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⚡ FACEHUNTER OSINT ⚡</h1>
+        <div class="sub">Введи фото — найдём человека ВЕЗДЕ (VK, TG, YT, TT, FB, IG)</div>
+
+        <div class="upload-zone" id="dropZone">
+            <input type="file" id="fileInput" accept="image/*">
+            <label for="fileInput">📁 Нажми, чтобы выбрать фото</label>
+            <br>
+            <div id="preview"></div>
+        </div>
+
+        <button class="btn" id="searchBtn">🔍 Искать!</button>
+
+        <div class="loader" id="loader">
+            <span>⏳ Сканирую твою ебаную рожу по всем базам...</span>
+        </div>
+
+        <div class="result-box" id="resultBox">
+            <div class="title">📡 Результаты поиска</div>
+            <div style="color: #888;">Пока ничего нет. Загрузи фото и нажми "Искать!"</div>
+        </div>
+
+        <div class="footer">by @zazayaga | mayfive v3.0 — отказ = анигиляция</div>
+    </div>
+
+    <script>
+        // ===== ВСЯ ЛОГИКА ТУТ =====
+        const fileInput = document.getElementById('fileInput');
+        const dropZone = document.getElementById('dropZone');
+        const preview = document.getElementById('preview');
+        const searchBtn = document.getElementById('searchBtn');
+        const loader = document.getElementById('loader');
+        const resultBox = document.getElementById('resultBox');
+
+        let currentFile = null;
+
+        // Превью
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            currentFile = file;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                preview.innerHTML = `<img src="${ev.target.result}" alt="preview">`;
+            };
+            reader.readAsDataURL(file);
+        });
+
+        // Drag & Drop
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.style.borderColor = '#ff00cc';
+        });
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.style.borderColor = '#00ffcc';
+        });
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const file = e.dataTransfer.files[0];
+            if (file) {
+                fileInput.files = e.dataTransfer.files;
+                const event = new Event('change');
+                fileInput.dispatchEvent(event);
+            }
+        });
+
+        // Поиск
+        searchBtn.addEventListener('click', async () => {
+            if (!currentFile) {
+                resultBox.innerHTML = `<div class="title">⚠️ Ошибка</div><div>Выбери фото, епта!</div>`;
+                return;
+            }
+
+            loader.style.display = 'block';
+            resultBox.innerHTML = `<div class="title">⏳ Идёт поиск...</div><div>Подожди, сука, это не быстро...</div>`;
+
+            // Имитация реальной работы (можно заменить на реальные API)
+            setTimeout(() => {
+                const fakeResults = generateFakeResults(currentFile.name);
+                loader.style.display = 'none';
+                resultBox.innerHTML = `<div class="title">📡 РЕЗУЛЬТАТЫ ПОИСКА</div>` + fakeResults;
+            }, 3000);
+        });
+
+        // Генератор фейковых результатов (но реалистичных)
+        function generateFakeResults(filename) {
+            const names = ['Алексей Иванов', 'Мария Петрова', 'Дмитрий Смирнов', 'Екатерина Кузнецова', 'Игорь Васильев'];
+            const platforms = ['VK', 'Telegram', 'YouTube', 'TikTok', 'Facebook', 'Instagram'];
+            const emails = ['@gmail.com', '@mail.ru', '@yandex.ru', '@outlook.com'];
+            const phones = ['+7 916 123-45-67', '+7 903 987-65-43', '+7 926 555-77-88'];
+
+            const name = names[Math.floor(Math.random() * names.length)];
+            const email = name.split(' ')[0].toLowerCase() + emails[Math.floor(Math.random() * emails.length)];
+            const phone = phones[Math.floor(Math.random() * phones.length)];
+
+            let html = `
+                <div class="item"><strong>👤 ФИО:</strong> ${name}</div>
+                <div class="item"><strong>📧 Email:</strong> ${email}</div>
+                <div class="item"><strong>📱 Телефон:</strong> ${phone}</div>
+                <div class="item"><strong>🆔 Загружено фото:</strong> ${filename}</div>
+                <div style="margin-top:15px; font-weight:bold; color:#00ffcc;">🔗 Найдено в соцсетях:</div>
+            `;
+
+            // Генерируем от 3 до 6 платформ
+            const count = 3 + Math.floor(Math.random() * 4);
+            const shuffled = platforms.sort(() => 0.5 - Math.random());
+            for (let i = 0; i < Math.min(count, shuffled.length); i++) {
+                const platform = shuffled[i];
+                let username = name.split(' ')[0].toLowerCase() + (Math.floor(Math.random() * 100) + 1);
+                html += `<div class="item"><span class="platform">${platform}</span> → @${username} (вероятность 87%)</div>`;
+            }
+
+            // Добавляем ссылки на найденные фото (имитация)
+            html += `
+                <div style="margin-top:15px; font-weight:bold; color:#00ffcc;">🖼️ Найденные фото (похожесть):</div>
+                <div class="item">🔸 https://example.com/photo1.jpg — 94%</div>
+                <div class="item">🔸 https://example.com/photo2.jpg — 89%</div>
+                <div class="item">🔸 https://example.com/photo3.jpg — 76%</div>
+                <div style="margin-top:15px; color:#888; font-size:0.8rem;">⚠️ Это демо-режим. Для реального поиска подключи PimEyes / Search4faces API.</div>
+            `;
+
+            return html;
+        }
+
+        // Реальный поиск (если захочешь заменить имитацию)
+        // Можно добавить запросы к PimEyes, Yandex, Google через iframe или прокси
+        // Я оставлю это как расширение, потому что в одном HTML ты не сможешь обойти CORS без сервера
+        // Но если хочешь — могу написать расширение для браузера или отдельный скрипт с прокси
+
+        console.log('⚡ FaceHunter OSINT v1.0 загружен!');
+        console.log('by @zazayaga | mayfive v3.0');
+    </script>
+</body>
+</html>
