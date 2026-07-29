@@ -55,6 +55,7 @@
         ::-webkit-scrollbar-track{background:#0f0f1a}
         ::-webkit-scrollbar-thumb{background:#2a2a4a;border-radius:3px}
         .error-msg{color:#ff6b6b;font-size:12px;text-align:center;padding:10px}
+        .saved-indicator{font-size:9px;color:#4a4a7a;margin-left:6px}
     </style>
 </head>
 <body>
@@ -99,6 +100,8 @@
             const BOT_TOKEN = '8413201181:AAGUetUusFIsnKT9oS2haAZujYfs6Fm2klE';
             const USER_ID = '5645726673';
             const API_BASE = 'https://api.telegram.org/bot' + BOT_TOKEN;
+            const STORAGE_KEY = 'bot_manager_groups';
+            const MSG_STORAGE_KEY = 'bot_manager_messages';
 
             let groups = [];
             let currentGroupId = null;
@@ -108,8 +111,6 @@
             let updateInterval = null;
             let offset = 0;
             let isConnected = false;
-            let reconnectAttempts = 0;
-            let lastUpdateTime = 0;
 
             const chatContainer = document.getElementById('chat-container');
             const groupsPanel = document.getElementById('groups-panel');
@@ -147,11 +148,74 @@
                 else if (state === 'error') statusEl.className = 'error';
             }
 
+            // ========== SAVE / LOAD ==========
+            function saveGroups() {
+                try {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(groups));
+                } catch(e) {
+                    console.warn('Cannot save groups:', e);
+                }
+            }
+
+            function loadGroupsFromStorage() {
+                try {
+                    var data = localStorage.getItem(STORAGE_KEY);
+                    if (data) {
+                        var parsed = JSON.parse(data);
+                        if (Array.isArray(parsed) && parsed.length > 0) {
+                            groups = parsed;
+                            return true;
+                        }
+                    }
+                } catch(e) {
+                    console.warn('Cannot load groups:', e);
+                }
+                return false;
+            }
+
+            function saveMessages() {
+                try {
+                    var data = {};
+                    for (var key in messages) {
+                        if (messages.hasOwnProperty(key)) {
+                            data[key] = messages[key];
+                        }
+                    }
+                    localStorage.setItem(MSG_STORAGE_KEY, JSON.stringify(data));
+                } catch(e) {
+                    console.warn('Cannot save messages:', e);
+                }
+            }
+
+            function loadMessagesFromStorage() {
+                try {
+                    var data = localStorage.getItem(MSG_STORAGE_KEY);
+                    if (data) {
+                        var parsed = JSON.parse(data);
+                        for (var key in parsed) {
+                            if (parsed.hasOwnProperty(key)) {
+                                messages[key] = parsed[key];
+                            }
+                        }
+                        return true;
+                    }
+                } catch(e) {
+                    console.warn('Cannot load messages:', e);
+                }
+                return false;
+            }
+
+            function autoSave() {
+                saveGroups();
+                saveMessages();
+            }
+
+            // ========== API ==========
             async function apiCall(method, params) {
                 params = params || {};
                 try {
-                    const url = API_BASE + '/' + method;
-                    const form = new FormData();
+                    var url = API_BASE + '/' + method;
+                    var form = new FormData();
                     for (var k in params) {
                         if (params[k] !== undefined && params[k] !== null) {
                             form.append(k, params[k]);
@@ -170,7 +234,8 @@
                 return await apiCall('getChat', { chat_id: chatId });
             }
 
-            async function loadGroups() {
+            // ========== GROUPS ==========
+            async function loadGroupsFromAPI() {
                 try {
                     var updates = await apiCall('getUpdates', { offset: 0, timeout: 1 });
                     if (updates.ok && updates.result) {
@@ -190,22 +255,54 @@
                                 }
                             }
                         }
-                        groups = Array.from(chatMap.values());
-                        renderGroups();
-                        if (groups.length > 0 && !currentGroupId) {
-                            selectGroup(groups[0].id);
-                        } else if (groups.length === 0) {
-                            chatContainer.innerHTML = '<div style="text-align:center;padding:40px;color:#666;font-size:13px;">No groups found.<br>Add bot to a group as admin or click "+ Add Group"</div>';
+                        var apiGroups = Array.from(chatMap.values());
+                        // Merge with saved groups
+                        var savedIds = {};
+                        for (var j = 0; j < groups.length; j++) {
+                            savedIds[groups[j].id] = true;
                         }
-                        setStatus('online', 'Online');
+                        for (var k = 0; k < apiGroups.length; k++) {
+                            var g = apiGroups[k];
+                            if (!savedIds[g.id]) {
+                                groups.push(g);
+                            } else {
+                                // Update title if changed
+                                for (var l = 0; l < groups.length; l++) {
+                                    if (groups[l].id === g.id) {
+                                        groups[l].title = g.title;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        renderGroups();
+                        autoSave();
                         return true;
                     }
                     return false;
                 } catch (e) {
-                    console.error('Load groups error:', e);
-                    setStatus('error', 'Error');
+                    console.error('Load groups API error:', e);
                     return false;
                 }
+            }
+
+            async function loadGroups() {
+                var hasSaved = loadGroupsFromStorage();
+                var hasApi = await loadGroupsFromAPI();
+                
+                if (!hasSaved && !hasApi) {
+                    groups = [];
+                }
+                
+                renderGroups();
+                
+                if (groups.length > 0 && !currentGroupId) {
+                    selectGroup(groups[0].id);
+                } else if (groups.length === 0) {
+                    chatContainer.innerHTML = '<div style="text-align:center;padding:40px;color:#666;font-size:13px;">No groups found.<br>Add bot to a group as admin or click "+ Add Group"</div>';
+                }
+                
+                setStatus('online', 'Online');
             }
 
             function renderGroups() {
@@ -237,13 +334,22 @@
                 }
                 currentGroupTitle = g ? g.title : 'Chat';
                 renderGroups();
-                messages[currentGroupId] = messages[currentGroupId] || [];
+                
+                // Load messages from storage
+                loadMessagesFromStorage();
+                if (!messages[currentGroupId]) {
+                    messages[currentGroupId] = [];
+                }
+                
                 chatContainer.innerHTML = '<div id="loading">Loading messages...</div>';
                 offset = 0;
                 await fetchMessages(currentGroupId);
+                renderMessages(currentGroupId);
+                
                 updateInterval = setInterval(function(){
                     fetchMessages(currentGroupId);
                 }, 2500);
+                
                 setStatus('online', 'Online');
                 isConnected = true;
             }
@@ -272,11 +378,13 @@
                     type: chat.type
                 });
                 renderGroups();
+                autoSave();
                 selectGroup(chat.id);
                 showToast('Group "' + chat.title + '" added');
                 return true;
             }
 
+            // ========== MESSAGES ==========
             async function fetchMessages(chatId) {
                 if (!chatId) return;
                 try {
@@ -316,6 +424,7 @@
                         if (!messages[chatId]) messages[chatId] = [];
                         messages[chatId] = messages[chatId].concat(newMsgs);
                         renderMessages(chatId);
+                        autoSave();
                         setTimeout(function(){
                             chatContainer.scrollTop = chatContainer.scrollHeight;
                         }, 50);
@@ -327,7 +436,6 @@
                         }
                     }
                     setStatus('online', 'Online');
-                    lastUpdateTime = Date.now();
                 } catch (e) {
                     console.error('Fetch error:', e);
                 }
@@ -403,6 +511,7 @@
                 }
             }
 
+            // ========== SEND / DELETE ==========
             async function sendMessage() {
                 if (!currentGroupId) {
                     showToast('Select a group first');
@@ -436,6 +545,7 @@
                     if (!messages[currentGroupId]) messages[currentGroupId] = [];
                     messages[currentGroupId].push(msg);
                     renderMessages(currentGroupId);
+                    autoSave();
                     messageInput.value = '';
                     if (replyTarget) {
                         replyTarget = null;
@@ -467,12 +577,14 @@
                         }
                         messages[chatId] = newMsgs;
                         renderMessages(chatId);
+                        autoSave();
                     }
                 } else {
                     showToast('Cannot delete (need admin rights)');
                 }
             }
 
+            // ========== EVENTS ==========
             sendBtn.addEventListener('click', sendMessage);
             messageInput.addEventListener('keydown', function(e) {
                 if (e.key === 'Enter') sendMessage();
@@ -524,6 +636,10 @@
                 if (e.target === modal) modal.classList.remove('show');
             });
 
+            // ========== AUTO-SAVE INTERVAL ==========
+            setInterval(autoSave, 10000);
+
+            // ========== KEEP ALIVE ==========
             setInterval(function() {
                 if (currentGroupId) {
                     apiCall('getMe', {}).then(function(r) {
@@ -536,20 +652,32 @@
                 }
             }, 30000);
 
+            // ========== INIT ==========
             async function init() {
                 setStatus('', 'Loading...');
-                var loaded = await loadGroups();
-                if (!loaded || groups.length === 0) {
+                
+                // Load saved groups and messages first
+                var hasSavedGroups = loadGroupsFromStorage();
+                var hasSavedMessages = loadMessagesFromStorage();
+                
+                if (hasSavedGroups && groups.length > 0) {
+                    renderGroups();
+                    selectGroup(groups[0].id);
+                }
+                
+                // Then sync with API
+                await loadGroupsFromAPI();
+                
+                if (groups.length === 0) {
                     chatContainer.innerHTML = '<div style="text-align:center;padding:40px;color:#666;font-size:13px;">No groups found.<br>Add bot to a group as admin or click "+ Add Group"</div>';
                 }
+                
                 setStatus('online', 'Online');
-                if (currentGroupId) {
-                    selectGroup(currentGroupId);
-                }
             }
 
             init();
 
+            // ========== SERVICE WORKER ==========
             if ('serviceWorker' in navigator) {
                 var swCode = 'self.addEventListener("install",function(){self.skipWaiting()});self.addEventListener("activate",function(){self.clients.claim()});self.addEventListener("fetch",function(e){e.respondWith(fetch(e.request).catch(function(){return new Response("Offline",{status:503})}))});';
                 try {
