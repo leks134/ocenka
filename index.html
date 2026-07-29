@@ -3,1305 +3,1356 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DIMSTAT NFT TAP - MAYFIVE V3.0</title>
+    <title>NFT Clicker v2.0 - Telegram Bot</title>
     <style>
+        /* ============ СТИЛИ ============ */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            user-select: none;
         }
         
         body {
-            background: linear-gradient(135deg, #0a0015, #1a0030, #0d0020);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a, #1a1a2e, #16213e);
             color: #fff;
             min-height: 100vh;
-            padding: 15px;
+            padding: 20px;
         }
         
         .container {
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
         }
         
-        /* Шапка */
+        /* ===== HEADER ===== */
         .header {
-            background: rgba(255, 215, 0, 0.1);
-            border: 2px solid #ffd700;
-            border-radius: 15px;
-            padding: 15px 20px;
-            margin-bottom: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding: 20px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 15px;
+            margin-bottom: 20px;
             flex-wrap: wrap;
-            gap: 10px;
-        }
-        
-        .header h1 {
-            font-size: 22px;
-            background: linear-gradient(45deg, #ffd700, #ff6b00);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            gap: 15px;
         }
         
         .user-info {
             display: flex;
             align-items: center;
-            gap: 15px;
-            flex-wrap: wrap;
+            gap: 20px;
         }
         
-        .user-badge {
-            background: rgba(255, 215, 0, 0.15);
-            padding: 6px 15px;
-            border-radius: 20px;
-            border: 1px solid #ffd700;
-            font-size: 14px;
-        }
-        
-        .user-badge .id {
-            color: #ffd700;
-        }
-        
-        .balance {
-            background: rgba(0, 255, 0, 0.1);
-            padding: 6px 15px;
-            border-radius: 20px;
-            border: 1px solid #00ff88;
-            font-weight: bold;
-            color: #00ff88;
-            font-size: 14px;
-        }
-        
-        .tap-count {
-            background: rgba(0, 100, 255, 0.1);
-            padding: 6px 15px;
-            border-radius: 20px;
-            border: 1px solid #4488ff;
-            font-weight: bold;
-            color: #4488ff;
-            font-size: 14px;
-        }
-        
-        /* Вкладки */
-        .tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-        
-        .tab-btn {
-            padding: 10px 20px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            color: #888;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 14px;
-            font-weight: bold;
-        }
-        
-        .tab-btn:hover {
-            background: rgba(255, 215, 0, 0.1);
-            border-color: #ffd700;
-        }
-        
-        .tab-btn.active {
-            background: rgba(255, 215, 0, 0.15);
-            border-color: #ffd700;
-            color: #ffd700;
-        }
-        
-        .tab-content {
-            display: none;
-            animation: fadeIn 0.4s;
-        }
-        
-        .tab-content.active {
-            display: block;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        /* Кнопка тапа */
-        .tap-area {
-            text-align: center;
-            padding: 30px 20px;
-        }
-        
-        .tap-btn {
-            width: 200px;
-            height: 200px;
+        .user-avatar {
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
-            background: radial-gradient(circle at 30% 30%, #ffd700, #ff8c00);
-            border: 4px solid #fff;
-            color: #000;
+            background: linear-gradient(135deg, #0088cc, #00d2ff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .stats {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-value {
             font-size: 28px;
             font-weight: bold;
+            background: linear-gradient(135deg, #f7971e, #ffd200);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #888;
+            margin-top: 5px;
+        }
+        
+        /* ===== CLICK AREA ===== */
+        .click-area {
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            margin: 20px 0;
             cursor: pointer;
-            transition: all 0.1s;
-            box-shadow: 0 0 60px rgba(255, 215, 0, 0.3);
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255,255,255,0.1);
             position: relative;
             overflow: hidden;
         }
         
-        .tap-btn:active {
-            transform: scale(0.92);
-            box-shadow: 0 0 100px rgba(255, 215, 0, 0.5);
+        .click-area:hover {
+            transform: scale(1.02);
+            border-color: #f7971e;
+            box-shadow: 0 0 40px rgba(247, 151, 30, 0.2);
         }
         
-        .tap-btn .tap-icon {
-            font-size: 70px;
-            display: block;
+        .click-area:active {
+            transform: scale(0.95);
         }
         
-        .tap-btn .tap-text {
-            font-size: 16px;
-        }
-        
-        /* Анимация тапа */
-        .tap-particle {
-            position: fixed;
-            font-size: 24px;
+        .click-circle {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #f7971e, #ffd200);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            font-size: 48px;
             font-weight: bold;
-            color: #ffd700;
-            pointer-events: none;
-            animation: floatUp 1.2s ease-out forwards;
-            z-index: 9999;
+            color: #000;
+            box-shadow: 0 0 60px rgba(247, 151, 30, 0.3);
+            transition: all 0.3s ease;
+            user-select: none;
         }
         
-        @keyframes floatUp {
-            0% { opacity: 1; transform: translateY(0) scale(1); }
-            100% { opacity: 0; transform: translateY(-150px) scale(1.5); }
+        .click-circle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 80px rgba(247, 151, 30, 0.5);
         }
         
-        /* Сетка NFT */
+        .click-counter {
+            font-size: 48px;
+            margin-top: 20px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #00d2ff, #3a7bd5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #f7971e, #ffd200);
+            transition: width 0.3s ease;
+            border-radius: 5px;
+        }
+        
+        /* ===== NFT GRID ===== */
         .nft-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-            gap: 12px;
-            margin-top: 15px;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
         }
         
-        .nft-item {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            padding: 12px;
+        .nft-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 15px;
             text-align: center;
-            border: 2px solid rgba(255, 255, 255, 0.05);
-            transition: all 0.3s;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.3s ease;
             cursor: pointer;
-            position: relative;
         }
         
-        .nft-item:hover {
-            transform: translateY(-3px);
-            border-color: #ffd700;
-            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.1);
+        .nft-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            border-color: #f7971e;
         }
         
-        .nft-item .icon {
-            font-size: 40px;
+        .nft-card.legendary {
+            border-color: #ff6b6b;
+            background: linear-gradient(135deg, rgba(255,107,107,0.2), rgba(255,107,107,0.05));
+        }
+        
+        .nft-card.epic {
+            border-color: #ffd93d;
+            background: linear-gradient(135deg, rgba(255,217,61,0.2), rgba(255,217,61,0.05));
+        }
+        
+        .nft-card.rare {
+            border-color: #6bcb77;
+            background: linear-gradient(135deg, rgba(107,203,119,0.2), rgba(107,203,119,0.05));
+        }
+        
+        .nft-card.common {
+            border-color: #4d96ff;
+            background: linear-gradient(135deg, rgba(77,150,255,0.2), rgba(77,150,255,0.05));
+        }
+        
+        .nft-emoji {
+            font-size: 48px;
+            margin-bottom: 10px;
             display: block;
         }
         
-        .nft-item .name {
-            font-size: 10px;
-            margin: 5px 0;
-            color: #ccc;
-            word-break: break-all;
+        .nft-name {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 5px;
         }
         
-        .nft-item .count {
-            font-size: 11px;
+        .nft-price {
+            font-size: 12px;
             color: #ffd700;
-            font-weight: bold;
-            background: rgba(255, 215, 0, 0.1);
-            padding: 2px 8px;
+        }
+        
+        .nft-rarity {
+            font-size: 10px;
+            padding: 2px 10px;
             border-radius: 10px;
             display: inline-block;
+            margin-top: 5px;
         }
         
-        .nft-item .rarity-common { border-left: 3px solid #888; }
-        .nft-item .rarity-uncommon { border-left: 3px solid #44ff44; }
-        .nft-item .rarity-rare { border-left: 3px solid #4488ff; }
-        .nft-item .rarity-epic { border-left: 3px solid #aa44ff; }
-        .nft-item .rarity-legendary { border-left: 3px solid #ffd700; }
-        .nft-item .rarity-mythic { border-left: 3px solid #ff0044; }
+        .rarity-legendary { background: #ff6b6b; color: #fff; }
+        .rarity-epic { background: #ffd93d; color: #000; }
+        .rarity-rare { background: #6bcb77; color: #fff; }
+        .rarity-common { background: #4d96ff; color: #fff; }
         
-        /* Рынок */
-        .market-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
-        }
-        
-        .market-card {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            padding: 15px;
-            text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: all 0.3s;
-        }
-        
-        .market-card:hover {
-            border-color: #ffd700;
-        }
-        
-        .market-card .icon { font-size: 40px; }
-        .market-card .name { font-size: 12px; margin: 5px 0; }
-        .market-card .price { color: #00ff88; font-weight: bold; }
-        .market-card .seller { color: #888; font-size: 11px; }
-        
-        .market-card .btn-sm {
-            padding: 6px 15px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 12px;
-            font-weight: bold;
-            margin: 3px;
-            transition: all 0.2s;
-        }
-        
-        .btn-buy { background: #00ff88; color: #000; }
-        .btn-buy:hover { transform: scale(1.05); }
-        
-        .btn-sell { background: #ff6b35; color: #fff; }
-        .btn-sell:hover { transform: scale(1.05); }
-        
-        .btn-cancel { background: #ff0044; color: #fff; }
-        .btn-cancel:hover { transform: scale(1.05); }
-        
-        /* Скрещивание */
-        .fusion-area {
-            background: rgba(255, 215, 0, 0.05);
-            border: 2px dashed rgba(255, 215, 0, 0.3);
-            border-radius: 15px;
-            padding: 20px;
-            margin-top: 15px;
-            text-align: center;
-        }
-        
-        .fusion-area .selected-nfts {
+        /* ===== TABS ===== */
+        .tabs {
             display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin: 15px 0;
+            gap: 10px;
+            margin: 20px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 10px;
             flex-wrap: wrap;
         }
         
-        .fusion-area .selected-nft {
-            background: rgba(255, 215, 0, 0.1);
-            padding: 10px;
+        .tab {
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.05);
             border-radius: 10px;
-            border: 2px solid #ffd700;
-            min-width: 80px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
         }
         
-        .fusion-area .selected-nft .icon { font-size: 30px; }
+        .tab.active {
+            background: linear-gradient(135deg, #f7971e, #ffd200);
+            color: #000;
+            border-color: #f7971e;
+        }
         
-        /* Модальное окно */
-        .modal {
-            display: none;
+        .tab:hover {
+            transform: translateY(-2px);
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        /* ===== MARKET ===== */
+        .market-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .market-item:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .buy-btn {
+            padding: 8px 20px;
+            background: linear-gradient(135deg, #00d2ff, #3a7bd5);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .buy-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(0,210,255,0.3);
+        }
+        
+        .sell-btn {
+            padding: 5px 15px;
+            background: linear-gradient(135deg, #f7971e, #ffd200);
+            border: none;
+            border-radius: 8px;
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 12px;
+        }
+        
+        .sell-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(247,151,30,0.3);
+        }
+        
+        /* ===== LOGIN ===== */
+        .login-overlay {
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            z-index: 1000;
-            justify-content: center;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.95);
+            display: flex;
             align-items: center;
-            backdrop-filter: blur(5px);
+            justify-content: center;
+            z-index: 1000;
         }
         
-        .modal.active { display: flex; }
-        
-        .modal-content {
-            background: linear-gradient(135deg, #1a0030, #2a0040);
-            padding: 30px;
+        .login-box {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            padding: 40px;
             border-radius: 20px;
             max-width: 450px;
             width: 90%;
-            border: 2px solid #ffd700;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .login-box h2 {
             text-align: center;
-            animation: modalIn 0.3s;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, #f7971e, #ffd200);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
         
-        @keyframes modalIn {
-            from { transform: scale(0.8); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-        
-        .modal-content .big-icon { font-size: 60px; margin: 10px 0; }
-        .modal-content h2 { color: #ffd700; margin-bottom: 10px; }
-        .modal-content p { color: #ccc; margin: 5px 0; }
-        
-        .modal-close {
-            margin-top: 15px;
-            padding: 10px 30px;
-            background: #ffd700;
-            color: #000;
-            border: none;
+        .login-box input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
             border-radius: 10px;
+            color: #fff;
             font-size: 16px;
-            cursor: pointer;
-            font-weight: bold;
+            transition: border-color 0.3s ease;
         }
         
-        .modal-close:hover { transform: scale(1.05); }
-        
-        /* Toast */
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: rgba(0, 0, 0, 0.9);
-            padding: 12px 20px;
-            border-radius: 10px;
-            border-left: 4px solid #ffd700;
-            color: #fff;
-            animation: slideIn 0.3s;
-            z-index: 2000;
-            max-width: 300px;
-            font-size: 14px;
+        .login-box input:focus {
+            outline: none;
+            border-color: #f7971e;
         }
         
-        .toast.success { border-left-color: #00ff88; }
-        .toast.error { border-left-color: #ff0044; }
-        
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-        
-        /* Выбор цены */
-        .price-input {
-            padding: 8px 12px;
-            border-radius: 8px;
-            border: 1px solid rgba(255, 215, 0, 0.3);
-            background: rgba(0, 0, 0, 0.5);
-            color: #fff;
-            width: 100px;
-            text-align: center;
-            font-size: 14px;
-        }
-        
-        /* Админ */
-        .admin-panel {
-            background: rgba(255, 0, 0, 0.05);
-            border: 1px solid rgba(255, 0, 0, 0.3);
-            border-radius: 15px;
-            padding: 15px;
-            margin-top: 15px;
-        }
-        
-        .admin-panel h3 { color: #ff6b6b; margin-bottom: 10px; }
-        .admin-panel .admin-controls { display: flex; gap: 8px; flex-wrap: wrap; }
-        
-        .btn {
-            padding: 8px 20px;
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #f7971e, #ffd200);
             border: none;
             border-radius: 10px;
-            font-size: 14px;
+            color: #000;
+            font-size: 16px;
             font-weight: bold;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s ease;
         }
         
-        .btn:hover { transform: scale(1.05); }
-        .btn-gold { background: #ffd700; color: #000; }
-        .btn-green { background: #00ff88; color: #000; }
-        .btn-red { background: #ff0044; color: #fff; }
-        .btn-blue { background: #4488ff; color: #fff; }
-        .btn-purple { background: #aa44ff; color: #fff; }
-        
-        .filter-tabs {
-            display: flex;
-            gap: 5px;
-            flex-wrap: wrap;
-            margin-bottom: 10px;
+        .login-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 5px 30px rgba(247,151,30,0.3);
         }
         
-        .filter-tab {
-            padding: 4px 12px;
-            border-radius: 15px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: #888;
-            cursor: pointer;
+        .login-btn.secondary {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            margin-top: 10px;
+        }
+        
+        .telegram-login {
+            text-align: center;
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+        }
+        
+        .telegram-login .bot-link {
+            display: inline-block;
+            padding: 12px 30px;
+            background: #0088cc;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 10px;
+            margin: 10px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .telegram-login .bot-link:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 30px rgba(0,136,204,0.3);
+        }
+        
+        .telegram-status {
+            margin-top: 10px;
+            padding: 8px;
+            border-radius: 8px;
             font-size: 12px;
-            transition: all 0.2s;
         }
         
-        .filter-tab.active {
-            background: rgba(255, 215, 0, 0.15);
-            border-color: #ffd700;
-            color: #ffd700;
+        .status-online {
+            background: rgba(107,203,119,0.2);
+            color: #6bcb77;
         }
         
-        @media (max-width: 600px) {
-            .tap-btn {
+        .status-offline {
+            background: rgba(255,107,107,0.2);
+            color: #ff6b6b;
+        }
+        
+        /* ===== NOTIFICATIONS ===== */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            background: linear-gradient(135deg, #00d2ff, #3a7bd5);
+            border-radius: 10px;
+            color: #fff;
+            font-weight: bold;
+            transform: translateX(120%);
+            transition: transform 0.5s ease;
+            z-index: 1001;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            max-width: 90%;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification.success {
+            background: linear-gradient(135deg, #6bcb77, #2d8f47);
+        }
+        
+        .notification.error {
+            background: linear-gradient(135deg, #ff6b6b, #c0392b);
+        }
+        
+        /* ===== MODAL ===== */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 90%;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .modal-content h3 {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .modal-content input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 16px;
+        }
+        
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .modal-actions button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-actions .confirm-btn {
+            background: linear-gradient(135deg, #f7971e, #ffd200);
+            color: #000;
+        }
+        
+        .modal-actions .cancel-btn {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+        }
+        
+        /* ===== BOT CHAT ===== */
+        .bot-chat {
+            margin-top: 20px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 15px;
+            padding: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .bot-message {
+            margin-bottom: 10px;
+            padding: 10px 15px;
+            border-radius: 10px;
+            max-width: 80%;
+        }
+        
+        .bot-message.user {
+            background: rgba(247,151,30,0.2);
+            margin-left: auto;
+            border-right: 3px solid #f7971e;
+        }
+        
+        .bot-message.bot {
+            background: rgba(0,210,255,0.1);
+            border-left: 3px solid #00d2ff;
+        }
+        
+        .bot-input-area {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .bot-input-area input {
+            flex: 1;
+            padding: 10px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            color: #fff;
+        }
+        
+        .bot-input-area button {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #0088cc, #00d2ff);
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .stats {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .click-circle {
                 width: 150px;
                 height: 150px;
-                font-size: 20px;
+                font-size: 36px;
             }
-            .tap-btn .tap-icon { font-size: 50px; }
-            .nft-grid { grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); }
-            .header h1 { font-size: 18px; }
-            .user-info { gap: 8px; }
-            .user-badge, .balance, .tap-count { font-size: 12px; padding: 4px 10px; }
+            
+            .nft-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
+            
+            .market-item {
+                flex-direction: column;
+                text-align: center;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Шапка -->
+    <!-- ===== УВЕДОМЛЕНИЯ ===== -->
+    <div id="notification" class="notification"></div>
+    
+    <!-- ===== ОКНО ВХОДА ===== -->
+    <div id="loginOverlay" class="login-overlay">
+        <div class="login-box">
+            <h2>🎮 NFT Clicker v2.0</h2>
+            <div class="telegram-login">
+                <p>🔹 Войди через Telegram</p>
+                <a href="https://t.me/NFT_CLICKER_BOT" target="_blank" class="bot-link" id="telegramBotLink">
+                    📱 Написать боту
+                </a>
+                <div id="telegramStatus" class="telegram-status status-offline">
+                    ⚠️ Бот офлайн
+                </div>
+                <p style="font-size: 12px; color: #888; margin-top: 10px;">
+                    👆 Напиши боту /start, получи код и введи его ниже
+                </p>
+            </div>
+            
+            <input type="text" id="loginCode" placeholder="🔑 Введите код из Telegram">
+            <button class="login-btn" onclick="loginWithCode()">🚀 Войти</button>
+            
+            <div style="border-top: 1px solid rgba(255,255,255,0.1); margin: 20px 0; text-align: center; padding-top: 10px; font-size: 12px; color: #888;">
+                или войди по логину/паролю
+            </div>
+            
+            <input type="text" id="loginUsername" placeholder="👤 Логин">
+            <input type="password" id="loginPassword" placeholder="🔒 Пароль">
+            <button class="login-btn" onclick="loginWithCredentials()">Войти</button>
+            <button class="login-btn secondary" onclick="registerNew()">📝 Регистрация</button>
+        </div>
+    </div>
+    
+    <!-- ===== ОСНОВНОЙ КОНТЕНТ ===== -->
+    <div id="mainContent" class="container hidden">
+        <!-- HEADER -->
         <div class="header">
-            <h1>🖱️ DIMSTAT NFT TAP</h1>
             <div class="user-info">
-                <div class="user-badge">👤 ID: <span class="id" id="userId">#0</span></div>
-                <div class="tap-count">🖱️ <span id="tapCount">0</span></div>
-                <div class="balance">💰 <span id="userBalance">0</span></div>
+                <div class="user-avatar" id="userAvatar">👤</div>
+                <div>
+                    <div id="userName" style="font-weight: bold;">Игрок</div>
+                    <div id="userId" style="font-size: 12px; color: #888;">ID: -</div>
+                </div>
+            </div>
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-value" id="crystalsDisplay">0</div>
+                    <div class="stat-label">💎 Кристаллы</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="nftCount">0</div>
+                    <div class="stat-label">🖼️ NFT</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="clickCount">0</div>
+                    <div class="stat-label">👆 Кликов</div>
+                </div>
             </div>
         </div>
         
-        <!-- Вкладки -->
+        <!-- CLICK AREA -->
+        <div class="click-area" onclick="handleClick(event)">
+            <div class="click-circle" id="clickCircle">👆</div>
+            <div class="click-counter" id="clickCounter">0</div>
+            <div style="margin-top: 10px; color: #888;">
+                кликов до NFT: <span id="clicksToNFT">100</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+            </div>
+        </div>
+        
+        <!-- TABS -->
         <div class="tabs">
-            <button class="tab-btn active" data-tab="tap">🖱️ Тапать</button>
-            <button class="tab-btn" data-tab="inventory">📦 Мои NFT (<span id="invCount">0</span>)</button>
-            <button class="tab-btn" data-tab="market">🏪 Рынок</button>
-            <button class="tab-btn" data-tab="fusion">🔮 Скрещивание</button>
-            <button class="tab-btn" data-tab="admin">⚙️ Админ</button>
+            <div class="tab active" onclick="switchTab('collection')">🎴 Коллекция</div>
+            <div class="tab" onclick="switchTab('market')">🏪 Рынок</div>
+            <div class="tab" onclick="switchTab('profile')">👤 Профиль</div>
+            <div class="tab" onclick="switchTab('bot')">🤖 Бот</div>
+            <div class="tab" onclick="saveAndExit()">💾 Выход</div>
         </div>
         
-        <!-- Тапалка -->
-        <div id="tap" class="tab-content active">
-            <div class="tap-area">
-                <h2 style="margin-bottom:10px;">ТАПАЙ И ПОЛУЧАЙ NFT</h2>
-                <p style="color:#888;margin-bottom:20px;font-size:14px;">Каждый тап даёт случайный NFT</p>
-                <button class="tap-btn" id="tapBtn">
-                    <span class="tap-icon">🎁</span>
-                    <span class="tap-text">ТАП!</span>
-                </button>
-                <p style="margin-top:20px;color:#888;font-size:13px;">Шанс на легендарный: 1% | Мифический: 0.1%</p>
+        <!-- COLLECTION -->
+        <div id="collectionTab">
+            <div class="nft-grid" id="nftGrid"></div>
+        </div>
+        
+        <!-- MARKET -->
+        <div id="marketTab" class="hidden">
+            <div id="marketList"></div>
+        </div>
+        
+        <!-- PROFILE -->
+        <div id="profileTab" class="hidden">
+            <div style="padding: 20px; text-align: center;">
+                <h3>👤 Профиль</h3>
+                <p><strong>Логин:</strong> <span id="profileLogin"></span></p>
+                <p><strong>Всего NFT:</strong> <span id="profileNftCount"></span></p>
+                <p><strong>Всего кликов:</strong> <span id="profileClicks"></span></p>
+                <p><strong>Кристаллов:</strong> <span id="profileCrystals"></span></p>
+                <button class="login-btn secondary" onclick="logout()" style="margin-top: 20px;">🚪 Выйти</button>
             </div>
         </div>
         
-        <!-- Инвентарь -->
-        <div id="inventory" class="tab-content">
-            <h2>📦 МОЙ ИНВЕНТАРЬ</h2>
-            <div class="filter-tabs" id="rarityFilters">
-                <button class="filter-tab active" data-filter="all">Все</button>
-                <button class="filter-tab" data-filter="common">Обычные</button>
-                <button class="filter-tab" data-filter="uncommon">Необычные</button>
-                <button class="filter-tab" data-filter="rare">Редкие</button>
-                <button class="filter-tab" data-filter="epic">Эпические</button>
-                <button class="filter-tab" data-filter="legendary">Легендарные</button>
-                <button class="filter-tab" data-filter="mythic">Мифические</button>
+        <!-- BOT CHAT -->
+        <div id="botTab" class="hidden">
+            <div style="margin-bottom: 15px;">
+                <span style="font-size: 18px;">🤖 Встроенный Telegram Бот</span>
+                <span id="botStatus" style="margin-left: 10px; font-size: 12px; color: #6bcb77;">● Онлайн</span>
             </div>
-            <div class="nft-grid" id="inventoryGrid"></div>
-        </div>
-        
-        <!-- Рынок -->
-        <div id="market" class="tab-content">
-            <h2>🏪 РЫНОК NFT</h2>
-            <p style="color:#888;font-size:13px;margin-bottom:10px;">Выставляй свои NFT на продажу или покупай чужие</p>
-            <div class="market-grid" id="marketGrid"></div>
-        </div>
-        
-        <!-- Скрещивание -->
-        <div id="fusion" class="tab-content">
-            <h2>🔮 СКРЕЩИВАНИЕ NFT</h2>
-            <p style="color:#888;font-size:13px;">Собери 3 одинаковых NFT → получи 1 улучшенный (×1.5 от базовой ценности)</p>
-            <div class="fusion-area">
-                <div class="selected-nfts" id="fusionSlots">
-                    <div class="selected-nft" style="border-color:#666;color:#666;">⬜ Слот 1</div>
-                    <div class="selected-nft" style="border-color:#666;color:#666;">⬜ Слот 2</div>
-                    <div class="selected-nft" style="border-color:#666;color:#666;">⬜ Слот 3</div>
-                </div>
-                <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
-                    <button class="btn btn-gold" id="fusionBtn" disabled>🔮 Скрестить</button>
-                    <button class="btn btn-red" id="clearFusionBtn">🗑️ Очистить</button>
-                </div>
-                <div id="fusionResult" style="margin-top:15px;font-size:14px;color:#ffd700;"></div>
-            </div>
-            <div style="margin-top:15px;">
-                <h3 style="font-size:14px;color:#888;">Доступные для скрещивания:</h3>
-                <div class="nft-grid" id="fusionInventory"></div>
-            </div>
-        </div>
-        
-        <!-- Админ -->
-        <div id="admin" class="tab-content">
-            <h2>⚙️ АДМИН ПАНЕЛЬ</h2>
-            <div class="admin-panel">
-                <h3>👑 Владелец ID #1</h3>
-                <div class="admin-controls">
-                    <button class="btn btn-green" onclick="adminAddBalance(100000)">💰 +100 000</button>
-                    <button class="btn btn-green" onclick="adminAddBalance(1000000)">💰 +1 000 000</button>
-                    <button class="btn btn-green" onclick="adminAddBalance(10000000)">💰 +10 000 000</button>
-                    <button class="btn btn-blue" onclick="adminAddTaps(100)">🖱️ +100 тапов</button>
-                    <button class="btn btn-purple" onclick="adminGenerateNFT()">🎨 Создать NFT</button>
-                    <button class="btn btn-red" onclick="adminReset()">🔄 Сбросить</button>
-                </div>
+            <div class="bot-chat" id="botChat"></div>
+            <div class="bot-input-area">
+                <input type="text" id="botInput" placeholder="Напишите боту..." onkeypress="if(event.key==='Enter') sendBotMessage()">
+                <button onclick="sendBotMessage()">📤 Отправить</button>
             </div>
         </div>
     </div>
     
-    <!-- Модальное окно -->
-    <div class="modal" id="modal">
+    <!-- ===== МОДАЛКА ПРОДАЖИ ===== -->
+    <div id="sellModal" class="modal hidden">
         <div class="modal-content">
-            <div class="big-icon" id="modalIcon">🎉</div>
-            <h2 id="modalTitle">Поздравляем!</h2>
-            <p id="modalText">Вы получили новый NFT</p>
-            <button class="modal-close" onclick="closeModal()">✕ Закрыть</button>
+            <h3>💰 Продать NFT</h3>
+            <p id="sellNftName" style="text-align: center; margin: 10px 0;"></p>
+            <input type="number" id="sellPrice" placeholder="Цена в кристаллах" min="1">
+            <div class="modal-actions">
+                <button class="confirm-btn" onclick="confirmSell()">Продать</button>
+                <button class="cancel-btn" onclick="closeSellModal()">Отмена</button>
+            </div>
         </div>
     </div>
     
     <script>
-        // ==================== ГЕНЕРАЦИЯ 200+ NFT ====================
-        const nftTemplates = (() => {
-            const templates = [];
-            const rarities = [
-                { name: 'common', weight: 40, prefix: 'Обычный' },
-                { name: 'uncommon', weight: 30, prefix: 'Необычный' },
-                { name: 'rare', weight: 18, prefix: 'Редкий' },
-                { name: 'epic', weight: 8, prefix: 'Эпический' },
-                { name: 'legendary', weight: 3, prefix: 'Легендарный' },
-                { name: 'mythic', weight: 1, prefix: 'Мифический' }
-            ];
-            
-            const icons = [
-                '🐉','🔥','💀','🐱','🐺','🦁','🦄','🐦','🦊','🦅','🦉','🐰','🐈','🐻','🐼',
-                '👾','🤖','👽','🎃','👻','💎','⭐','🌙','☀️','🌈','🌀','⚡','🔥','❄️','🌊',
-                '🍒','🍋','🍊','🍇','🍉','🍓','🍑','🍍','🥝','🌶️','🧊','🍭','🍬','🍫','🍩',
-                '🎯','🎲','🎮','🎰','🎱','🏆','🥇','🥈','🥉','🎖️','💊','🧪','🔮','⚗️','🧬',
-                '🗡️','⚔️','🛡️','🏹','🔱','🧙','🧝','🧛','🧟','🦇','🐉','🐲','🐾','🦴','👁️',
-                '💜','💙','💚','💛','🧡','❤️','🤍','🖤','💗','💖','💕','💞','💓','💘','💝',
-                '🌹','🥀','🌺','🌸','🌼','🌻','🌷','🌿','☘️','🍀','🎄','🌲','🌳','🌴','🌵',
-                '🌍','🌎','🌏','🌕','🌖','🌗','🌘','🌑','🌒','🌓','🌔','🌙','☄️','💫','🌟'
-            ];
-            
-            let id = 0;
-            for (let rarity of rarities) {
-                const count = Math.floor(rarity.weight / 100 * 200);
-                const actualCount = Math.max(1, Math.min(count, 60));
-                for (let i = 0; i < actualCount; i++) {
-                    const icon = icons[id % icons.length];
-                    const name = rarity.prefix + ' ' + icon + ' #' + (id + 1);
-                    templates.push({
-                        id: id++,
-                        name: name,
-                        icon: icon,
-                        rarity: rarity.name,
-                        baseValue: getBaseValue(rarity.name)
-                    });
-                }
-            }
-            
-            // Добиваем до 200+
-            while (templates.length < 200) {
-                const rarity = rarities[Math.floor(Math.random() * rarities.length)];
-                const icon = icons[Math.floor(Math.random() * icons.length)];
-                templates.push({
-                    id: templates.length,
-                    name: rarity.prefix + ' ' + icon + ' #' + (templates.length + 1),
-                    icon: icon,
-                    rarity: rarity.name,
-                    baseValue: getBaseValue(rarity.name)
+        // ============================================================
+        // ============ КОНФИГУРАЦИЯ TELEGRAM БОТА ============
+        // ============================================================
+        const BOT_TOKEN = '8998947312:AAGyGHIyi4cSqUzKmeIhQzSLJLXXH3kkmXg';
+        const BOT_USERNAME = 'NFT_CLICKER_BOT';
+        const BOT_API_URL = `https://api.telegram.org/bot${BOT_TOKEN}`;
+        
+        // ============================================================
+        // ============ NFT DATA ============
+        // ============================================================
+        const NFT_EMOJIS = ['🎨','🖼️','🎭','🎪','🎠','🎡','🎢','🎨','🖌️','🖍️','✏️','🖋️','🖊️','🔮','💎','👑','🌟','⭐','🌙','☀️','🔥','💫','✨','🌈','🎯','🎰','🎲','🎳','🎮','🎵','🎶','🎤','🎧','🎼','🎹','🎸','🎺','🎷','🎻','🥁','🎬','📸','📹','🎥','📽️','🎞️','📺','📻','📱','💻','🖥️','⌨️','🖱️','🖨️','💿','📀','💾','📼','🔋','🔌','💡','🔦','🕯️','📡','📯','🔭','🔬','🔮','🧪','🧫','🧬','💊','💉','🌿','🍀','🌺','🌸','🌹','🌷','🌻','🌼','💐','🍄','🌾','🌵','🎄','🌲','🌳','🌴','🌱','🌿','☘️','🍂','🍁','🌊','🌋','🏔️','⛰️','🌄','🌅','🌇','🌆','🏙️','🌃','🌌'];
+        
+        function generateAllNFTs() {
+            const nfts = [];
+            // 90 обычных NFT (цена 10-100 кристаллов)
+            for (let i = 0; i < 90; i++) {
+                const price = Math.floor(Math.random() * 91) + 10;
+                nfts.push({
+                    id: i + 1,
+                    name: `NFT #${i+1}`,
+                    emoji: NFT_EMOJIS[i % NFT_EMOJIS.length],
+                    rarity: 'common',
+                    price: price,
+                    salePrice: price + Math.floor(price * 0.3)
                 });
             }
-            
-            return templates;
-        })();
-        
-        function getBaseValue(rarity) {
-            const values = {
-                'common': 10,
-                'uncommon': 25,
-                'rare': 60,
-                'epic': 150,
-                'legendary': 400,
-                'mythic': 1000
-            };
-            return values[rarity] || 10;
-        }
-        
-        // ==================== ПОЛЬЗОВАТЕЛЬ ====================
-        function getUserId() {
-            let id = localStorage.getItem('dimstat_user_id');
-            if (!id) {
-                id = Math.floor(Math.random() * 900000) + 100000;
-                localStorage.setItem('dimstat_user_id', id);
+            // 5 NFT по 1000 кристаллов
+            for (let i = 0; i < 5; i++) {
+                nfts.push({
+                    id: 91 + i,
+                    name: `Редкий NFT #${91+i}`,
+                    emoji: NFT_EMOJIS[(90 + i) % NFT_EMOJIS.length],
+                    rarity: 'rare',
+                    price: 1000,
+                    salePrice: 1300
+                });
             }
-            return id;
+            // 5 NFT по 6000 кристаллов
+            for (let i = 0; i < 5; i++) {
+                nfts.push({
+                    id: 96 + i,
+                    name: `Легендарный NFT #${96+i}`,
+                    emoji: NFT_EMOJIS[(95 + i) % NFT_EMOJIS.length],
+                    rarity: 'legendary',
+                    price: 6000,
+                    salePrice: 7800
+                });
+            }
+            return nfts;
         }
         
-        let user = {
-            id: getUserId(),
-            balance: 0,
-            taps: 0,
-            nfts: [], // [{templateId, count, fused}]
-            listedNFTs: [], // [{nftId, price, templateId}]
-            fusionSlots: []
+        const ALL_NFTS = generateAllNFTs();
+        
+        // ============================================================
+        // ============ GAME STATE ============
+        // ============================================================
+        let gameState = {
+            user: null,
+            clicks: 0,
+            crystals: 0,
+            nfts: [],
+            market: [],
+            clickMultiplier: 1
         };
         
-        function loadData() {
-            const saved = localStorage.getItem('dimstat_user_data_' + user.id);
-            if (saved) {
-                try {
-                    const parsed = JSON.parse(saved);
-                    user.balance = parsed.balance || 0;
-                    user.taps = parsed.taps || 0;
-                    user.nfts = parsed.nfts || [];
-                    user.listedNFTs = parsed.listedNFTs || [];
-                    user.fusionSlots = parsed.fusionSlots || [];
-                } catch(e) {
-                    console.log('Error loading data');
+        // ============================================================
+        // ============ TELEGRAM BOT API ============
+        // ============================================================
+        let telegramUpdateId = 0;
+        let botChatMessages = [];
+        
+        async function checkTelegramUpdates() {
+            try {
+                const url = `${BOT_API_URL}/getUpdates?offset=${telegramUpdateId + 1}&timeout=30`;
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (data.ok && data.result.length > 0) {
+                    for (const update of data.result) {
+                        telegramUpdateId = update.update_id;
+                        if (update.message && update.message.text) {
+                            handleBotMessage(update.message);
+                        }
+                    }
                 }
-            }
-            
-            // Загружаем рыночные данные (общие для всех)
-            const marketData = localStorage.getItem('dimstat_market_data');
-            if (marketData) {
-                try {
-                    window.marketListings = JSON.parse(marketData);
-                } catch(e) {
-                    window.marketListings = [];
-                }
-            } else {
-                window.marketListings = [];
+            } catch (error) {
+                console.log('⚠️ Ошибка Telegram API:', error);
+                document.getElementById('botStatus').textContent = '⚠️ Офлайн';
+                document.getElementById('botStatus').style.color = '#ff6b6b';
             }
         }
         
-        function saveData() {
-            const data = {
-                balance: user.balance,
-                taps: user.taps,
-                nfts: user.nfts,
-                listedNFTs: user.listedNFTs,
-                fusionSlots: user.fusionSlots
-            };
-            localStorage.setItem('dimstat_user_data_' + user.id, JSON.stringify(data));
-            localStorage.setItem('dimstat_market_data', JSON.stringify(window.marketListings));
-        }
-        
-        // ==================== ТАП ====================
-        function tap() {
-            user.taps++;
-            
-            // Выбираем NFT по шансам
-            const rand = Math.random() * 100;
-            let rarity;
-            if (rand < 0.1) rarity = 'mythic';
-            else if (rand < 1.1) rarity = 'legendary';
-            else if (rand < 4.1) rarity = 'epic';
-            else if (rand < 12.1) rarity = 'rare';
-            else if (rand < 32.1) rarity = 'uncommon';
-            else rarity = 'common';
-            
-            const available = nftTemplates.filter(t => t.rarity === rarity);
-            const template = available[Math.floor(Math.random() * available.length)];
-            
-            // Добавляем в инвентарь
-            const existing = user.nfts.find(n => n.templateId === template.id && !n.fused);
-            if (existing) {
-                existing.count++;
-            } else {
-                user.nfts.push({
-                    templateId: template.id,
-                    count: 1,
-                    fused: false
+        async function sendToTelegram(chatId, text) {
+            try {
+                const url = `${BOT_API_URL}/sendMessage`;
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: chatId,
+                        text: text,
+                        parse_mode: 'HTML'
+                    })
                 });
+                return await response.json();
+            } catch (error) {
+                console.error('❌ Ошибка отправки:', error);
+                return null;
+            }
+        }
+        
+        function handleBotMessage(message) {
+            const text = message.text;
+            const chatId = message.chat.id;
+            const username = message.from.username || 'Аноним';
+            
+            // Добавляем в чат
+            addBotMessage('user', `${username}: ${text}`);
+            
+            // Обработка команд
+            if (text === '/start') {
+                const code = generateAuthCode();
+                const response = `🔐 <b>Добро пожаловать в NFT Clicker!</b>\n\n` +
+                    `🎮 Твой код для входа:\n<code>${code}</code>\n\n` +
+                    `📋 Логин: ${code.split(':')[0]}\n` +
+                    `🔑 Пароль: ${code.split(':')[1]}\n\n` +
+                    `1. Скопируй код\n` +
+                    `2. Вставь на сайте\n` +
+                    `3. Наслаждайся игрой! 🎮`;
+                sendToTelegram(chatId, response);
+                addBotMessage('bot', `✅ Отправлен код: ${code}`);
+            } else if (text === '/help') {
+                const help = `🎮 <b>NFT Clicker Bot</b>\n\n` +
+                    `<b>Команды:</b>\n` +
+                    `/start - Получить код для входа\n` +
+                    `/help - Эта справка\n` +
+                    `/mycodes - Мои коды\n` +
+                    `/delete - Удалить данные\n\n` +
+                    `<b>💰 Система:</b>\n` +
+                    `• Каждые 100 кликов - NFT\n` +
+                    `• 90 обычных (10-100💎)\n` +
+                    `• 5 редких (1000💎)\n` +
+                    `• 5 легендарных (6000💎)\n` +
+                    `• Рынок для торговли`;
+                sendToTelegram(chatId, help);
+                addBotMessage('bot', '📖 Справка отправлена');
+            } else if (text === '/mycodes') {
+                showUserCodes(chatId);
+            } else if (text === '/delete') {
+                sendToTelegram(chatId, '⚠️ Твои данные удалены! Напиши /start заново.');
+                addBotMessage('bot', '🗑️ Данные удалены');
+            } else {
+                // Обычное сообщение
+                const response = `🤖 Привет! Я бот NFT Clicker.\n` +
+                    `Напиши /start чтобы получить код для входа.\n` +
+                    `Или /help для справки.`;
+                sendToTelegram(chatId, response);
+                addBotMessage('bot', response);
+            }
+        }
+        
+        function generateAuthCode() {
+            const login = 'user_' + Math.random().toString(36).substring(2, 10);
+            const password = Math.random().toString(36).substring(2, 12);
+            const code = `${login}:${password}`;
+            
+            // Сохраняем в localStorage
+            const codes = JSON.parse(localStorage.getItem('telegram_codes') || '{}');
+            codes[code] = {
+                login: login,
+                password: password,
+                used: false,
+                created: new Date().toISOString()
+            };
+            localStorage.setItem('telegram_codes', JSON.stringify(codes));
+            
+            return code;
+        }
+        
+        function showUserCodes(chatId) {
+            const codes = JSON.parse(localStorage.getItem('telegram_codes') || '{}');
+            const entries = Object.entries(codes);
+            
+            if (entries.length === 0) {
+                sendToTelegram(chatId, '📭 У тебя пока нет кодов. Напиши /start');
+                return;
             }
             
-            // Небольшой бонус к балансу
-            user.balance += Math.floor(template.baseValue * 0.3);
+            let response = '📋 <b>Твои коды:</b>\n\n';
+            for (const [code, data] of entries.slice(-5)) {
+                const status = data.used ? '✅ Использован' : '🔄 Активен';
+                response += `🔑 <code>${code}</code>\n`;
+                response += `📌 Статус: ${status}\n\n`;
+            }
+            sendToTelegram(chatId, response);
+        }
+        
+        function addBotMessage(type, text) {
+            const chat = document.getElementById('botChat');
+            const div = document.createElement('div');
+            div.className = `bot-message ${type}`;
+            div.textContent = text.replace(/<[^>]*>/g, '');
+            chat.appendChild(div);
+            chat.scrollTop = chat.scrollHeight;
+        }
+        
+        async function sendBotMessage() {
+            const input = document.getElementById('botInput');
+            const text = input.value.trim();
+            if (!text) return;
             
-            saveData();
+            input.value = '';
+            addBotMessage('user', `Вы: ${text}`);
+            
+            // Отправляем в Telegram (имитация)
+            if (text === '/start') {
+                const code = generateAuthCode();
+                addBotMessage('bot', `✅ Твой код: ${code}`);
+                showNotification(`🔑 Код: ${code}`, 'success');
+            } else if (text === '/help') {
+                addBotMessage('bot', '📖 Справка: /start - получить код, /help - справка');
+            } else {
+                addBotMessage('bot', '🤖 Напиши /start для входа или /help для справки');
+            }
+        }
+        
+        // ============================================================
+        // ============ AUTH ============
+        // ============================================================
+        function loginWithCode() {
+            const code = document.getElementById('loginCode').value.trim();
+            if (!code) {
+                showNotification('❌ Введите код из Telegram', 'error');
+                return;
+            }
+            
+            const codes = JSON.parse(localStorage.getItem('telegram_codes') || '{}');
+            if (!codes[code]) {
+                showNotification('❌ Неверный код', 'error');
+                return;
+            }
+            
+            const data = codes[code];
+            data.used = true;
+            codes[code] = data;
+            localStorage.setItem('telegram_codes', JSON.stringify(codes));
+            
+            registerUser(data.login, data.password);
+            showNotification('✅ Вход выполнен!', 'success');
+        }
+        
+        function loginWithCredentials() {
+            const login = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+            if (!login || !password) {
+                showNotification('❌ Введите логин и пароль', 'error');
+                return;
+            }
+            loginUser(login, password);
+        }
+        
+        function registerNew() {
+            const login = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+            if (!login || !password) {
+                showNotification('❌ Введите логин и пароль', 'error');
+                return;
+            }
+            registerUser(login, password);
+        }
+        
+        function loginUser(login, password) {
+            const users = JSON.parse(localStorage.getItem('nft_users') || '{}');
+            if (users[login] && users[login].password === password) {
+                gameState.user = users[login];
+                loadGame();
+                document.getElementById('loginOverlay').classList.add('hidden');
+                document.getElementById('mainContent').classList.remove('hidden');
+                updateUI();
+                showNotification('✅ Добро пожаловать!', 'success');
+            } else if (users[login]) {
+                showNotification('❌ Неверный пароль', 'error');
+            } else {
+                showNotification('❌ Пользователь не найден', 'error');
+            }
+        }
+        
+        function registerUser(login, password) {
+            const users = JSON.parse(localStorage.getItem('nft_users') || '{}');
+            if (users[login]) {
+                showNotification('❌ Пользователь уже существует', 'error');
+                return;
+            }
+            
+            const newUser = {
+                login: login,
+                password: password,
+                clicks: 0,
+                crystals: 0,
+                nfts: [],
+                market: []
+            };
+            
+            users[login] = newUser;
+            localStorage.setItem('nft_users', JSON.stringify(users));
+            
+            gameState.user = newUser;
+            saveGame();
+            document.getElementById('loginOverlay').classList.add('hidden');
+            document.getElementById('mainContent').classList.remove('hidden');
             updateUI();
+            showNotification('✅ Регистрация успешна!', 'success');
+        }
+        
+        // ============================================================
+        // ============ GAME SAVE/LOAD ============
+        // ============================================================
+        function saveGame() {
+            if (!gameState.user) return;
+            const users = JSON.parse(localStorage.getItem('nft_users') || '{}');
+            gameState.user.clicks = gameState.clicks;
+            gameState.user.crystals = gameState.crystals;
+            gameState.user.nfts = gameState.nfts;
+            gameState.user.market = gameState.market;
+            users[gameState.user.login] = gameState.user;
+            localStorage.setItem('nft_users', JSON.stringify(users));
+        }
+        
+        function loadGame() {
+            if (!gameState.user) return;
+            gameState.clicks = gameState.user.clicks || 0;
+            gameState.crystals = gameState.user.crystals || 0;
+            gameState.nfts = gameState.user.nfts || [];
+            gameState.market = gameState.user.market || [];
+        }
+        
+        function saveAndExit() {
+            saveGame();
+            showNotification('💾 Прогресс сохранен!', 'success');
+            setTimeout(() => {
+                document.getElementById('mainContent').classList.add('hidden');
+                document.getElementById('loginOverlay').classList.remove('hidden');
+            }, 500);
+        }
+        
+        function logout() {
+            saveGame();
+            gameState.user = null;
+            document.getElementById('mainContent').classList.add('hidden');
+            document.getElementById('loginOverlay').classList.remove('hidden');
+            showNotification('👋 До встречи!', 'success');
+        }
+        
+        // ============================================================
+        // ============ CLICK SYSTEM ============
+        // ============================================================
+        function handleClick(e) {
+            if (!gameState.user) return;
+            
+            gameState.clicks++;
+            const clicksToNFT = 100 / gameState.clickMultiplier;
+            const progress = ((gameState.clicks % clicksToNFT) / clicksToNFT) * 100;
+            
+            document.getElementById('clickCounter').textContent = gameState.clicks;
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('clicksToNFT').textContent = Math.floor(clicksToNFT - (gameState.clicks % clicksToNFT));
             
             // Анимация
-            showTapParticle(template.icon);
+            const circle = document.getElementById('clickCircle');
+            circle.style.transform = 'scale(0.9)';
+            setTimeout(() => circle.style.transform = 'scale(1)', 100);
             
-            // Показываем что выпало
-            showToast('🎁 Выпал: ' + template.name, 'success');
-        }
-        
-        function showTapParticle(icon) {
-            const el = document.createElement('div');
-            el.className = 'tap-particle';
-            el.textContent = icon;
-            el.style.left = (Math.random() * 60 + 20) + '%';
-            el.style.top = (Math.random() * 40 + 30) + '%';
-            document.body.appendChild(el);
-            setTimeout(() => el.remove(), 1200);
-        }
-        
-        // ==================== ИНВЕНТАРЬ ====================
-        function renderInventory(filter = 'all') {
-            const grid = document.getElementById('inventoryGrid');
-            grid.innerHTML = '';
-            
-            let items = user.nfts.filter(n => !n.fused);
-            
-            if (filter !== 'all') {
-                const templateIds = nftTemplates.filter(t => t.rarity === filter).map(t => t.id);
-                items = items.filter(n => templateIds.includes(n.templateId));
+            // Проверка на получение NFT
+            if (gameState.clicks % clicksToNFT === 0) {
+                const nft = getRandomNFT();
+                gameState.nfts.push(nft);
+                showNotification(`🎉 Получен NFT: ${nft.emoji} ${nft.name} (${nft.price}💎)`, 'success');
+                saveGame();
+                updateUI();
             }
             
-            if (items.length === 0) {
-                grid.innerHTML = '<p style="color:#888;grid-column:1/-1;text-align:center;">Нет NFT. Тапай!</p>';
+            if (gameState.clicks % 10 === 0) saveGame();
+            updateUI();
+        }
+        
+        function getRandomNFT() {
+            const rand = Math.random() * 100;
+            let nft;
+            if (rand < 5) {
+                nft = ALL_NFTS.filter(n => n.rarity === 'legendary')[Math.floor(Math.random() * 5)];
+            } else if (rand < 10) {
+                nft = ALL_NFTS.filter(n => n.rarity === 'rare')[Math.floor(Math.random() * 5)];
+            } else {
+                nft = ALL_NFTS.filter(n => n.rarity === 'common')[Math.floor(Math.random() * 90)];
+            }
+            return { ...nft, uniqueId: Date.now() + '_' + Math.random().toString(36).substring(7) };
+        }
+        
+        // ============================================================
+        // ============ MARKET ============
+        // ============================================================
+        function listForSale(index) {
+            const nft = gameState.nfts[index];
+            if (!nft) return;
+            document.getElementById('sellNftName').textContent = `${nft.emoji} ${nft.name}`;
+            document.getElementById('sellPrice').value = nft.price;
+            document.getElementById('sellModal').dataset.nftIndex = index;
+            document.getElementById('sellModal').classList.remove('hidden');
+        }
+        
+        function confirmSell() {
+            const price = parseInt(document.getElementById('sellPrice').value);
+            if (isNaN(price) || price < 1) {
+                showNotification('❌ Введите корректную цену', 'error');
                 return;
             }
             
-            items.sort((a, b) => {
-                const tA = nftTemplates.find(t => t.id === a.templateId);
-                const tB = nftTemplates.find(t => t.id === b.templateId);
-                const rA = ['mythic','legendary','epic','rare','uncommon','common'].indexOf(tA?.rarity || 'common');
-                const rB = ['mythic','legendary','epic','rare','uncommon','common'].indexOf(tB?.rarity || 'common');
-                return rA - rB;
-            });
+            const index = parseInt(document.getElementById('sellModal').dataset.nftIndex);
+            const nft = gameState.nfts[index];
+            if (!nft) return;
             
-            items.forEach(nft => {
-                const template = nftTemplates.find(t => t.id === nft.templateId);
-                if (!template) return;
-                
-                const div = document.createElement('div');
-                div.className = 'nft-item rarity-' + template.rarity;
-                div.innerHTML = `
-                    <span class="icon">${template.icon}</span>
-                    <div class="name">${template.name}</div>
-                    <div class="count">×${nft.count}</div>
-                    <div style="font-size:10px;color:#888;">${template.rarity}</div>
-                    <div style="font-size:10px;color:#00ff88;">${template.baseValue}💰</div>
-                `;
-                div.onclick = () => {
-                    // При клике можно выставить на продажу
-                    if (confirm(`Выставить ${template.name} (×${nft.count}) на продажу?`)) {
-                        const price = prompt('Введите цену:', template.baseValue * 2);
-                        if (price && !isNaN(price) && parseInt(price) > 0) {
-                            listNFT(nft.templateId, parseInt(price));
-                        }
-                    }
-                };
-                grid.appendChild(div);
-            });
-            
-            document.getElementById('invCount').textContent = items.length;
-        }
-        
-        // ==================== РЫНОК ====================
-        function listNFT(templateId, price) {
-            const nft = user.nfts.find(n => n.templateId === templateId && !n.fused);
-            if (!nft || nft.count < 1) {
-                showToast('❌ Нет такого NFT', 'error');
-                return;
-            }
-            
-            // Проверяем, не выставлен ли уже
-            const alreadyListed = user.listedNFTs.some(l => l.templateId === templateId);
-            if (alreadyListed) {
-                showToast('❌ Этот NFT уже выставлен', 'error');
-                return;
-            }
-            
-            nft.count--;
-            if (nft.count === 0) {
-                const idx = user.nfts.indexOf(nft);
-                if (idx > -1) user.nfts.splice(idx, 1);
-            }
-            
-            const listing = {
-                id: Date.now() + '_' + Math.random().toString(36).substr(2, 6),
-                templateId: templateId,
+            gameState.market.push({
+                id: Date.now(),
+                sellerLogin: gameState.user.login,
+                nft: nft,
                 price: price,
-                sellerId: user.id,
-                sellerName: 'Пользователь #' + user.id
+                listedAt: new Date().toISOString()
+            });
+            gameState.nfts.splice(index, 1);
+            closeSellModal();
+            saveGame();
+            updateUI();
+            showNotification(`✅ NFT выставлен на продажу за ${price}💎`, 'success');
+        }
+        
+        function closeSellModal() {
+            document.getElementById('sellModal').classList.add('hidden');
+        }
+        
+        function buyNFT(listingId) {
+            const index = gameState.market.findIndex(m => m.id === listingId);
+            if (index === -1) return;
+            
+            const listing = gameState.market[index];
+            if (gameState.crystals < listing.price) {
+                showNotification('❌ Недостаточно кристаллов', 'error');
+                return;
+            }
+            if (gameState.user.login === listing.sellerLogin) {
+                showNotification('❌ Нельзя купить свой NFT', 'error');
+                return;
+            }
+            
+            gameState.crystals -= listing.price;
+            gameState.nfts.push({ ...listing.nft, uniqueId: Date.now() + '_' + Math.random().toString(36).substring(7) });
+            
+            // Увеличиваем кристаллы продавца
+            const users = JSON.parse(localStorage.getItem('nft_users') || '{}');
+            if (users[listing.sellerLogin]) {
+                users[listing.sellerLogin].crystals += listing.price;
+                localStorage.setItem('nft_users', JSON.stringify(users));
+            }
+            
+            gameState.market.splice(index, 1);
+            saveGame();
+            updateUI();
+            showNotification(`✅ Куплен NFT: ${listing.nft.emoji} ${listing.nft.name}`, 'success');
+        }
+        
+        function removeFromMarket(listingId) {
+            const index = gameState.market.findIndex(m => m.id === listingId);
+            if (index === -1) return;
+            
+            const listing = gameState.market[index];
+            if (gameState.user.login !== listing.sellerLogin) {
+                showNotification('❌ Это не ваш NFT', 'error');
+                return;
+            }
+            
+            gameState.nfts.push({ ...listing.nft, uniqueId: Date.now() + '_' + Math.random().toString(36).substring(7) });
+            gameState.market.splice(index, 1);
+            saveGame();
+            updateUI();
+            showNotification('✅ NFT возвращен в коллекцию', 'success');
+        }
+        
+        // ============================================================
+        // ============ UI ============
+        // ============================================================
+        function updateUI() {
+            document.getElementById('crystalsDisplay').textContent = gameState.crystals;
+            document.getElementById('clickCount').textContent = gameState.clicks;
+            document.getElementById('nftCount').textContent = gameState.nfts.length;
+            document.getElementById('clickCounter').textContent = gameState.clicks;
+            
+            if (gameState.user) {
+                document.getElementById('userName').textContent = gameState.user.login;
+                document.getElementById('userId').textContent = 'ID: ' + gameState.user.login;
+                document.getElementById('profileLogin').textContent = gameState.user.login;
+                document.getElementById('profileNftCount').textContent = gameState.nfts.length;
+                document.getElementById('profileClicks').textContent = gameState.clicks;
+                document.getElementById('profileCrystals').textContent = gameState.crystals;
+            }
+            
+            // Коллекция
+            const grid = document.getElementById('nftGrid');
+            grid.innerHTML = '';
+            if (gameState.nfts.length === 0) {
+                grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #888;">У вас пока нет NFT. Продолжайте кликать! 🎯</div>';
+            } else {
+                gameState.nfts.forEach((nft, index) => {
+                    const card = document.createElement('div');
+                    card.className = `nft-card ${nft.rarity}`;
+                    card.innerHTML = `
+                        <span class="nft-emoji">${nft.emoji}</span>
+                        <div class="nft-name">${nft.name}</div>
+                        <div class="nft-price">💰 ${nft.price}💎</div>
+                        <span class="nft-rarity rarity-${nft.rarity}">${nft.rarity.toUpperCase()}</span>
+                        <br>
+                        <button class="sell-btn" onclick="listForSale(${index})">📤 Продать</button>
+                    `;
+                    grid.appendChild(card);
+                });
+            }
+            
+            // Рынок
+            const marketList = document.getElementById('marketList');
+            marketList.innerHTML = '';
+            if (gameState.market.length === 0) {
+                marketList.innerHTML = '<div style="text-align: center; padding: 40px; color: #888;">На рынке пока ничего нет 📭</div>';
+            } else {
+                gameState.market.forEach(listing => {
+                    const item = document.createElement('div');
+                    item.className = 'market-item';
+                    const isOwner = listing.sellerLogin === gameState.user.login;
+                    item.innerHTML = `
+                        <div>
+                            <span style="font-size: 24px;">${listing.nft.emoji}</span>
+                            <strong>${listing.nft.name}</strong>
+                            <span style="color: #888; font-size: 12px;">(${listing.nft.rarity})</span>
+                            <div style="font-size: 12px; color: #888;">Продавец: ${listing.sellerLogin}</div>
+                        </div>
+                        <div>
+                            <span style="color: #ffd700; font-weight: bold;">💰 ${listing.price}💎</span>
+                            ${isOwner ? 
+                                `<button class="buy-btn" onclick="removeFromMarket(${listing.id})" style="background: #ff6b6b; margin-left: 10px;">❌ Снять</button>` :
+                                `<button class="buy-btn" onclick="buyNFT(${listing.id})" style="margin-left: 10px;">Купить</button>`
+                            }
+                        </div>
+                    `;
+                    marketList.appendChild(item);
+                });
+            }
+        }
+        
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('[id$="Tab"]').forEach(t => t.classList.add('hidden'));
+            
+            const tabs = {
+                collection: { el: 'collectionTab', idx: 0 },
+                market: { el: 'marketTab', idx: 1 },
+                profile: { el: 'profileTab', idx: 2 },
+                bot: { el: 'botTab', idx: 3 }
             };
             
-            user.listedNFTs.push(listing);
-            window.marketListings.push({
-                ...listing,
-                marketId: Date.now() + '_' + Math.random().toString(36).substr(2, 6)
-            });
-            
-            saveData();
-            updateUI();
-            renderMarket();
-            renderInventory();
-            showToast('✅ NFT выставлен на продажу за ' + price + '💰', 'success');
+            if (tabs[tab]) {
+                document.querySelectorAll('.tab')[tabs[tab].idx].classList.add('active');
+                document.getElementById(tabs[tab].el).classList.remove('hidden');
+                if (tab === 'market') updateUI();
+                if (tab === 'profile') updateUI();
+                if (tab === 'bot') {
+                    document.getElementById('botChat').innerHTML = '';
+                    addBotMessage('bot', '🤖 Бот готов! Напиши /start для входа или /help для справки.');
+                }
+            }
         }
         
-        function buyNFT(marketId) {
-            const idx = window.marketListings.findIndex(l => l.marketId === marketId);
-            if (idx === -1) {
-                showToast('❌ NFT уже куплен', 'error');
-                return;
-            }
-            
-            const listing = window.marketListings[idx];
-            if (listing.sellerId === user.id) {
-                showToast('❌ Это ваш NFT', 'error');
-                return;
-            }
-            
-            if (user.balance < listing.price) {
-                showToast('❌ Недостаточно средств!', 'error');
-                return;
-            }
-            
-            // Покупаем
-            user.balance -= listing.price;
-            
-            // Добавляем покупателю
-            const existing = user.nfts.find(n => n.templateId === listing.templateId && !n.fused);
-            if (existing) {
-                existing.count++;
-            } else {
-                user.nfts.push({
-                    templateId: listing.templateId,
-                    count: 1,
-                    fused: false
-                });
-            }
-            
-            // Добавляем продавцу деньги
-            // В реальной игре нужно передавать продавцу, но для упрощения добавляем в общий пул
-            // Находим продавца и добавляем ему баланс (имитация)
-            const sellerListings = user.listedNFTs.filter(l => l.templateId === listing.templateId && l.sellerId === listing.sellerId);
-            sellerListings.forEach(l => {
-                const idx2 = user.listedNFTs.indexOf(l);
-                if (idx2 > -1) user.listedNFTs.splice(idx2, 1);
-            });
-            
-            // Удаляем из рыночных
-            window.marketListings.splice(idx, 1);
-            
-            saveData();
-            updateUI();
-            renderMarket();
-            renderInventory();
-            showToast('✅ NFT куплен!', 'success');
+        function showNotification(msg, type = 'info') {
+            const el = document.getElementById('notification');
+            el.textContent = msg;
+            el.className = 'notification show';
+            if (type === 'success') el.classList.add('success');
+            if (type === 'error') el.classList.add('error');
+            setTimeout(() => el.classList.remove('show'), 4000);
         }
         
-        function cancelListing(marketId) {
-            const idx = window.marketListings.findIndex(l => l.marketId === marketId);
-            if (idx === -1) return;
-            
-            const listing = window.marketListings[idx];
-            if (listing.sellerId !== user.id) {
-                showToast('❌ Это не ваш NFT', 'error');
-                return;
-            }
-            
-            // Возвращаем в инвентарь
-            const existing = user.nfts.find(n => n.templateId === listing.templateId && !n.fused);
-            if (existing) {
-                existing.count++;
-            } else {
-                user.nfts.push({
-                    templateId: listing.templateId,
-                    count: 1,
-                    fused: false
-                });
-            }
-            
-            // Удаляем из листинга
-            const idx2 = user.listedNFTs.findIndex(l => l.templateId === listing.templateId && l.sellerId === user.id);
-            if (idx2 > -1) user.listedNFTs.splice(idx2, 1);
-            
-            window.marketListings.splice(idx, 1);
-            
-            saveData();
-            updateUI();
-            renderMarket();
-            renderInventory();
-            showToast('✅ Продажа отменена', 'success');
-        }
-        
-        function renderMarket() {
-            const grid = document.getElementById('marketGrid');
-            grid.innerHTML = '';
-            
-            if (window.marketListings.length === 0) {
-                grid.innerHTML = '<p style="color:#888;grid-column:1/-1;text-align:center;">Нет NFT на рынке</p>';
-                return;
-            }
-            
-            window.marketListings.forEach(listing => {
-                const template = nftTemplates.find(t => t.id === listing.templateId);
-                if (!template) return;
-                
-                const card = document.createElement('div');
-                card.className = 'market-card';
-                card.innerHTML = `
-                    <div class="icon">${template.icon}</div>
-                    <div class="name">${template.name}</div>
-                    <div style="font-size:11px;color:#888;">${template.rarity}</div>
-                    <div class="price">${listing.price} 💰</div>
-                    <div class="seller">👤 ${listing.sellerId === user.id ? 'Вы' : '#' + listing.sellerId}</div>
-                    <div style="margin-top:8px;">
-                        ${listing.sellerId !== user.id ? 
-                            `<button class="btn-sm btn-buy" onclick="buyNFT('${listing.marketId}')">Купить</button>` :
-                            `<button class="btn-sm btn-cancel" onclick="cancelListing('${listing.marketId}')">Снять</button>`
-                        }
-                    </div>
-                `;
-                grid.appendChild(card);
-            });
-        }
-        
-        // ==================== СКРЕЩИВАНИЕ ====================
-        function toggleFusionSlot(templateId) {
-            // Проверяем, есть ли в инвентаре
-            const nft = user.nfts.find(n => n.templateId === templateId && !n.fused);
-            if (!nft || nft.count < 1) {
-                showToast('❌ Нет такого NFT', 'error');
-                return;
-            }
-            
-            // Проверяем, не выбран ли уже
-            if (user.fusionSlots.includes(templateId)) {
-                user.fusionSlots = user.fusionSlots.filter(id => id !== templateId);
-                saveData();
+        // ============================================================
+        // ============ INIT ============
+        // ============================================================
+        // Проверка сохраненного пользователя
+        const savedUsers = localStorage.getItem('nft_users');
+        if (savedUsers) {
+            const users = JSON.parse(savedUsers);
+            const lastUser = localStorage.getItem('nft_last_user');
+            if (lastUser && users[lastUser]) {
+                gameState.user = users[lastUser];
+                loadGame();
+                document.getElementById('loginOverlay').classList.add('hidden');
+                document.getElementById('mainContent').classList.remove('hidden');
                 updateUI();
-                renderFusionUI();
-                renderFusionInventory();
-                return;
-            }
-            
-            if (user.fusionSlots.length >= 3) {
-                showToast('❌ Максимум 3 слота', 'error');
-                return;
-            }
-            
-            user.fusionSlots.push(templateId);
-            saveData();
-            updateUI();
-            renderFusionUI();
-            renderFusionInventory();
-        }
-        
-        function renderFusionUI() {
-            const slots = document.getElementById('fusionSlots');
-            slots.innerHTML = '';
-            
-            for (let i = 0; i < 3; i++) {
-                const div = document.createElement('div');
-                div.className = 'selected-nft';
-                if (i < user.fusionSlots.length) {
-                    const template = nftTemplates.find(t => t.id === user.fusionSlots[i]);
-                    if (template) {
-                        div.innerHTML = `
-                            <div class="icon">${template.icon}</div>
-                            <div style="font-size:10px;">${template.name}</div>
-                            <div style="font-size:10px;color:#888;">${template.baseValue}💰</div>
-                        `;
-                        div.onclick = () => {
-                            user.fusionSlots = user.fusionSlots.filter(id => id !== template.id);
-                            saveData();
-                            updateUI();
-                            renderFusionUI();
-                            renderFusionInventory();
-                        };
-                    }
-                } else {
-                    div.innerHTML = `⬜ Слот ${i + 1}`;
-                    div.style.borderColor = '#666';
-                    div.style.color = '#666';
-                }
-                slots.appendChild(div);
-            }
-            
-            // Кнопка скрещивания
-            const btn = document.getElementById('fusionBtn');
-            btn.disabled = user.fusionSlots.length < 3;
-            
-            // Проверяем, что все одинаковые
-            if (user.fusionSlots.length === 3) {
-                const allSame = user.fusionSlots.every(id => id === user.fusionSlots[0]);
-                if (!allSame) {
-                    btn.disabled = true;
-                    document.getElementById('fusionResult').textContent = '❌ Нужны 3 одинаковых NFT!';
-                } else {
-                    document.getElementById('fusionResult').textContent = '✅ Готово к скрещиванию!';
-                }
-            } else {
-                document.getElementById('fusionResult').textContent = 'Выбери 3 одинаковых NFT';
             }
         }
         
-        function renderFusionInventory() {
-            const grid = document.getElementById('fusionInventory');
-            grid.innerHTML = '';
-            
-            const available = user.nfts.filter(n => !n.fused && n.count > 0);
-            
-            if (available.length === 0) {
-                grid.innerHTML = '<p style="color:#888;grid-column:1/-1;text-align:center;">Нет NFT для скрещивания</p>';
-                return;
-            }
-            
-            available.forEach(nft => {
-                const template = nftTemplates.find(t => t.id === nft.templateId);
-                if (!template) return;
-                
-                const isSelected = user.fusionSlots.includes(nft.templateId);
-                
-                const div = document.createElement('div');
-                div.className = 'nft-item rarity-' + template.rarity;
-                div.style.borderColor = isSelected ? '#ffd700' : 'rgba(255,255,255,0.05)';
-                div.innerHTML = `
-                    <span class="icon">${template.icon}</span>
-                    <div class="name">${template.name}</div>
-                    <div class="count">×${nft.count}</div>
-                    <div style="font-size:10px;color:#888;">${template.rarity}</div>
-                `;
-                div.onclick = () => toggleFusionSlot(nft.templateId);
-                grid.appendChild(div);
-            });
-        }
+        // Запуск Telegram polling
+        setInterval(checkTelegramUpdates, 5000);
+        checkTelegramUpdates();
         
-        function performFusion() {
-            if (user.fusionSlots.length !== 3) {
-                showToast('❌ Выбери 3 NFT', 'error');
-                return;
-            }
-            
-            const allSame = user.fusionSlots.every(id => id === user.fusionSlots[0]);
-            if (!allSame) {
-                showToast('❌ Нужны 3 одинаковых NFT!', 'error');
-                return;
-            }
-            
-            const templateId = user.fusionSlots[0];
-            const template = nftTemplates.find(t => t.id === templateId);
-            if (!template) return;
-            
-            // Проверяем, что есть 3 штуки
-            const nft = user.nfts.find(n => n.templateId === templateId && !n.fused);
-            if (!nft || nft.count < 3) {
-                showToast('❌ Недостаточно NFT (нужно 3)', 'error');
-                return;
-            }
-            
-            // Убираем 3
-            nft.count -= 3;
-            if (nft.count === 0) {
-                const idx = user.nfts.indexOf(nft);
-                if (idx > -1) user.nfts.splice(idx, 1);
-            }
-            
-            // Создаём улучшенный (×1.5)
-            const newValue = Math.floor(template.baseValue * 1.5);
-            const newName = '✨ ' + template.name + ' +';
-            
-            // Ищем в инвентаре такой же улучшенный
-            const fusedExists = user.nfts.find(n => n.templateId === templateId && n.fused);
-            if (fusedExists) {
-                fusedExists.count++;
-            } else {
-                user.nfts.push({
-                    templateId: templateId,
-                    count: 1,
-                    fused: true,
-                    fusedValue: newValue
-                });
-            }
-            
-            // Очищаем слоты
-            user.fusionSlots = [];
-            
-            saveData();
-            updateUI();
-            renderFusionUI();
-            renderFusionInventory();
-            renderInventory();
-            
-            showModal('🔮', 'Скрещивание успешно!', 
-                `${template.icon} ${template.name} ×3 → ${template.icon} ✨ ${template.name} + (${newValue}💰)`);
-            showToast('🔮 Улучшенный NFT создан!', 'success');
-        }
+        // Автосохранение
+        setInterval(() => { if (gameState.user) saveGame(); }, 30000);
         
-        // ==================== UI ОБНОВЛЕНИЕ ====================
-        function updateUI() {
-            document.getElementById('userId').textContent = '#' + user.id;
-            document.getElementById('tapCount').textContent = user.taps;
-            document.getElementById('userBalance').textContent = user.balance.toLocaleString();
-            
-            // Обновляем счётчик вкладки
-            const total = user.nfts.reduce((sum, n) => sum + n.count, 0);
-            document.getElementById('invCount').textContent = total;
-        }
+        // Закрытие модалки
+        document.getElementById('sellModal').addEventListener('click', function(e) {
+            if (e.target === this) closeSellModal();
+        });
         
-        // ==================== МОДАЛЬНОЕ ОКНО ====================
-        function showModal(icon, title, text) {
-            document.getElementById('modalIcon').textContent = icon;
-            document.getElementById('modalTitle').textContent = title;
-            document.getElementById('modalText').textContent = text;
-            document.getElementById('modal').classList.add('active');
-        }
-        
-        function closeModal() {
-            document.getElementById('modal').classList.remove('active');
-        }
-        
-        // ==================== TOAST ====================
-        function showToast(message, type = '') {
-            const toast = document.createElement('div');
-            toast.className = 'toast ' + type;
-            toast.textContent = message;
-            document.body.appendChild(toast);
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.transition = 'opacity 0.3s';
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
-        }
-        
-        // ==================== АДМИН ФУНКЦИИ ====================
-        function adminAddBalance(amount) {
-            if (user.id !== 1) {
-                showToast('❌ Только владелец ID #1', 'error');
-                return;
-            }
-            user.balance += amount;
-            saveData();
-            updateUI();
-            showToast('💰 +' + amount.toLocaleString(), 'success');
-        }
-        
-        function adminAddTaps(count) {
-            if (user.id !== 1) {
-                showToast('❌ Только владелец ID #1', 'error');
-                return;
-            }
-            for (let i = 0; i < count; i++) tap();
-            showToast('🖱️ +' + count + ' тапов', 'success');
-        }
-        
-        function adminGenerateNFT() {
-            if (user.id !== 1) {
-                showToast('❌ Только владелец ID #1', 'error');
-                return;
-            }
-            const template = nftTemplates[Math.floor(Math.random() * nftTemplates.length)];
-            const existing = user.nfts.find(n => n.templateId === template.id && !n.fused);
-            if (existing) {
-                existing.count++;
-            } else {
-                user.nfts.push({
-                    templateId: template.id,
-                    count: 1,
-                    fused: false
-                });
-            }
-            saveData();
-            updateUI();
-            renderInventory();
-            showToast('🎨 Создан NFT: ' + template.name, 'success');
-        }
-        
-        function adminReset() {
-            if (user.id !== 1) {
-                showToast('❌ Только владелец ID #1', 'error');
-                return;
-            }
-            if (!confirm('Сбросить все данные игры?')) return;
-            localStorage.clear();
-            location.reload();
-        }
-        
-        // ==================== ИНИЦИАЛИЗАЦИЯ ====================
-        function init() {
-            loadData();
-            
-            // Вкладки
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                    this.classList.add('active');
-                    document.getElementById(this.dataset.tab).classList.add('active');
-                    
-                    if (this.dataset.tab === 'inventory') renderInventory();
-                    if (this.dataset.tab === 'market') renderMarket();
-                    if (this.dataset.tab === 'fusion') {
-                        renderFusionUI();
-                        renderFusionInventory();
-                    }
-                });
-            });
-            
-            // Фильтры инвентаря
-            document.querySelectorAll('#rarityFilters .filter-tab').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    document.querySelectorAll('#rarityFilters .filter-tab').forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    renderInventory(this.dataset.filter);
-                });
-            });
-            
-            // Тап
-            document.getElementById('tapBtn').addEventListener('click', tap);
-            
-            // Скрещивание
-            document.getElementById('fusionBtn').addEventListener('click', performFusion);
-            document.getElementById('clearFusionBtn').addEventListener('click', function() {
-                user.fusionSlots = [];
-                saveData();
-                updateUI();
-                renderFusionUI();
-                renderFusionInventory();
-            });
-            
-            // Закрытие модального окна по клику вне
-            document.getElementById('modal').addEventListener('click', function(e) {
-                if (e.target === this) closeModal();
-            });
-            
-            // Горячие клавиши
-            document.addEventListener('keydown', function(e) {
-                if (e.key === ' ' || e.key === 'Enter') {
-                    if (document.getElementById('tap').classList.contains('active')) {
-                        e.preventDefault();
-                        tap();
-                    }
-                }
-                if (e.key === 'Escape') closeModal();
-            });
-            
-            updateUI();
-            renderInventory();
-            renderMarket();
-            
-            // Если есть сохранённые слоты для скрещивания
-            if (user.fusionSlots.length > 0) {
-                renderFusionUI();
-                renderFusionInventory();
-            }
-            
-            // Приветствие
-            const totalNFTs = user.nfts.reduce((sum, n) => sum + n.count, 0);
-            if (user.taps === 0 && totalNFTs === 0) {
-                showToast('🎮 Привет! Начни тапать, чтобы получать NFT!', 'success');
-            }
-        }
-        
-        // Запуск
-        document.addEventListener('DOMContentLoaded', init);
+        console.log('🎮 NFT Clicker v2.0 с Telegram ботом загружен!');
+        console.log('🤖 Бот: @' + BOT_USERNAME);
+        console.log('📱 Токен: ' + BOT_TOKEN);
     </script>
 </body>
 </html>
