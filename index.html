@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🤖 TG Bot Pro - Рабочая версия</title>
+    <title>🤖 TG Bot - РАБОЧАЯ ВЕРСИЯ</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
@@ -15,115 +15,69 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 12px;
+            padding: 10px;
         }
 
         .container {
-            max-width: 500px;
+            max-width: 480px;
             width: 100%;
             background: linear-gradient(145deg, #1a1a2e, #16213e);
-            border-radius: 24px;
-            padding: 16px;
+            border-radius: 22px;
+            padding: 14px;
             border: 1px solid rgba(255,255,255,0.05);
-            height: 96vh;
-            max-height: 850px;
+            height: 95vh;
+            max-height: 820px;
             display: flex;
             flex-direction: column;
         }
 
-        /* HEADER */
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding-bottom: 10px;
+            padding-bottom: 8px;
             border-bottom: 1px solid rgba(255,255,255,0.05);
             flex-shrink: 0;
         }
 
-        .header h1 {
-            font-size: 16px;
-            background: linear-gradient(135deg, #0088cc, #00d2ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .status {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 11px;
-            color: #888;
-        }
-
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            display: inline-block;
-        }
-
+        .header h1 { font-size: 15px; background: linear-gradient(135deg, #0088cc, #00d2ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .status { display: flex; align-items: center; gap: 5px; font-size: 10px; color: #888; }
+        .status-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
         .status-dot.online { background: #6bcb77; animation: pulse 2s infinite; }
         .status-dot.offline { background: #ff6b6b; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
-        @keyframes pulse {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.5; transform: scale(0.8); }
-        }
-
-        /* ГРУППЫ */
-        .groups-section { flex-shrink: 0; margin: 10px 0; }
+        .groups-section { flex-shrink: 0; margin: 8px 0; }
         .groups-scroll {
             display: flex;
-            gap: 8px;
+            gap: 6px;
             overflow-x: auto;
-            padding: 4px 0 8px 0;
+            padding: 3px 0 6px 0;
             -webkit-overflow-scrolling: touch;
         }
         .groups-scroll::-webkit-scrollbar { height: 2px; }
-        .groups-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 10px; }
+        .groups-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.06); border-radius: 10px; }
 
         .group-btn {
             flex-shrink: 0;
-            padding: 6px 14px;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 12px;
+            padding: 5px 12px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 10px;
             color: #aaa;
-            font-size: 12px;
+            font-size: 11px;
             cursor: pointer;
             transition: all 0.3s ease;
             white-space: nowrap;
         }
+        .group-btn.active { background: rgba(0,210,255,0.1); border-color: #00d2ff; color: #fff; }
+        .group-btn .badge.unread { background: #ff6b6b; color: #fff; padding: 0 5px; border-radius: 6px; font-size: 9px; margin-left: 3px; }
+        .group-btn .add-btn { color: #00d2ff; }
 
-        .group-btn.active {
-            background: rgba(0,210,255,0.12);
-            border-color: #00d2ff;
-            color: #fff;
-        }
-
-        .group-btn .badge {
-            background: rgba(255,255,255,0.08);
-            padding: 0 6px;
-            border-radius: 8px;
-            font-size: 10px;
-            color: #888;
-            margin-left: 4px;
-        }
-
-        .group-btn .badge.unread {
-            background: #ff6b6b;
-            color: #fff;
-            animation: pulse 1.5s infinite;
-        }
-
-        .group-btn .add-btn { color: #00d2ff; font-size: 14px; }
-
-        /* ЧАТ */
         .chat-container {
             flex: 1;
             background: rgba(0,0,0,0.2);
-            border-radius: 14px;
+            border-radius: 12px;
             overflow: hidden;
             display: flex;
             flex-direction: column;
@@ -132,101 +86,45 @@
 
         .chat-messages {
             flex: 1;
-            padding: 10px 12px;
+            padding: 8px 10px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
             gap: 3px;
             -webkit-overflow-scrolling: touch;
         }
-
         .chat-messages::-webkit-scrollbar { width: 2px; }
-        .chat-messages::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.06); border-radius: 10px; }
+        .chat-messages::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.05); border-radius: 10px; }
 
-        .chat-empty {
-            text-align: center;
-            color: #444;
-            padding: 30px 20px;
-            font-size: 13px;
-        }
-        .chat-empty .icon { font-size: 32px; display: block; margin-bottom: 8px; }
+        .chat-empty { text-align: center; color: #444; padding: 30px 20px; font-size: 12px; }
+        .chat-empty .icon { font-size: 28px; display: block; margin-bottom: 6px; }
+        .chat-empty .sub { font-size: 10px; color: #333; }
 
-        /* СООБЩЕНИЯ */
         .message {
             max-width: 88%;
-            padding: 6px 12px;
-            border-radius: 14px;
-            font-size: 13px;
+            padding: 5px 10px;
+            border-radius: 12px;
+            font-size: 12px;
             line-height: 1.4;
             word-wrap: break-word;
             animation: msgIn 0.2s ease;
-            position: relative;
         }
+        @keyframes msgIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        @keyframes msgIn {
-            from { opacity: 0; transform: translateY(6px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        .message.outgoing { align-self: flex-end; background: linear-gradient(135deg, #0088cc, #00aaff); border-bottom-right-radius: 3px; color: #fff; }
+        .message.incoming { align-self: flex-start; background: rgba(255,255,255,0.05); border-bottom-left-radius: 3px; color: #ddd; cursor: default; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+        .message.incoming:active { background: rgba(0,210,255,0.08); transform: scale(0.97); }
+        .message.incoming.selected { background: rgba(0,210,255,0.1); border: 1px solid rgba(0,210,255,0.1); }
 
-        .message.outgoing {
-            align-self: flex-end;
-            background: linear-gradient(135deg, #0088cc, #00aaff);
-            border-bottom-right-radius: 3px;
-            color: #fff;
-        }
-
-        .message.incoming {
-            align-self: flex-start;
-            background: rgba(255,255,255,0.06);
-            border-bottom-left-radius: 3px;
-            color: #ddd;
-            cursor: default;
-            -webkit-tap-highlight-color: transparent;
-            touch-action: manipulation;
-        }
-
-        .message.incoming:active {
-            background: rgba(0,210,255,0.1);
-            transform: scale(0.97);
-        }
-
-        .message.incoming.selected {
-            background: rgba(0,210,255,0.12);
-            border: 1px solid rgba(0,210,255,0.15);
-        }
-
-        .message .msg-sender {
-            font-size: 10px;
-            color: #00d2ff;
-            font-weight: 600;
-            margin-bottom: 1px;
-        }
-
+        .message .msg-sender { font-size: 9px; color: #00d2ff; font-weight: 600; margin-bottom: 1px; }
         .message .msg-text { word-break: break-word; }
-        .message .msg-meta {
-            font-size: 9px;
-            color: #555;
-            margin-top: 2px;
-            display: flex;
-            justify-content: flex-end;
-            gap: 6px;
-        }
-        .message .msg-meta .check { color: #6bcb77; font-size: 11px; }
+        .message .msg-meta { font-size: 8px; color: #555; margin-top: 2px; display: flex; justify-content: flex-end; gap: 4px; }
+        .message .msg-meta .check { color: #6bcb77; font-size: 10px; }
+        .message .reply-indicator { font-size: 9px; color: #f7971e; padding: 1px 6px; background: rgba(247,151,30,0.06); border-radius: 4px; border-left: 2px solid #f7971e; margin-bottom: 2px; }
 
-        .message .reply-indicator {
-            font-size: 10px;
-            color: #f7971e;
-            padding: 2px 8px;
-            background: rgba(247,151,30,0.06);
-            border-radius: 6px;
-            border-left: 2px solid #f7971e;
-            margin-bottom: 3px;
-        }
-
-        /* ВВОД */
         .chat-input-area {
-            padding: 8px 10px 10px 10px;
-            background: rgba(0,0,0,0.15);
+            padding: 6px 8px 8px 8px;
+            background: rgba(0,0,0,0.12);
             border-top: 1px solid rgba(255,255,255,0.03);
             flex-shrink: 0;
         }
@@ -234,61 +132,52 @@
         .reply-badge {
             display: none;
             align-items: center;
-            gap: 6px;
-            padding: 3px 10px 6px 10px;
-            font-size: 11px;
+            gap: 5px;
+            padding: 2px 8px 4px 8px;
+            font-size: 10px;
             color: #f7971e;
             animation: msgIn 0.2s ease;
         }
-
         .reply-badge.show { display: flex; }
         .reply-badge .reply-text { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; opacity: 0.7; }
-        .reply-badge .cancel-reply { cursor: pointer; color: #ff6b6b; font-weight: bold; padding: 0 4px; }
+        .reply-badge .cancel-reply { cursor: pointer; color: #ff6b6b; font-weight: bold; padding: 0 3px; }
 
-        .input-row {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-
+        .input-row { display: flex; gap: 6px; align-items: center; }
         .input-row input {
             flex: 1;
-            padding: 8px 12px;
+            padding: 7px 10px;
             background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 10px;
             color: #fff;
-            font-size: 13px;
+            font-size: 12px;
             outline: none;
         }
-
         .input-row input:focus { border-color: rgba(0,210,255,0.2); }
         .input-row input::placeholder { color: #444; }
         .input-row input:disabled { opacity: 0.3; }
 
         .send-btn {
-            padding: 8px 16px;
+            padding: 7px 14px;
             background: linear-gradient(135deg, #0088cc, #00d2ff);
             border: none;
-            border-radius: 12px;
+            border-radius: 10px;
             color: #fff;
             font-weight: 600;
             cursor: pointer;
-            font-size: 13px;
+            font-size: 12px;
             flex-shrink: 0;
-            min-width: 50px;
+            min-width: 45px;
             transition: all 0.2s ease;
         }
-
         .send-btn:active { transform: scale(0.95); }
         .send-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 
-        /* МОДАЛКА */
         .modal-overlay {
             display: none;
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.8);
+            background: rgba(0,0,0,0.85);
             justify-content: center;
             align-items: center;
             z-index: 1000;
@@ -300,57 +189,53 @@
 
         .modal {
             background: linear-gradient(145deg, #1a1a2e, #16213e);
-            padding: 24px;
-            border-radius: 20px;
-            max-width: 400px;
+            padding: 20px;
+            border-radius: 18px;
+            max-width: 380px;
             width: 100%;
             border: 1px solid rgba(255,255,255,0.06);
         }
-
-        .modal h3 { text-align: center; margin-bottom: 14px; font-size: 17px; }
+        .modal h3 { text-align: center; margin-bottom: 12px; font-size: 16px; }
         .modal input {
             width: 100%;
-            padding: 10px;
-            margin-bottom: 8px;
+            padding: 9px;
+            margin-bottom: 6px;
             background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 8px;
             color: #fff;
-            font-size: 13px;
+            font-size: 12px;
         }
         .modal input:focus { outline: none; border-color: rgba(0,210,255,0.2); }
-        .modal .hint { font-size: 11px; color: #555; margin-bottom: 10px; text-align: center; }
-        .modal .hint .code { color: #f7971e; font-family: monospace; }
+        .modal .hint { font-size: 10px; color: #555; margin-bottom: 8px; text-align: center; line-height: 1.5; }
+        .modal .hint .code { color: #f7971e; font-family: monospace; background: rgba(247,151,30,0.05); padding: 0 4px; border-radius: 3px; }
+        .modal .hint .warn { color: #ff6b6b; }
 
-        .modal-actions {
-            display: flex;
-            gap: 8px;
-        }
+        .modal-actions { display: flex; gap: 6px; }
         .modal-actions button {
             flex: 1;
-            padding: 10px;
+            padding: 8px;
             border: none;
-            border-radius: 10px;
+            border-radius: 8px;
             font-weight: 600;
             cursor: pointer;
-            font-size: 13px;
+            font-size: 12px;
             transition: all 0.2s ease;
         }
         .modal-actions .confirm { background: linear-gradient(135deg, #0088cc, #00d2ff); color: #fff; }
         .modal-actions .cancel { background: rgba(255,255,255,0.05); color: #888; }
 
-        /* ТОСТ */
         .toast {
             position: fixed;
-            bottom: 20px;
+            bottom: 15px;
             left: 50%;
-            transform: translateX(-50%) translateY(80px);
-            padding: 8px 20px;
+            transform: translateX(-50%) translateY(70px);
+            padding: 7px 16px;
             background: rgba(0,0,0,0.92);
-            border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 10px;
             color: #fff;
-            font-size: 12px;
+            font-size: 11px;
             opacity: 0;
             transition: all 0.3s ease;
             z-index: 2000;
@@ -363,13 +248,24 @@
         .toast.success { border-color: #6bcb77; }
         .toast.error { border-color: #ff6b6b; }
         .toast.info { border-color: #00d2ff; }
+        .toast.warn { border-color: #f7971e; }
 
-        /* МЕДИА */
+        .instructions {
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            padding: 10px 12px;
+            margin: 6px 0;
+            border-left: 3px solid #f7971e;
+        }
+        .instructions h4 { font-size: 12px; color: #f7971e; margin-bottom: 4px; }
+        .instructions p { font-size: 10px; color: #888; line-height: 1.5; margin-bottom: 2px; }
+        .instructions .step { color: #00d2ff; font-weight: 600; }
+
         @media (max-width: 480px) {
-            body { padding: 6px; }
-            .container { padding: 12px; border-radius: 18px; height: 98vh; }
-            .message { font-size: 12px; padding: 5px 10px; max-width: 92%; }
-            .group-btn { font-size: 11px; padding: 5px 10px; }
+            body { padding: 4px; }
+            .container { padding: 10px; border-radius: 16px; height: 98vh; }
+            .message { font-size: 11px; padding: 4px 8px; max-width: 92%; }
+            .group-btn { font-size: 10px; padding: 4px 10px; }
         }
     </style>
 </head>
@@ -392,12 +288,21 @@
             </div>
         </div>
 
+        <!-- ИНСТРУКЦИЯ -->
+        <div class="instructions" id="instructions">
+            <h4>⚠️ ВАЖНО!</h4>
+            <p><span class="step">1.</span> Добавь бота <strong>@NFT_CLICKER_BOT</strong> в группу</p>
+            <p><span class="step">2.</span> Сделай его <strong>АДМИНОМ</strong> или дай права на чтение сообщений</p>
+            <p><span class="step">3.</span> Напиши что-нибудь в группе (любое сообщение)</p>
+            <p><span class="step">4.</span> Затем добавь группу по ID: <code style="color:#f7971e;">-5298398264</code></p>
+        </div>
+
         <div class="chat-container">
             <div class="chat-messages" id="chatMessages">
                 <div class="chat-empty">
                     <span class="icon">💬</span>
                     Выберите группу<br>
-                    <span style="font-size: 11px; color: #333;">Бот должен быть добавлен в группу</span>
+                    <span class="sub">Бот должен быть админом в группе</span>
                 </div>
             </div>
 
@@ -416,15 +321,15 @@
         </div>
     </div>
 
-    <!-- МОДАЛКА -->
     <div class="modal-overlay" id="addModal">
         <div class="modal">
             <h3>➕ Добавить группу</h3>
-            <input type="text" id="groupChatId" placeholder="ID группы (-1001234567890)">
-            <input type="text" id="groupName" placeholder="Название">
+            <input type="text" id="groupChatId" placeholder="ID группы" value="-5298398264">
+            <input type="text" id="groupName" placeholder="Название (опционально)" value="Чат перемиряя">
             <div class="hint">
-                🔑 Бот должен быть <strong>добавлен в группу</strong><br>
-                Как получить ID: <span class="code">@get_my_id_bot</span> в группе
+                <span class="warn">⚠️ Бот должен быть АДМИНОМ в группе!</span><br>
+                <span class="code">@get_my_id_bot</span> покажет ID группы<br>
+                <span style="color:#555;">ID твоей группы: <strong style="color:#f7971e;">-5298398264</strong></span>
             </div>
             <div class="modal-actions">
                 <button class="confirm" onclick="addGroup()">Добавить</button>
@@ -529,7 +434,7 @@
 
             const me = await getMe();
             if (!me.ok) {
-                showToast('❌ Бот не доступен', 'error');
+                showToast('❌ Бот не доступен. Проверь токен.', 'error');
                 pollingActive = false;
                 updateStatus(false);
                 return;
@@ -537,7 +442,7 @@
 
             botInfo = me.result;
             updateStatus(true);
-            showToast('✅ Бот готов', 'success');
+            showToast(`✅ Бот @${botInfo.username} готов`, 'success');
             pollLoop();
         }
 
@@ -554,9 +459,7 @@
                     }
                     saveState();
                 }
-
                 updateUI();
-
             } catch(e) {
                 console.warn('Poll error:', e);
             }
@@ -622,7 +525,7 @@
                 renderMessages(chatId);
                 scrollToBottom();
             } else {
-                showToast(`📩 ${messageData.from.username}: ${text.substring(0, 35)}`, 'info');
+                showToast(`📩 ${messageData.from.username}: ${text.substring(0, 30)}`, 'info');
             }
         }
 
@@ -695,10 +598,10 @@
                 return;
             }
 
-            // Проверяем группу
+            // ПРОВЕРЯЕМ ГРУППУ
             const result = await getChat(chatId);
             if (!result.ok) {
-                showToast('❌ Группа не найдена. Бот должен быть в группе!', 'error');
+                showToast('❌ Группа не найдена! Бот должен быть АДМИНОМ в группе!', 'error');
                 return;
             }
 
@@ -724,7 +627,7 @@
             selectGroup(chatId);
             saveState();
             updateUI();
-            showToast(`✅ Группа "${result.result.title || name}" добавлена`, 'success');
+            showToast(`✅ Группа "${result.result.title}" добавлена!`, 'success');
         }
 
         function selectGroup(chatId) {
@@ -748,28 +651,6 @@
         function getGroupName(chatId) {
             const g = state.groups.find(gr => String(gr.id) === chatId);
             return g ? (g.title || g.name || g.id) : chatId;
-        }
-
-        async function refreshGroups() {
-            showToast('🔄 Обновление...', 'info');
-            for (const g of state.groups) {
-                try {
-                    const result = await getChat(g.id);
-                    if (result.ok) g.title = result.result.title || g.name;
-                } catch(e) {}
-            }
-            saveState();
-            updateUI();
-            showToast('✅ Обновлено', 'success');
-        }
-
-        function clearChat() {
-            if (!state.currentGroup) return;
-            if (!confirm('Очистить историю?')) return;
-            state.messages = state.messages.filter(m => String(m.chatId) !== state.currentGroup);
-            renderMessages(state.currentGroup);
-            saveState();
-            showToast('🗑️ Очищено', 'info');
         }
 
         // ============================================================
@@ -813,7 +694,7 @@
 
             const badge = document.getElementById('replyBadge');
             badge.classList.add('show');
-            document.getElementById('replyText').textContent = msg.text.substring(0, 50) + (msg.text.length > 50 ? '...' : '');
+            document.getElementById('replyText').textContent = msg.text.substring(0, 40) + (msg.text.length > 40 ? '...' : '');
 
             document.querySelectorAll('.message.incoming').forEach(el => el.classList.remove('selected'));
             const el = document.querySelector(`.message[data-id="${messageId}"]`);
@@ -878,7 +759,7 @@
                     <div class="chat-empty">
                         <span class="icon">📭</span>
                         Нет сообщений<br>
-                        <span style="font-size: 11px; color: #333;">Отправьте первое сообщение</span>
+                        <span class="sub">Напишите что-нибудь первым</span>
                     </div>
                 `;
                 return;
@@ -894,7 +775,7 @@
                 if (msg.replyToId && msg.replyToText) {
                     const reply = document.createElement('div');
                     reply.className = 'reply-indicator';
-                    reply.textContent = `↩️ ${msg.replyToText.substring(0, 40)}${msg.replyToText.length > 40 ? '...' : ''}`;
+                    reply.textContent = `↩️ ${msg.replyToText.substring(0, 35)}${msg.replyToText.length > 35 ? '...' : ''}`;
                     div.appendChild(reply);
                 }
 
@@ -949,7 +830,7 @@
             el.textContent = text;
             el.className = `toast ${type} show`;
             clearTimeout(toastTimer);
-            toastTimer = setTimeout(() => el.classList.remove('show'), 2500);
+            toastTimer = setTimeout(() => el.classList.remove('show'), 3000);
         }
 
         // ============================================================
@@ -967,7 +848,7 @@
                 botInfo = me.result;
                 startPolling();
             } else {
-                showToast('❌ Бот не доступен', 'error');
+                showToast('❌ Бот не доступен. Проверь токен!', 'error');
                 updateStatus(false);
             }
 
@@ -991,7 +872,6 @@
             console.log('🤖 Group Bot Pro v2.0');
             console.log('📱 Бот запущен');
             console.log('💡 Зажмите сообщение для ответа');
-            console.log('📋 Как получить ID группы: добавьте @get_my_id_bot в группу');
         }
 
         document.addEventListener('DOMContentLoaded', init);
