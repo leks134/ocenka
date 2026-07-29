@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Telegram Bot Manager</title>
+    <title>Telegram Bot Manager Pro</title>
     <style>
         * {
             margin: 0;
@@ -21,7 +21,7 @@
         }
         #header {
             background: #1a1a2e;
-            padding: 12px 16px;
+            padding: 10px 16px;
             border-bottom: 2px solid #2a2a4a;
             display: flex;
             justify-content: space-between;
@@ -29,15 +29,15 @@
             flex-shrink: 0;
         }
         #header h1 {
-            font-size: 18px;
+            font-size: 17px;
             font-weight: 600;
             background: linear-gradient(90deg, #00d4ff, #7b2ffc);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
         #status {
-            font-size: 12px;
-            padding: 4px 12px;
+            font-size: 11px;
+            padding: 3px 12px;
             border-radius: 12px;
             background: #2a2a4a;
         }
@@ -47,24 +47,27 @@
         }
         #groups-panel {
             background: #12121f;
-            padding: 10px 16px;
+            padding: 8px 12px;
             border-bottom: 1px solid #2a2a4a;
             flex-shrink: 0;
-            overflow-x: auto;
-            white-space: nowrap;
             display: flex;
-            gap: 8px;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            gap: 6px;
+            align-items: center;
+            min-height: 48px;
         }
         .group-btn {
             background: #1e1e32;
             border: 1px solid #2a2a4a;
             color: #b0b0d0;
-            padding: 6px 16px;
-            border-radius: 20px;
+            padding: 5px 14px;
+            border-radius: 16px;
             cursor: pointer;
-            font-size: 13px;
+            font-size: 12px;
             transition: 0.2s;
             flex-shrink: 0;
+            white-space: nowrap;
         }
         .group-btn:hover {
             background: #2a2a4a;
@@ -75,66 +78,82 @@
             border-color: #7b2ffc;
             color: #fff;
         }
+        #add-group-btn {
+            background: #1a1a3a;
+            border: 1px dashed #4a4a7a;
+            color: #7b7b9b;
+            padding: 5px 12px;
+            border-radius: 16px;
+            cursor: pointer;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+        #add-group-btn:hover {
+            background: #2a2a4a;
+            border-color: #7b2ffc;
+            color: #b0b0d0;
+        }
         #chat-container {
             flex: 1;
             overflow-y: auto;
-            padding: 16px;
+            padding: 12px;
             background: #0f0f1a;
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 4px;
             min-height: 0;
         }
         .message {
             max-width: 80%;
-            padding: 10px 14px;
-            border-radius: 16px;
+            padding: 8px 12px;
+            border-radius: 14px;
             word-wrap: break-word;
-            font-size: 14px;
-            line-height: 1.5;
+            font-size: 13px;
+            line-height: 1.4;
             position: relative;
             cursor: pointer;
             transition: 0.1s;
             user-select: none;
         }
         .message:active {
-            transform: scale(0.98);
+            transform: scale(0.97);
             opacity: 0.7;
         }
         .message.incoming {
             background: #1a1a2e;
             align-self: flex-start;
-            border-bottom-left-radius: 4px;
+            border-bottom-left-radius: 3px;
         }
         .message.outgoing {
             background: #2a2a6a;
             align-self: flex-end;
-            border-bottom-right-radius: 4px;
+            border-bottom-right-radius: 3px;
         }
         .message .meta {
-            font-size: 10px;
+            font-size: 9px;
             opacity: 0.5;
-            margin-top: 4px;
+            margin-top: 3px;
             display: flex;
             justify-content: space-between;
         }
         .message .reply-indicator {
-            font-size: 11px;
+            font-size: 10px;
             color: #7b2ffc;
-            margin-bottom: 4px;
+            margin-bottom: 3px;
             border-left: 2px solid #7b2ffc;
-            padding-left: 8px;
+            padding-left: 6px;
             opacity: 0.7;
         }
         #reply-bar {
             display: none;
             background: #1a1a2e;
-            padding: 6px 16px;
+            padding: 4px 12px;
             border-top: 1px solid #2a2a4a;
-            font-size: 12px;
+            font-size: 11px;
             color: #7b2ffc;
             flex-shrink: 0;
             justify-content: space-between;
+            align-items: center;
         }
         #reply-bar.show {
             display: flex;
@@ -142,24 +161,25 @@
         #reply-bar .cancel {
             color: #ff4444;
             cursor: pointer;
-            padding: 0 8px;
+            padding: 0 6px;
+            font-size: 16px;
         }
         #input-area {
             display: flex;
-            gap: 8px;
-            padding: 12px 16px;
+            gap: 6px;
+            padding: 8px 12px;
             background: #12121f;
             border-top: 1px solid #2a2a4a;
             flex-shrink: 0;
         }
         #message-input {
             flex: 1;
-            padding: 10px 16px;
-            border-radius: 24px;
+            padding: 8px 14px;
+            border-radius: 20px;
             border: 1px solid #2a2a4a;
             background: #1a1a2e;
             color: #e0e0e0;
-            font-size: 14px;
+            font-size: 13px;
             outline: none;
             transition: 0.2s;
         }
@@ -167,14 +187,15 @@
             border-color: #7b2ffc;
         }
         #send-btn {
-            padding: 10px 24px;
-            border-radius: 24px;
+            padding: 8px 18px;
+            border-radius: 20px;
             border: none;
             background: linear-gradient(90deg, #00d4ff, #7b2ffc);
             color: #fff;
             font-weight: 600;
             cursor: pointer;
             transition: 0.2s;
+            font-size: 13px;
         }
         #send-btn:active {
             transform: scale(0.95);
@@ -183,41 +204,108 @@
             text-align: center;
             padding: 20px;
             color: #666;
-            font-size: 13px;
+            font-size: 12px;
         }
         .toast {
             position: fixed;
-            bottom: 80px;
+            bottom: 70px;
             left: 50%;
             transform: translateX(-50%);
             background: #1a1a2e;
             border: 1px solid #2a2a4a;
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-size: 13px;
+            padding: 6px 16px;
+            border-radius: 16px;
+            font-size: 12px;
             color: #b0b0d0;
             opacity: 0;
             transition: 0.3s;
             pointer-events: none;
             z-index: 999;
+            max-width: 90%;
         }
         .toast.show {
             opacity: 1;
+        }
+        #modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(4px);
+        }
+        #modal.show {
+            display: flex;
+        }
+        #modal-content {
+            background: #1a1a2e;
+            border: 1px solid #2a2a4a;
+            border-radius: 16px;
+            padding: 24px;
+            width: 90%;
+            max-width: 380px;
+        }
+        #modal-content h3 {
+            margin-bottom: 12px;
+            color: #b0b0d0;
+        }
+        #modal-content input {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 12px;
+            border: 1px solid #2a2a4a;
+            background: #12121f;
+            color: #e0e0e0;
+            font-size: 14px;
+            outline: none;
+            margin-bottom: 12px;
+        }
+        #modal-content input:focus {
+            border-color: #7b2ffc;
+        }
+        #modal-buttons {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+        #modal-buttons button {
+            padding: 8px 20px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+        }
+        #modal-cancel {
+            background: #2a2a4a;
+            color: #b0b0d0;
+        }
+        #modal-confirm {
+            background: linear-gradient(90deg, #00d4ff, #7b2ffc);
+            color: #fff;
+        }
+        #modal-confirm:active {
+            transform: scale(0.95);
         }
         #context-menu {
             display: none;
             position: fixed;
             background: #1a1a2e;
             border: 1px solid #2a2a4a;
-            border-radius: 12px;
-            padding: 6px 0;
-            min-width: 140px;
-            z-index: 1000;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+            border-radius: 10px;
+            padding: 4px 0;
+            min-width: 120px;
+            z-index: 1001;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.6);
         }
         #context-menu .item {
-            padding: 8px 20px;
-            font-size: 13px;
+            padding: 6px 16px;
+            font-size: 12px;
             cursor: pointer;
             transition: 0.1s;
         }
@@ -225,14 +313,14 @@
             background: #2a2a4a;
         }
         ::-webkit-scrollbar {
-            width: 4px;
+            width: 3px;
         }
         ::-webkit-scrollbar-track {
             background: #0f0f1a;
         }
         ::-webkit-scrollbar-thumb {
             background: #2a2a4a;
-            border-radius: 4px;
+            border-radius: 3px;
         }
     </style>
 </head>
@@ -241,7 +329,9 @@
         <h1>🤖 Bot Manager</h1>
         <span id="status">● Offline</span>
     </div>
-    <div id="groups-panel"></div>
+    <div id="groups-panel">
+        <button id="add-group-btn">➕ Добавить группу</button>
+    </div>
     <div id="chat-container">
         <div id="loading">Загрузка чатов...</div>
     </div>
@@ -255,8 +345,22 @@
     </div>
     <div id="context-menu">
         <div class="item" id="ctx-reply">💬 Ответить</div>
+        <div class="item" id="ctx-delete">🗑 Удалить (для админа)</div>
     </div>
     <div id="toast" class="toast"></div>
+
+    <!-- Модалка для добавления группы -->
+    <div id="modal">
+        <div id="modal-content">
+            <h3>➕ Добавить группу</h3>
+            <p style="font-size:12px;color:#888;margin-bottom:8px;">Введите ID группы (число). Бот должен быть в ней админом.</p>
+            <input type="text" id="modal-input" placeholder="Например: -1001234567890" autocomplete="off">
+            <div id="modal-buttons">
+                <button id="modal-cancel">Отмена</button>
+                <button id="modal-confirm">Добавить</button>
+            </div>
+        </div>
+    </div>
 
     <script>
         // ================== CONFIG ==================
@@ -269,9 +373,8 @@
         let currentGroupId = null;
         let currentGroupTitle = 'Без названия';
         let messages = {};
-        let replyTarget = null; // { message_id, text, from }
+        let replyTarget = null;
         let updateInterval = null;
-        let isOnline = false;
         let offset = 0;
 
         // ================== DOM REFS ==================
@@ -286,6 +389,12 @@
         const toast = document.getElementById('toast');
         const contextMenu = document.getElementById('context-menu');
         const ctxReply = document.getElementById('ctx-reply');
+        const ctxDelete = document.getElementById('ctx-delete');
+        const modal = document.getElementById('modal');
+        const modalInput = document.getElementById('modal-input');
+        const modalCancel = document.getElementById('modal-cancel');
+        const modalConfirm = document.getElementById('modal-confirm');
+        const addGroupBtn = document.getElementById('add-group-btn');
 
         // ================== TOAST ==================
         function showToast(text) {
@@ -314,66 +423,49 @@
 
         // ================== GROUPS ==================
         async function loadGroups() {
-            const result = await apiCall('getChats', {});
-            if (!result.ok) {
-                // fallback: получаем обновления, чтобы вытащить чаты
-                const updates = await apiCall('getUpdates', { offset: 0, timeout: 1 });
-                if (updates.ok && updates.result) {
-                    const chatIds = new Set();
-                    for (const u of updates.result) {
-                        if (u.message && u.message.chat) {
-                            chatIds.add(u.message.chat.id);
-                        }
-                    }
-                    // запрашиваем инфу по каждому чату
-                    const loaded = [];
-                    for (const id of chatIds) {
-                        const info = await apiCall('getChat', { chat_id: id });
-                        if (info.ok && info.result) {
-                            const chat = info.result;
-                            loaded.push({
-                                id: chat.id,
-                                title: chat.title || chat.username || 'Чат',
-                                type: chat.type
-                            });
-                        }
-                    }
-                    groups = loaded;
-                    renderGroups();
-                    if (groups.length > 0 && !currentGroupId) {
-                        selectGroup(groups[0].id);
-                    }
-                    showToast(`Загружено ${groups.length} чатов`);
-                }
-                return;
-            }
-            // если бы getChats работал, но его нет — используем getUpdates
+            // Получаем все обновления, чтобы вытащить чаты
             const updates = await apiCall('getUpdates', { offset: 0, timeout: 1 });
             if (updates.ok && updates.result) {
-                const chatIds = new Map();
+                const chatMap = new Map();
                 for (const u of updates.result) {
                     if (u.message && u.message.chat) {
                         const c = u.message.chat;
-                        if (!chatIds.has(c.id)) {
-                            chatIds.set(c.id, { id: c.id, title: c.title || c.username || 'Чат', type: c.type });
+                        // Только группы/супергруппы
+                        if (c.type === 'group' || c.type === 'supergroup') {
+                            if (!chatMap.has(c.id)) {
+                                chatMap.set(c.id, {
+                                    id: c.id,
+                                    title: c.title || c.username || 'Группа',
+                                    type: c.type
+                                });
+                            }
                         }
                     }
                 }
-                groups = Array.from(chatIds.values());
+                groups = Array.from(chatMap.values());
                 renderGroups();
                 if (groups.length > 0 && !currentGroupId) {
                     selectGroup(groups[0].id);
+                } else if (groups.length === 0) {
+                    chatContainer.innerHTML = `
+                        <div style="text-align:center;padding:40px;color:#666;">
+                            <div style="font-size:48px;margin-bottom:12px;">📢</div>
+                            <div>Нет групп</div>
+                            <div style="font-size:12px;margin-top:6px;color:#444;">Добавьте бота в группу как админа</div>
+                            <div style="font-size:12px;margin-top:4px;color:#444;">Или нажмите "➕ Добавить группу"</div>
+                        </div>
+                    `;
                 }
-                showToast(`Загружено ${groups.length} чатов`);
+                showToast(`Загружено ${groups.length} групп`);
             }
         }
 
         function renderGroups() {
+            // Сохраняем кнопку "Добавить"
+            const addBtn = document.getElementById('add-group-btn');
             groupsPanel.innerHTML = '';
-            if (groups.length === 0) {
-                groupsPanel.innerHTML = '<span style="color:#666;font-size:13px;">Нет групп. Добавьте бота в группу.</span>';
-                return;
-            }
+            groupsPanel.appendChild(addBtn);
+            
             for (const g of groups) {
                 const btn = document.createElement('button');
                 btn.className = 'group-btn' + (currentGroupId === g.id ? ' active' : '');
@@ -384,25 +476,52 @@
             }
         }
 
-        function selectGroup(id) {
+        async function selectGroup(id) {
             currentGroupId = id;
             const g = groups.find(x => x.id === id);
             currentGroupTitle = g ? g.title : 'Чат';
             renderGroups();
             messages[currentGroupId] = messages[currentGroupId] || [];
-            chatContainer.innerHTML = '';
-            renderMessages(currentGroupId);
+            chatContainer.innerHTML = '<div id="loading">Загрузка сообщений...</div>';
             offset = 0;
-            fetchMessages(currentGroupId);
+            await fetchMessages(currentGroupId);
             // запускаем обновления
             if (updateInterval) clearInterval(updateInterval);
             updateInterval = setInterval(() => {
                 fetchMessages(currentGroupId);
             }, 3000);
-            // статус
-            isOnline = true;
             statusEl.textContent = '● Online';
             statusEl.className = 'online';
+        }
+
+        // ================== ADD GROUP BY ID ==================
+        async function addGroupById(groupId) {
+            if (!groupId) return false;
+            // Проверяем, существует ли группа
+            const info = await apiCall('getChat', { chat_id: groupId });
+            if (!info.ok) {
+                showToast('❌ Группа не найдена или бот не админ');
+                return false;
+            }
+            const chat = info.result;
+            if (chat.type !== 'group' && chat.type !== 'supergroup') {
+                showToast('❌ Это не группа');
+                return false;
+            }
+            // Проверяем, есть ли уже
+            if (groups.find(g => g.id === chat.id)) {
+                showToast('⚠️ Группа уже добавлена');
+                return false;
+            }
+            groups.push({
+                id: chat.id,
+                title: chat.title || 'Группа',
+                type: chat.type
+            });
+            renderGroups();
+            selectGroup(chat.id);
+            showToast(`✅ Группа "${chat.title}" добавлена`);
+            return true;
         }
 
         // ================== MESSAGES ==================
@@ -434,14 +553,13 @@
                 if (!messages[chatId]) messages[chatId] = [];
                 messages[chatId] = messages[chatId].concat(newMsgs);
                 renderMessages(chatId);
-                // скролл вниз
                 setTimeout(() => {
                     chatContainer.scrollTop = chatContainer.scrollHeight;
                 }, 50);
-                // проверка на уведомления
+                // уведомления
                 for (const m of newMsgs) {
                     if (!m.isOut) {
-                        showToast(`Новое сообщение от ${m.from}`);
+                        showToast(`📩 ${m.from}: ${m.text.substring(0, 30)}...`);
                     }
                 }
             }
@@ -450,7 +568,7 @@
         function renderMessages(chatId) {
             const msgs = messages[chatId] || [];
             if (msgs.length === 0) {
-                chatContainer.innerHTML = '<div style="text-align:center;color:#666;padding:40px;">Нет сообщений</div>';
+                chatContainer.innerHTML = '<div style="text-align:center;color:#666;padding:30px;font-size:13px;">Нет сообщений</div>';
                 return;
             }
             let html = '';
@@ -473,10 +591,9 @@
             }
             chatContainer.innerHTML = html;
 
-            // клик по сообщению для ответа
+            // клик для ответа
             chatContainer.querySelectorAll('.message').forEach(el => {
                 el.addEventListener('click', (e) => {
-                    // если клик по reply-indicator — игнорируем
                     if (e.target.closest('.reply-indicator')) return;
                     const id = parseInt(el.dataset.id);
                     const text = el.dataset.text;
@@ -493,18 +610,17 @@
                         const id = parseInt(el.dataset.id);
                         const text = el.dataset.text;
                         const from = el.dataset.from;
-                        replyTarget = { message_id: id, text, from };
-                        // показать контекстное меню
+                        const isOut = el.classList.contains('outgoing');
+                        replyTarget = { message_id: id, text, from, isOut };
                         const touch = e.touches[0];
                         contextMenu.style.display = 'block';
-                        contextMenu.style.left = touch.clientX + 'px';
-                        contextMenu.style.top = touch.clientY + 'px';
-                        // скрыть через 3с
+                        contextMenu.style.left = Math.min(touch.clientX, window.innerWidth - 140) + 'px';
+                        contextMenu.style.top = Math.min(touch.clientY, window.innerHeight - 80) + 'px';
                         clearTimeout(contextMenu._hide);
                         contextMenu._hide = setTimeout(() => {
                             contextMenu.style.display = 'none';
                         }, 3000);
-                    }, 600);
+                    }, 500);
                 });
                 el.addEventListener('touchend', () => clearTimeout(touchTimer));
                 el.addEventListener('touchmove', () => clearTimeout(touchTimer));
@@ -514,12 +630,12 @@
         // ================== SEND MESSAGE ==================
         async function sendMessage() {
             if (!currentGroupId) {
-                showToast('Выберите группу');
+                showToast('⚠️ Выберите группу');
                 return;
             }
             const text = messageInput.value.trim();
             if (!text) {
-                showToast('Введите текст');
+                showToast('⚠️ Введите текст');
                 return;
             }
             const params = {
@@ -531,7 +647,6 @@
             }
             const result = await apiCall('sendMessage', params);
             if (result.ok) {
-                // добавляем сообщение локально
                 const msg = {
                     id: result.result.message_id,
                     text: text,
@@ -554,9 +669,28 @@
                 setTimeout(() => {
                     chatContainer.scrollTop = chatContainer.scrollHeight;
                 }, 50);
-                showToast('Отправлено ✅');
+                showToast('✅ Отправлено');
             } else {
-                showToast('Ошибка: ' + (result.description || 'неизвестно'));
+                showToast('❌ Ошибка: ' + (result.description || 'неизвестно'));
+            }
+        }
+
+        // ================== DELETE MESSAGE ==================
+        async function deleteMessage(chatId, messageId) {
+            if (!chatId || !messageId) return;
+            const result = await apiCall('deleteMessage', {
+                chat_id: chatId,
+                message_id: messageId
+            });
+            if (result.ok) {
+                showToast('🗑 Сообщение удалено');
+                // Удаляем из локального кэша
+                if (messages[chatId]) {
+                    messages[chatId] = messages[chatId].filter(m => m.id !== messageId);
+                    renderMessages(chatId);
+                }
+            } else {
+                showToast('❌ Не удалось удалить (нужны права админа)');
             }
         }
 
@@ -569,7 +703,8 @@
             replyTarget = null;
             replyBar.classList.remove('show');
         });
-        // контекстное меню
+
+        // Контекстное меню
         ctxReply.addEventListener('click', () => {
             if (replyTarget) {
                 replyText.textContent = `${replyTarget.from}: ${replyTarget.text.substring(0, 40)}...`;
@@ -578,17 +713,54 @@
                 contextMenu.style.display = 'none';
             }
         });
+        ctxDelete.addEventListener('click', () => {
+            if (replyTarget && currentGroupId) {
+                deleteMessage(currentGroupId, replyTarget.message_id);
+                contextMenu.style.display = 'none';
+            }
+        });
         document.addEventListener('click', () => {
             contextMenu.style.display = 'none';
         });
 
-        // ================== KEEP ALIVE (Service Worker) ==================
-        // Регистрируем Service Worker для работы в фоне
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw.js').then(() => {
-                console.log('SW registered');
-            }).catch(() => {});
-        }
+        // Модалка добавления группы
+        addGroupBtn.addEventListener('click', () => {
+            modal.classList.add('show');
+            modalInput.value = '';
+            modalInput.focus();
+        });
+        modalCancel.addEventListener('click', () => {
+            modal.classList.remove('show');
+        });
+        modalConfirm.addEventListener('click', async () => {
+            const id = modalInput.value.trim();
+            if (!id) {
+                showToast('⚠️ Введите ID группы');
+                return;
+            }
+            modal.classList.remove('show');
+            await addGroupById(id);
+        });
+        modalInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') modalConfirm.click();
+        });
+        // Закрыть по клику вне модалки
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) modal.classList.remove('show');
+        });
+
+        // ================== KEEP ALIVE ==================
+        // Периодический пинг для поддержания сессии
+        setInterval(() => {
+            if (currentGroupId) {
+                apiCall('getMe', {}).then(r => {
+                    if (!r.ok) {
+                        statusEl.textContent = '● Reconnecting...';
+                        statusEl.className = '';
+                    }
+                });
+            }
+        }, 30000);
 
         // ================== INIT ==================
         async function init() {
@@ -597,30 +769,20 @@
             if (groups.length === 0) {
                 chatContainer.innerHTML = `
                     <div style="text-align:center;padding:40px;color:#666;">
-                        <div style="font-size:48px;margin-bottom:16px;">🤖</div>
-                        <div>Добавьте бота в группу</div>
-                        <div style="font-size:12px;margin-top:8px;">ID: ${USER_ID}</div>
-                        <div style="font-size:12px;color:#444;">Бот будет автоматически обнаружен</div>
+                        <div style="font-size:48px;margin-bottom:12px;">🤖</div>
+                        <div>Добавьте бота в группу как админа</div>
+                        <div style="font-size:12px;margin-top:6px;color:#444;">Нажмите "➕ Добавить группу" и введите ID</div>
+                        <div style="font-size:11px;margin-top:8px;color:#333;">ID группы можно получить у @userinfobot</div>
                     </div>
                 `;
             }
             statusEl.textContent = '● Online';
             statusEl.className = 'online';
-            isOnline = true;
         }
 
-        // ================== ПЕРИОДИЧЕСКАЯ ПРОВЕРКА НОВЫХ ГРУПП ==================
-        setInterval(async () => {
-            if (!currentGroupId) {
-                await loadGroups();
-            }
-        }, 15000);
-
-        // ================== ЗАПУСК ==================
         init();
 
-        // ================== SW КОД (встроенный) ==================
-        // Для простоты — создаём sw.js динамически, если его нет
+        // ================== SERVICE WORKER (фон) ==================
         if ('serviceWorker' in navigator) {
             const swCode = `
                 self.addEventListener('install', () => self.skipWaiting());
@@ -629,16 +791,19 @@
                     e.respondWith(fetch(e.request).catch(() => new Response('Offline', { status: 503 })));
                 });
             `;
-            const blob = new Blob([swCode], { type: 'application/javascript' });
-            const swUrl = URL.createObjectURL(blob);
-            navigator.serviceWorker.register(swUrl).then(() => {
-                console.log('SW registered from blob');
-            }).catch(() => {});
+            try {
+                const blob = new Blob([swCode], { type: 'application/javascript' });
+                const swUrl = URL.createObjectURL(blob);
+                navigator.serviceWorker.register(swUrl).then(() => {
+                    console.log('✅ Service Worker зарегистрирован');
+                }).catch(() => {});
+            } catch (e) {}
         }
 
         console.log('🚀 DIMSTAT BOT MANAGER v3.0');
         console.log('💬 USER_ID:', USER_ID);
         console.log('🤖 BOT_TOKEN:', BOT_TOKEN);
+        console.log('📌 Чтобы добавить группу, нажмите "➕ Добавить группу"');
     </script>
 </body>
 </html>
