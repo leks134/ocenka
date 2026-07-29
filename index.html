@@ -327,8 +327,8 @@
     <div id="header">
         <button class="header-btn">‹</button>
         <div class="header-center">
-            <div class="header-title" id="chat-title">Чат перемирия</div>
-            <div class="header-subtitle" id="chat-status">3 участника</div>
+            <div class="header-title" id="chat-title">Telegram Менеджер</div>
+            <div class="header-subtitle" id="chat-status">Выберите группу</div>
         </div>
         <div class="header-btn" style="font-size: 11px;" id="status-dot">●</div>
     </div>
@@ -338,7 +338,7 @@
     </div>
 
     <div id="chat-container">
-        <div class="empty-state">Загрузка сообщений...</div>
+        <div class="empty-state" id="empty-state-text">Загрузка сообщений...</div>
     </div>
 
     <div id="reply-bar">
@@ -380,10 +380,12 @@
     <script>
         (function(){
             const BOT_TOKEN = '8413201181:AAGUetUusFIsnKT9oS2haAZujYfs6Fm2klE';
+            const BOT_ID = BOT_TOKEN.split(':')[0]; // Идентификатор вашего бота: 8413201181
             const API_BASE = 'https://api.telegram.org/bot' + BOT_TOKEN;
-            const STORAGE_KEY = 'tg_groups_v4';
-            const MSG_STORAGE_KEY = 'tg_messages_v4';
-            const DELETED_KEY = 'tg_deleted_v4';
+            
+            const KEYS = ['tg_groups_v5', 'tg_groups_v4', 'tg_groups_v3', 'tg_groups'];
+            const MSG_KEYS = ['tg_messages_v5', 'tg_messages_v4', 'tg_messages'];
+            const DEL_KEYS = ['tg_deleted_v5', 'tg_deleted_v4', 'tg_deleted'];
 
             const NAME_COLORS = ['#ff8e8e', '#f39c12', '#a882f4', '#2ecc71', '#3498db', '#e84393', '#00cec9', '#ff5959'];
 
@@ -465,17 +467,35 @@
 
             function saveAll() {
                 try {
-                    localStorage.setItem(STORAGE_KEY, JSON.stringify(groups));
-                    localStorage.setItem(MSG_STORAGE_KEY, JSON.stringify(messages));
-                    localStorage.setItem(DELETED_KEY, JSON.stringify(deletedMessages));
+                    localStorage.setItem(KEYS[0], JSON.stringify(groups));
+                    localStorage.setItem(MSG_KEYS[0], JSON.stringify(messages));
+                    localStorage.setItem(DEL_KEYS[0], JSON.stringify(deletedMessages));
                 } catch(e) {}
             }
 
             function loadStorage() {
                 try {
-                    groups = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-                    messages = JSON.parse(localStorage.getItem(MSG_STORAGE_KEY)) || {};
-                    deletedMessages = JSON.parse(localStorage.getItem(DELETED_KEY)) || {};
+                    for (let key of KEYS) {
+                        let data = localStorage.getItem(key);
+                        if (data) {
+                            groups = JSON.parse(data) || [];
+                            if (groups.length > 0) break;
+                        }
+                    }
+                    for (let key of MSG_KEYS) {
+                        let data = localStorage.getItem(key);
+                        if (data) {
+                            messages = JSON.parse(data) || {};
+                            if (Object.keys(messages).length > 0) break;
+                        }
+                    }
+                    for (let key of DEL_KEYS) {
+                        let data = localStorage.getItem(key);
+                        if (data) {
+                            deletedMessages = JSON.parse(data) || {};
+                            if (Object.keys(deletedMessages).length > 0) break;
+                        }
+                    }
                 } catch(e) {}
             }
 
@@ -503,6 +523,7 @@
             async function loadGroupsFromAPI() {
                 let updates = await apiCall('getUpdates', { offset: 0, timeout: 1 });
                 if (updates.ok && updates.result) {
+                    statusDot.style.color = '#2ecc71';
                     let map = new Map();
                     updates.result.forEach(u => {
                         if (u.message && u.message.chat && (u.message.chat.type === 'group' || u.message.chat.type === 'supergroup')) {
@@ -571,28 +592,35 @@
                         }
 
                         let senderName = 'Пользователь';
+                        let isFromBot = false;
                         if (msg.from) {
-                            senderName = msg.from.first_name || '';
-                            if (msg.from.last_name) senderName += ' ' + msg.from.last_name;
-                            if (!senderName.trim() && msg.from.username) senderName = msg.from.username;
+                            if (String(msg.from.id) === String(BOT_ID) || msg.from.is_bot) {
+                                isFromBot = true;
+                                senderName = 'Haiinted Ai';
+                            } else {
+                                senderName = msg.from.first_name || '';
+                                if (msg.from.last_name) senderName += ' ' + msg.from.last_name;
+                                if (!senderName.trim() && msg.from.username) senderName = msg.from.username;
+                            }
                         }
+
+                        let existingIndex = messages[chatId].findIndex(m => m.id === msg.message_id);
 
                         let newMsg = {
                             id: msg.message_id,
                             text: msg.text || null,
                             from: senderName,
-                            isOut: false, // Входящие сообщения от любых пользователей в чате
+                            isOut: isFromBot, // Если отправитель - наш бот, то сообщение всегда СПРАВА
                             date: msg.date,
                             photo: photoUrl,
                             reply: replyData,
-                            isAdmin: msg.from && (msg.from.username === 'admin' || msg.from.first_name?.toLowerCase().includes('admin'))
+                            isAdmin: isFromBot || (msg.from && (msg.from.username === 'admin' || msg.from.first_name?.toLowerCase().includes('admin')))
                         };
 
-                        let existingIndex = messages[chatId].findIndex(m => m.id === newMsg.id);
                         if (existingIndex === -1) {
                             messages[chatId].push(newMsg);
                             updated = true;
-                        } else if (!messages[chatId][existingIndex].isOut) {
+                        } else {
                             messages[chatId][existingIndex] = newMsg;
                             updated = true;
                         }
@@ -607,11 +635,16 @@
             }
 
             function renderMessages(chatId) {
+                if (!chatId) {
+                    chatContainer.innerHTML = '<div class="empty-state">Нажмите "+ Добавить группу", чтобы привязать чат</div>';
+                    return;
+                }
+
                 let msgs = messages[chatId] || [];
                 let deleted = deletedMessages[chatId] || {};
 
                 if (msgs.length === 0 && Object.keys(deleted).length === 0) {
-                    chatContainer.innerHTML = '<div class="empty-state">Сообщений нет</div>';
+                    chatContainer.innerHTML = '<div class="empty-state">Сообщений в этом чате пока нет</div>';
                     return;
                 }
 
@@ -720,9 +753,10 @@
                         id: res.result.message_id,
                         text: text,
                         from: 'Haiinted Ai',
-                        isOut: true, // Сообщение, отправленное ВАМИ через этот интерфейс
+                        isOut: true,
                         date: Math.floor(Date.now() / 1000),
-                        reply: replyTarget ? { text: replyTarget.text, from: replyTarget.from } : null
+                        reply: replyTarget ? { text: replyTarget.text, from: replyTarget.from } : null,
+                        isAdmin: true
                     };
 
                     messages[currentGroupId].push(msg);
@@ -792,11 +826,15 @@
                 if (id) {
                     let info = await apiCall('getChat', { chat_id: id });
                     if (info.ok) {
-                        groups.push({ id: info.result.id, title: info.result.title || 'Группа' });
+                        let newGroup = { id: info.result.id, title: info.result.title || 'Группа' };
+                        if (!groups.some(g => g.id === newGroup.id)) {
+                            groups.push(newGroup);
+                        }
                         saveAll();
                         renderGroups();
-                        selectGroup(info.result.id);
+                        selectGroup(newGroup.id);
                         modal.classList.remove('show');
+                        modalInput.value = '';
                         showToast('Группа добавлена');
                     } else {
                         showToast('Группа не найдена');
@@ -806,10 +844,13 @@
 
             async function init() {
                 loadStorage();
-                await loadGroupsFromAPI();
                 renderGroups();
-                if (groups.length > 0) selectGroup(groups[0].id);
-                statusDot.style.color = '#2ecc71';
+                await loadGroupsFromAPI();
+                if (groups.length > 0) {
+                    selectGroup(groups[0].id);
+                } else {
+                    renderMessages(null);
+                }
             }
 
             init();
