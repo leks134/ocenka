@@ -5,114 +5,440 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Telegram Bot Manager</title>
     <style>
-        *{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
-        body{background:#0a0a0f;color:#e0e0e0;height:100vh;overflow:hidden;display:flex;flex-direction:column}
-        #header{background:#1a1a2e;padding:6px 12px;border-bottom:2px solid #2a2a4a;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;min-height:38px}
-        #header h1{font-size:14px;font-weight:600;background:linear-gradient(90deg,#00d4ff,#7b2ffc);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-        #status{font-size:9px;padding:2px 8px;border-radius:8px;background:#2a2a4a}
-        #status.online{background:#00c853;color:#fff}
-        #status.error{background:#d32f2f;color:#fff}
-        #groups-panel{background:#12121f;padding:4px 8px;border-bottom:1px solid #2a2a4a;flex-shrink:0;display:flex;flex-wrap:nowrap;overflow-x:auto;gap:3px;align-items:center;min-height:32px}
-        .group-btn{background:#1e1e32;border:1px solid #2a2a4a;color:#b0b0d0;padding:3px 10px;border-radius:12px;cursor:pointer;font-size:10px;transition:0.2s;flex-shrink:0;white-space:nowrap}
-        .group-btn:hover{background:#2a2a4a;border-color:#4a4a7a}
-        .group-btn.active{background:#2a2a6a;border-color:#7b2ffc;color:#fff}
-        #add-group-btn{background:#1a1a3a;border:1px dashed #4a4a7a;color:#7b7b9b;padding:3px 8px;border-radius:12px;cursor:pointer;font-size:10px;flex-shrink:0}
-        #add-group-btn:hover{background:#2a2a4a;border-color:#7b2ffc;color:#b0b0d0}
-        #chat-container{flex:1;overflow-y:auto;padding:8px;background:#0f0f1a;display:flex;flex-direction:column;gap:4px;min-height:0}
-        .message-wrapper{display:flex;flex-direction:column;max-width:88%;margin:2px 0}
-        .message-wrapper.incoming{align-self:flex-start}
-        .message-wrapper.outgoing{align-self:flex-end}
-        .message-row{display:flex;align-items:flex-end;gap:6px}
-        .message-wrapper.incoming .message-row{flex-direction:row}
-        .message-wrapper.outgoing .message-row{flex-direction:row-reverse}
-        .avatar{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;border:2px solid #2a2a4a}
-        .message-content{display:flex;flex-direction:column;max-width:100%}
-        .message-name{font-size:10px;font-weight:600;color:#8b8b9b;margin-bottom:2px;padding-left:2px}
-        .message-wrapper.outgoing .message-name{text-align:right;padding-right:2px;color:#7b2ffc}
-        .message{border-radius:14px;padding:8px 12px;word-wrap:break-word;font-size:13px;line-height:1.4;cursor:pointer;transition:0.1s;position:relative}
-        .message-wrapper.incoming .message{background:#1e1e32;border-bottom-left-radius:4px}
-        .message-wrapper.outgoing .message{background:#2a2a6a;border-bottom-right-radius:4px}
-        .message:active{transform:scale(0.97);opacity:0.7}
-        .message .meta{font-size:9px;opacity:0.4;margin-top:4px;display:flex;justify-content:flex-end;gap:6px}
-        .message .reply-indicator{font-size:10px;color:#7b2ffc;margin-bottom:4px;border-left:2px solid #7b2ffc;padding-left:8px;opacity:0.8;background:rgba(123,47,252,0.05);border-radius:0 4px 4px 0;padding:3px 8px}
-        .message .reply-indicator .reply-from{color:#7b2ffc;font-weight:500}
-        .message .reply-indicator .reply-text{color:#a0a0c0}
-        .message .photo{max-width:100%;border-radius:6px;margin:4px 0;display:block;cursor:pointer;max-height:250px;object-fit:contain}
-        .deleted-indicator{color:#666;font-style:italic;font-size:12px;opacity:0.5}
-        .msg-time{font-size:9px;color:#666}
-        .deleted-badge{color:#888;font-size:9px;margin-left:4px;background:#2a2a2a;padding:0 5px;border-radius:6px}
-        #reply-bar{display:none;background:#1a1a2e;padding:4px 10px;border-top:1px solid #2a2a4a;font-size:11px;color:#7b2ffc;flex-shrink:0;justify-content:space-between;align-items:center}
-        #reply-bar.show{display:flex}
-        #reply-bar .reply-preview{display:flex;flex-direction:column;flex:1;overflow:hidden}
-        #reply-bar .reply-preview .reply-from{color:#7b2ffc;font-weight:500;font-size:10px}
-        #reply-bar .reply-preview .reply-text{color:#a0a0c0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:11px}
-        #reply-bar .cancel{color:#ff4444;cursor:pointer;padding:0 6px;font-size:16px;font-weight:bold}
-        #input-area{display:flex;gap:5px;padding:5px 8px;background:#12121f;border-top:1px solid #2a2a4a;flex-shrink:0}
-        #message-input{flex:1;padding:7px 12px;border-radius:18px;border:1px solid #2a2a4a;background:#1a1a2e;color:#e0e0e0;font-size:13px;outline:none;transition:0.2s}
-        #message-input:focus{border-color:#7b2ffc}
-        #send-btn{padding:7px 16px;border-radius:18px;border:none;background:linear-gradient(90deg,#00d4ff,#7b2ffc);color:#fff;font-weight:600;cursor:pointer;transition:0.2s;font-size:12px}
-        #send-btn:active{transform:scale(0.95)}
-        #loading{text-align:center;padding:20px;color:#666;font-size:12px}
-        .toast{position:fixed;bottom:55px;left:50%;transform:translateX(-50%);background:#1a1a2e;border:1px solid #2a2a4a;padding:4px 12px;border-radius:12px;font-size:11px;color:#b0b0d0;opacity:0;transition:0.3s;pointer-events:none;z-index:999;max-width:90%;text-align:center}
-        .toast.show{opacity:1}
-        #modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);align-items:center;justify-content:center;z-index:1000;backdrop-filter:blur(4px)}
-        #modal.show{display:flex}
-        #modal-content{background:#1a1a2e;border:1px solid #2a2a4a;border-radius:12px;padding:16px;width:90%;max-width:340px}
-        #modal-content h3{margin-bottom:8px;color:#b0b0d0;font-size:15px}
-        #modal-content p{font-size:11px;color:#888;margin-bottom:6px}
-        #modal-content input{width:100%;padding:7px 10px;border-radius:8px;border:1px solid #2a2a4a;background:#12121f;color:#e0e0e0;font-size:13px;outline:none;margin-bottom:8px}
-        #modal-content input:focus{border-color:#7b2ffc}
-        #modal-buttons{display:flex;gap:5px;justify-content:flex-end}
-        #modal-buttons button{padding:5px 14px;border-radius:8px;border:none;cursor:pointer;font-weight:600;font-size:11px}
-        #modal-cancel{background:#2a2a4a;color:#b0b0d0}
-        #modal-confirm{background:linear-gradient(90deg,#00d4ff,#7b2ffc);color:#fff}
-        #modal-confirm:active{transform:scale(0.95)}
-        #context-menu{display:none;position:fixed;background:#1a1a2e;border:1px solid #2a2a4a;border-radius:8px;padding:3px 0;min-width:90px;z-index:1001;box-shadow:0 4px 16px rgba(0,0,0,0.6)}
-        #context-menu .item{padding:4px 12px;font-size:11px;cursor:pointer;transition:0.1s}
-        #context-menu .item:hover{background:#2a2a4a}
-        ::-webkit-scrollbar{width:3px}
-        ::-webkit-scrollbar-track{background:#0f0f1a}
-        ::-webkit-scrollbar-thumb{background:#2a2a4a;border-radius:3px}
-        .empty-state{text-align:center;padding:40px;color:#666;font-size:13px}
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
+        
+        body {
+            background-color: #0f0f12;
+            background-image: radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 0);
+            background-size: 24px 24px;
+            color: #ffffff;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Header */
+        #header {
+            background: rgba(22, 22, 28, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 8px 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+            z-index: 10;
+            min-height: 52px;
+        }
+
+        .header-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: #a2b2c8;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .header-center {
+            background: rgba(30, 30, 38, 0.9);
+            border-radius: 18px;
+            padding: 4px 16px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .header-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #ffffff;
+            line-height: 1.2;
+        }
+
+        .header-subtitle {
+            font-size: 11px;
+            color: #707579;
+            margin-top: 1px;
+        }
+
+        /* Groups Panel */
+        #groups-panel {
+            background: #16161c;
+            padding: 6px 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            flex-shrink: 0;
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            align-items: center;
+        }
+        #groups-panel::-webkit-scrollbar { display: none; }
+
+        .group-btn {
+            background: #21212a;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #8e94a0;
+            padding: 5px 12px;
+            border-radius: 14px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 500;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+        .group-btn.active {
+            background: #6c38cc;
+            border-color: #8e52ec;
+            color: #ffffff;
+            font-weight: 600;
+        }
+        #add-group-btn {
+            background: rgba(108, 56, 204, 0.15);
+            border: 1px dashed #6c38cc;
+            color: #a882f4;
+            padding: 5px 10px;
+            border-radius: 14px;
+            cursor: pointer;
+            font-size: 11px;
+            white-space: nowrap;
+        }
+
+        /* Chat Container */
+        #chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        /* Message Structure */
+        .message-wrapper {
+            display: flex;
+            margin: 2px 0;
+            max-width: 85%;
+        }
+        .message-wrapper.incoming { align-self: flex-start; }
+        .message-wrapper.outgoing { align-self: flex-end; }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            color: #fff;
+            flex-shrink: 0;
+            margin-right: 8px;
+            align-self: flex-end;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .message-bubble {
+            position: relative;
+            padding: 7px 11px;
+            border-radius: 16px;
+            font-size: 14px;
+            line-height: 1.35;
+            word-break: break-word;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .message-wrapper.incoming .message-bubble {
+            background: #21212a;
+            color: #f5f5f5;
+            border-bottom-left-radius: 4px;
+        }
+
+        .message-wrapper.outgoing .message-bubble {
+            background: #6c38cc;
+            color: #ffffff;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message-header {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 3px;
+        }
+
+        .message-name {
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-admin {
+            background: rgba(46, 204, 113, 0.2);
+            color: #2ecc71;
+            font-size: 9px;
+            padding: 1px 5px;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+
+        .reply-indicator {
+            background: rgba(0, 0, 0, 0.2);
+            border-left: 2px solid #a882f4;
+            padding: 3px 8px;
+            border-radius: 0 6px 6px 0;
+            margin-bottom: 5px;
+            font-size: 11px;
+            cursor: pointer;
+        }
+        .reply-from { font-weight: 600; color: #a882f4; }
+        .reply-text { color: #d1d5db; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+
+        .meta {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            float: right;
+            margin-left: 8px;
+            margin-top: 2px;
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .photo-attachment {
+            width: 100%;
+            max-height: 280px;
+            border-radius: 10px;
+            object-fit: cover;
+            margin-top: 4px;
+            display: block;
+        }
+
+        .deleted-text {
+            font-style: italic;
+            opacity: 0.6;
+            font-size: 12px;
+        }
+
+        /* Reply Bar */
+        #reply-bar {
+            display: none;
+            background: #16161c;
+            padding: 6px 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            align-items: center;
+            justify-content: space-between;
+        }
+        #reply-bar.show { display: flex; }
+        .reply-bar-info { border-left: 2px solid #8e52ec; padding-left: 8px; }
+        .reply-bar-user { font-size: 11px; color: #8e52ec; font-weight: 600; }
+        .reply-bar-text { font-size: 11px; color: #a2b2c8; }
+        .reply-bar-close { color: #8e94a0; cursor: pointer; font-size: 16px; padding: 0 4px; }
+
+        /* Input Area */
+        #input-area {
+            background: #16161c;
+            padding: 8px 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .input-icon {
+            color: #707579;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        .input-wrapper {
+            flex: 1;
+            background: #21212a;
+            border-radius: 20px;
+            padding: 6px 14px;
+            display: flex;
+            align-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        #message-input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #ffffff;
+            font-size: 14px;
+        }
+        #message-input::placeholder { color: #707579; }
+
+        .send-btn {
+            background: #6c38cc;
+            border: none;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: transform 0.1s;
+        }
+        .send-btn:active { transform: scale(0.92); }
+
+        /* Context Menu & Modal */
+        #context-menu {
+            display: none;
+            position: fixed;
+            background: rgba(30, 30, 40, 0.95);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 4px;
+            z-index: 1000;
+            min-width: 120px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+        }
+        #context-menu .item {
+            padding: 8px 12px;
+            font-size: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            color: #e0e0e0;
+        }
+        #context-menu .item:hover { background: rgba(255, 255, 255, 0.1); }
+
+        .toast {
+            position: fixed;
+            bottom: 65px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(30, 30, 38, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 6px 16px;
+            border-radius: 16px;
+            font-size: 12px;
+            color: #fff;
+            opacity: 0;
+            transition: opacity 0.2s;
+            pointer-events: none;
+            z-index: 999;
+        }
+        .toast.show { opacity: 1; }
+
+        #modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(5px);
+            align-items: center;
+            justify-content: center;
+            z-index: 1001;
+        }
+        #modal.show { display: flex; }
+        .modal-body {
+            background: #1c1c24;
+            border-radius: 16px;
+            padding: 18px;
+            width: 85%;
+            max-width: 320px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .modal-body h3 { font-size: 15px; margin-bottom: 6px; }
+        .modal-body p { font-size: 12px; color: #707579; margin-bottom: 12px; }
+        .modal-body input {
+            width: 100%;
+            padding: 8px 12px;
+            background: #252530;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            color: #fff;
+            outline: none;
+            font-size: 13px;
+            margin-bottom: 12px;
+        }
+        .modal-btns { display: flex; gap: 8px; justify-content: flex-end; }
+        .modal-btns button {
+            padding: 6px 14px;
+            border-radius: 8px;
+            border: none;
+            font-size: 12px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .btn-cancel { background: transparent; color: #8e94a0; }
+        .btn-confirm { background: #6c38cc; color: #fff; }
+
+        .empty-state {
+            text-align: center;
+            margin: auto;
+            color: #707579;
+            font-size: 13px;
+        }
     </style>
 </head>
 <body>
+
     <div id="header">
-        <h1>Bot Manager</h1>
-        <span id="status">Offline</span>
-    </div>
-    <div id="groups-panel">
-        <button id="add-group-btn">+ Add Group</button>
-    </div>
-    <div id="chat-container">
-        <div id="loading">Loading...</div>
-    </div>
-    <div id="reply-bar">
-        <div class="reply-preview">
-            <span class="reply-from" id="reply-from">User:</span>
-            <span class="reply-text" id="reply-text">...</span>
+        <button class="header-btn">‹</button>
+        <div class="header-center">
+            <div class="header-title" id="chat-title">Telegram Bot Manager</div>
+            <div class="header-subtitle" id="chat-status">3 участника</div>
         </div>
-        <span class="cancel" id="cancel-reply">×</span>
+        <div class="header-btn" style="font-size: 11px;" id="status-dot">●</div>
     </div>
+
+    <div id="groups-panel">
+        <button id="add-group-btn">+ Добавить группу</button>
+    </div>
+
+    <div id="chat-container">
+        <div class="empty-state">Загрузка сообщений...</div>
+    </div>
+
+    <div id="reply-bar">
+        <div class="reply-bar-info">
+            <div class="reply-bar-user" id="reply-from">Имя</div>
+            <div class="reply-bar-text" id="reply-text">Текст сообщения</div>
+        </div>
+        <div class="reply-bar-close" id="cancel-reply">✕</div>
+    </div>
+
     <div id="input-area">
-        <input type="text" id="message-input" placeholder="Type message..." autocomplete="off">
-        <button id="send-btn">Send</button>
+        <div class="input-icon">📎</div>
+        <div class="input-wrapper">
+            <input type="text" id="message-input" placeholder="Сообщение" autocomplete="off">
+        </div>
+        <button class="send-btn" id="send-btn">➤</button>
     </div>
+
     <div id="context-menu">
-        <div class="item" id="ctx-reply">Reply</div>
-        <div class="item" id="ctx-delete">Delete</div>
-        <div class="item" id="ctx-copy">Copy</div>
+        <div class="item" id="ctx-reply">Ответить</div>
+        <div class="item" id="ctx-copy">Копировать</div>
+        <div class="item" id="ctx-delete" style="color: #ff5959;">Удалить</div>
     </div>
+
     <div id="toast" class="toast"></div>
 
     <div id="modal">
-        <div id="modal-content">
-            <h3>Add Group</h3>
-            <p>Enter group ID. Bot must be admin.</p>
-            <input type="text" id="modal-input" placeholder="-1001234567890" autocomplete="off">
-            <div id="modal-buttons">
-                <button id="modal-cancel">Cancel</button>
-                <button id="modal-confirm">Add</button>
+        <div class="modal-body">
+            <h3>Добавить группу</h3>
+            <p>Введите ID группы (-100...)</p>
+            <input type="text" id="modal-input" placeholder="-1001234567890">
+            <div class="modal-btns">
+                <button class="btn-cancel" id="modal-cancel">Отмена</button>
+                <button class="btn-confirm" id="modal-confirm">Добавить</button>
             </div>
         </div>
     </div>
@@ -122,9 +448,11 @@
             const BOT_TOKEN = '8413201181:AAGUetUusFIsnKT9oS2haAZujYfs6Fm2klE';
             const USER_ID = '5645726673';
             const API_BASE = 'https://api.telegram.org/bot' + BOT_TOKEN;
-            const STORAGE_KEY = 'bot_manager_groups';
-            const MSG_STORAGE_KEY = 'bot_manager_messages';
-            const DELETED_KEY = 'bot_manager_deleted';
+            const STORAGE_KEY = 'tg_groups_v2';
+            const MSG_STORAGE_KEY = 'tg_messages_v2';
+            const DELETED_KEY = 'tg_deleted_v2';
+
+            const NAME_COLORS = ['#ff8e8e', '#f39c12', '#a882f4', '#2ecc71', '#3498db', '#e84393', '#00cec9'];
 
             let groups = [];
             let currentGroupId = null;
@@ -133,12 +461,13 @@
             let replyTarget = null;
             let updateInterval = null;
             let offset = 0;
+            let currentContextMsg = null;
+            let toastTimer = null;
 
             const chatContainer = document.getElementById('chat-container');
             const groupsPanel = document.getElementById('groups-panel');
             const messageInput = document.getElementById('message-input');
             const sendBtn = document.getElementById('send-btn');
-            const statusEl = document.getElementById('status');
             const replyBar = document.getElementById('reply-bar');
             const replyFrom = document.getElementById('reply-from');
             const replyText = document.getElementById('reply-text');
@@ -153,659 +482,365 @@
             const modalCancel = document.getElementById('modal-cancel');
             const modalConfirm = document.getElementById('modal-confirm');
             const addGroupBtn = document.getElementById('add-group-btn');
-
-            let toastTimer = null;
-            let currentContextMsg = null;
+            const chatTitle = document.getElementById('chat-title');
+            const statusDot = document.getElementById('status-dot');
 
             function showToast(text) {
                 toast.textContent = text;
                 toast.classList.add('show');
                 if (toastTimer) clearTimeout(toastTimer);
-                toastTimer = setTimeout(function(){
-                    toast.classList.remove('show');
-                }, 2500);
+                toastTimer = setTimeout(() => toast.classList.remove('show'), 2000);
             }
 
-            function setStatus(state, text) {
-                statusEl.textContent = text || 'Offline';
-                statusEl.className = '';
-                if (state === 'online') statusEl.className = 'online';
-                else if (state === 'error') statusEl.className = 'error';
-            }
-
-            function saveGroups() {
-                try { localStorage.setItem(STORAGE_KEY, JSON.stringify(groups)); } catch(e) {}
-            }
-            function loadGroupsFromStorage() {
-                try {
-                    var data = localStorage.getItem(STORAGE_KEY);
-                    if (data) { var parsed = JSON.parse(data); if (Array.isArray(parsed)) { groups = parsed; return true; } }
-                } catch(e) {}
-                return false;
-            }
-            function saveMessages() {
-                try {
-                    var data = {};
-                    for (var key in messages) {
-                        if (messages.hasOwnProperty(key)) {
-                            data[key] = messages[key];
-                        }
-                    }
-                    localStorage.setItem(MSG_STORAGE_KEY, JSON.stringify(data));
-                } catch(e) {}
-            }
-            function loadMessagesFromStorage() {
-                try {
-                    var data = localStorage.getItem(MSG_STORAGE_KEY);
-                    if (data) {
-                        var parsed = JSON.parse(data);
-                        for (var key in parsed) {
-                            if (parsed.hasOwnProperty(key)) {
-                                messages[key] = parsed[key];
-                            }
-                        }
-                        return true;
-                    }
-                } catch(e) {}
-                return false;
-            }
-            function saveDeleted() {
-                try { localStorage.setItem(DELETED_KEY, JSON.stringify(deletedMessages)); } catch(e) {}
-            }
-            function loadDeletedFromStorage() {
-                try {
-                    var data = localStorage.getItem(DELETED_KEY);
-                    if (data) {
-                        var parsed = JSON.parse(data);
-                        for (var key in parsed) {
-                            if (parsed.hasOwnProperty(key)) {
-                                deletedMessages[key] = parsed[key];
-                            }
-                        }
-                        return true;
-                    }
-                } catch(e) {}
-                return false;
-            }
-            function autoSave() {
-                saveGroups();
-                saveMessages();
-                saveDeleted();
-            }
-
-            async function apiCall(method, params) {
-                params = params || {};
-                try {
-                    var url = API_BASE + '/' + method;
-                    var form = new FormData();
-                    for (var k in params) {
-                        if (params[k] !== undefined && params[k] !== null) {
-                            form.append(k, params[k]);
-                        }
-                    }
-                    var res = await fetch(url, { method: 'POST', body: form });
-                    if (!res.ok) throw new Error('HTTP ' + res.status);
-                    return await res.json();
-                } catch (e) {
-                    console.error('[API]', e);
-                    return { ok: false, error: e.message };
-                }
-            }
-
-            async function getChatInfo(chatId) {
-                return await apiCall('getChat', { chat_id: chatId });
-            }
-
-            async function getPhotoFile(fileId) {
-                var result = await apiCall('getFile', { file_id: fileId });
-                if (result.ok && result.result) {
-                    return 'https://api.telegram.org/file/bot' + BOT_TOKEN + '/' + result.result.file_path;
-                }
-                return null;
-            }
-
-            function stringToColor(str) {
-                var hash = 0;
-                for (var i = 0; i < str.length; i++) {
-                    hash = str.charCodeAt(i) + ((hash << 5) - hash);
-                }
-                var hue = Math.abs(hash) % 360;
-                return 'hsl(' + hue + ', 55%, 45%)';
+            function getUserColor(str) {
+                let hash = 0;
+                for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
+                return NAME_COLORS[Math.abs(hash) % NAME_COLORS.length];
             }
 
             function getInitials(name) {
                 if (!name) return '?';
-                var parts = name.trim().split(' ');
-                if (parts.length >= 2) {
-                    return (parts[0][0] + parts[1][0]).toUpperCase();
+                let parts = name.trim().split(' ');
+                return parts.length >= 2 ? (parts[0][0] + parts[1][0]).toUpperCase() : name.substring(0, 1).toUpperCase();
+            }
+
+            function saveAll() {
+                try {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(groups));
+                    localStorage.setItem(MSG_STORAGE_KEY, JSON.stringify(messages));
+                    localStorage.setItem(DELETED_KEY, JSON.stringify(deletedMessages));
+                } catch(e) {}
+            }
+
+            function loadStorage() {
+                try {
+                    groups = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+                    messages = JSON.parse(localStorage.getItem(MSG_STORAGE_KEY)) || {};
+                    deletedMessages = JSON.parse(localStorage.getItem(DELETED_KEY)) || {};
+                } catch(e) {}
+            }
+
+            async function apiCall(method, params = {}) {
+                try {
+                    let form = new FormData();
+                    for (let k in params) {
+                        if (params[k] !== undefined && params[k] !== null) form.append(k, params[k]);
+                    }
+                    let res = await fetch(API_BASE + '/' + method, { method: 'POST', body: form });
+                    return await res.json();
+                } catch (e) {
+                    return { ok: false };
                 }
-                return name.substring(0, 2).toUpperCase();
+            }
+
+            async function getPhotoUrl(fileId) {
+                let res = await apiCall('getFile', { file_id: fileId });
+                if (res.ok && res.result) {
+                    return `https://api.telegram.org/file/bot${BOT_TOKEN}/${res.result.file_path}`;
+                }
+                return null;
             }
 
             async function loadGroupsFromAPI() {
-                try {
-                    var updates = await apiCall('getUpdates', { offset: 0, timeout: 1 });
-                    if (updates.ok && updates.result) {
-                        var chatMap = new Map();
-                        for (var i = 0; i < updates.result.length; i++) {
-                            var u = updates.result[i];
-                            if (u.message && u.message.chat) {
-                                var c = u.message.chat;
-                                if (c.type === 'group' || c.type === 'supergroup') {
-                                    if (!chatMap.has(c.id)) {
-                                        chatMap.set(c.id, {
-                                            id: c.id,
-                                            title: c.title || c.username || 'Group',
-                                            type: c.type
-                                        });
-                                    }
-                                }
-                            }
+                let updates = await apiCall('getUpdates', { offset: 0, timeout: 1 });
+                if (updates.ok && updates.result) {
+                    let map = new Map();
+                    updates.result.forEach(u => {
+                        if (u.message && u.message.chat && (u.message.chat.type === 'group' || u.message.chat.type === 'supergroup')) {
+                            map.set(u.message.chat.id, { id: u.message.chat.id, title: u.message.chat.title || 'Группа' });
                         }
-                        var apiGroups = Array.from(chatMap.values());
-                        var savedIds = {};
-                        for (var j = 0; j < groups.length; j++) {
-                            savedIds[groups[j].id] = true;
-                        }
-                        for (var k = 0; k < apiGroups.length; k++) {
-                            var g = apiGroups[k];
-                            if (!savedIds[g.id]) {
-                                groups.push(g);
-                            }
-                        }
-                        renderGroups();
-                        autoSave();
-                        return true;
-                    }
-                    return false;
-                } catch (e) {
-                    console.error('Load groups API error:', e);
-                    return false;
+                    });
+                    let existingIds = new Set(groups.map(g => g.id));
+                    map.forEach((g) => { if (!existingIds.has(g.id)) groups.push(g); });
+                    renderGroups();
+                    saveAll();
                 }
-            }
-
-            async function loadGroups() {
-                loadGroupsFromStorage();
-                await loadGroupsFromAPI();
-                renderGroups();
-                if (groups.length > 0 && !currentGroupId) {
-                    selectGroup(groups[0].id);
-                } else if (groups.length === 0) {
-                    chatContainer.innerHTML = '<div class="empty-state">No groups found</div>';
-                }
-                setStatus('online', 'Online');
             }
 
             function renderGroups() {
-                var addBtn = document.getElementById('add-group-btn');
+                const addBtn = document.getElementById('add-group-btn');
                 groupsPanel.innerHTML = '';
                 groupsPanel.appendChild(addBtn);
-                for (var i = 0; i < groups.length; i++) {
-                    var g = groups[i];
-                    var btn = document.createElement('button');
+                groups.forEach(g => {
+                    let btn = document.createElement('button');
                     btn.className = 'group-btn' + (currentGroupId === g.id ? ' active' : '');
                     btn.textContent = g.title;
-                    btn.dataset.id = g.id;
-                    (function(id){
-                        btn.onclick = function(){ selectGroup(id); };
-                    })(g.id);
+                    btn.onclick = () => selectGroup(g.id);
                     groupsPanel.appendChild(btn);
-                }
+                });
             }
 
             async function selectGroup(id) {
-                if (updateInterval) {
-                    clearInterval(updateInterval);
-                    updateInterval = null;
-                }
+                if (updateInterval) clearInterval(updateInterval);
                 currentGroupId = id;
+                let g = groups.find(x => x.id === id);
+                if (g) chatTitle.textContent = g.title;
+
                 renderGroups();
-                loadMessagesFromStorage();
-                loadDeletedFromStorage();
                 if (!messages[currentGroupId]) messages[currentGroupId] = [];
                 if (!deletedMessages[currentGroupId]) deletedMessages[currentGroupId] = {};
-                chatContainer.innerHTML = '<div id="loading">Loading...</div>';
-                offset = 0;
-                await fetchMessages(currentGroupId);
-                renderMessages(currentGroupId);
-                updateInterval = setInterval(function(){
-                    fetchMessages(currentGroupId);
-                }, 2500);
-                setStatus('online', 'Online');
-            }
 
-            async function addGroupById(groupId) {
-                if (!groupId) return false;
-                var info = await getChatInfo(groupId);
-                if (!info.ok) {
-                    showToast('Group not found or bot not admin');
-                    return false;
-                }
-                var chat = info.result;
-                if (chat.type !== 'group' && chat.type !== 'supergroup') {
-                    showToast('Not a group');
-                    return false;
-                }
-                for (var i = 0; i < groups.length; i++) {
-                    if (groups[i].id === chat.id) {
-                        showToast('Already added');
-                        return false;
-                    }
-                }
-                groups.push({
-                    id: chat.id,
-                    title: chat.title || 'Group',
-                    type: chat.type
-                });
-                renderGroups();
-                autoSave();
-                selectGroup(chat.id);
-                showToast('Group added');
-                return true;
+                renderMessages(currentGroupId);
+                await fetchMessages(currentGroupId);
+                
+                updateInterval = setInterval(() => fetchMessages(currentGroupId), 2500);
             }
 
             async function fetchMessages(chatId) {
                 if (!chatId) return;
-                try {
-                    var result = await apiCall('getUpdates', { offset: offset + 1, timeout: 1 });
-                    if (!result.ok) return;
-                    var updates = result.result || [];
-                    var newMsgs = [];
-                    for (var i = 0; i < updates.length; i++) {
-                        var u = updates[i];
-                        if (u.message && u.message.chat && u.message.chat.id === chatId) {
-                            var msg = u.message;
-                            var isOut = msg.from && msg.from.id == USER_ID;
-                            var replyData = null;
-                            if (msg.reply_to_message) {
-                                var replyMsg = msg.reply_to_message;
-                                replyData = {
-                                    text: replyMsg.text || '(message)',
-                                    from: replyMsg.from ? replyMsg.from.first_name : 'Unknown',
-                                    isDeleted: false
-                                };
-                            }
-                            var photoUrl = null;
-                            if (msg.photo && msg.photo.length > 0) {
-                                var photoSize = msg.photo[msg.photo.length - 1];
-                                photoUrl = await getPhotoFile(photoSize.file_id);
-                            }
-                            newMsgs.push({
-                                id: msg.message_id,
-                                text: msg.text || null,
-                                from: msg.from ? msg.from.first_name : 'Unknown',
-                                isOut: isOut,
-                                date: msg.date,
-                                reply_to_message: replyData,
-                                photo: photoUrl,
-                                hasPhoto: !!photoUrl,
-                                isDeleted: false
-                            });
-                            if (u.update_id > offset) offset = u.update_id;
+                let result = await apiCall('getUpdates', { offset: offset + 1, timeout: 1 });
+                if (!result.ok || !result.result) return;
+
+                let updated = false;
+                for (let u of result.result) {
+                    if (u.update_id > offset) offset = u.update_id;
+                    if (u.message && u.message.chat && u.message.chat.id === chatId) {
+                        let msg = u.message;
+                        let isOut = msg.from && msg.from.id == USER_ID;
+                        
+                        let photoUrl = null;
+                        if (msg.photo && msg.photo.length > 0) {
+                            photoUrl = await getPhotoUrl(msg.photo[msg.photo.length - 1].file_id);
+                        }
+
+                        let replyData = null;
+                        if (msg.reply_to_message) {
+                            replyData = {
+                                text: msg.reply_to_message.text || 'Фотография',
+                                from: msg.reply_to_message.from ? msg.reply_to_message.from.first_name : 'Unknown'
+                            };
+                        }
+
+                        let newMsg = {
+                            id: msg.message_id,
+                            text: msg.text || null,
+                            from: msg.from ? (msg.from.first_name + (msg.from.last_name ? ' ' + msg.from.last_name : '')) : 'Пользователь',
+                            isOut: isOut,
+                            date: msg.date,
+                            photo: photoUrl,
+                            reply: replyData,
+                            isAdmin: msg.from && msg.from.username === 'admin'
+                        };
+
+                        if (!messages[chatId].some(m => m.id === newMsg.id)) {
+                            messages[chatId].push(newMsg);
+                            updated = true;
                         }
                     }
-                    if (newMsgs.length > 0) {
-                        if (!messages[chatId]) messages[chatId] = [];
-                        for (var j = 0; j < newMsgs.length; j++) {
-                            var nm = newMsgs[j];
-                            var exists = false;
-                            for (var k = 0; k < messages[chatId].length; k++) {
-                                if (messages[chatId][k].id === nm.id) { exists = true; break; }
-                            }
-                            if (!exists) {
-                                messages[chatId].push(nm);
-                            }
-                        }
-                        renderMessages(chatId);
-                        autoSave();
-                        setTimeout(function(){
-                            chatContainer.scrollTop = chatContainer.scrollHeight;
-                        }, 50);
-                    }
-                } catch (e) {
-                    console.error('Fetch error:', e);
+                }
+
+                if (updated) {
+                    renderMessages(chatId);
+                    saveAll();
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
                 }
             }
 
             function renderMessages(chatId) {
-                var msgs = messages[chatId] || [];
-                var deleted = deletedMessages[chatId] || {};
+                let msgs = messages[chatId] || [];
+                let deleted = deletedMessages[chatId] || {};
+
                 if (msgs.length === 0 && Object.keys(deleted).length === 0) {
-                    chatContainer.innerHTML = '<div class="empty-state">No messages</div>';
+                    chatContainer.innerHTML = '<div class="empty-state">Сообщений нет</div>';
                     return;
                 }
-                var html = '';
-                var allMsgs = msgs.slice();
-                for (var did in deleted) {
-                    if (deleted.hasOwnProperty(did)) {
-                        var found = false;
-                        for (var i = 0; i < msgs.length; i++) {
-                            if (msgs[i].id == did) { found = true; break; }
-                        }
-                        if (!found) {
-                            allMsgs.push({
-                                id: parseInt(did),
-                                text: null,
-                                from: deleted[did].from || 'Unknown',
-                                isOut: false,
-                                date: deleted[did].date || 0,
-                                isDeleted: true,
-                                deletedText: deleted[did].text || 'message'
-                            });
-                        }
-                    }
-                }
-                allMsgs.sort(function(a, b){ return a.date - b.date; });
 
-                for (var i = 0; i < allMsgs.length; i++) {
-                    var m = allMsgs[i];
-                    var isDeleted = m.isDeleted || (deleted[m.id] && !m.text);
-                    var cls = m.isOut ? 'outgoing' : 'incoming';
-                    var dateStr = new Date(m.date * 1000).toLocaleTimeString();
-                    var name = m.isOut ? 'You' : m.from;
-                    var initials = getInitials(name);
-                    var color = stringToColor(name);
-                    var avatarHtml = '<div class="avatar" style="background:' + color + ';">' + initials + '</div>';
-                    
-                    var replyHtml = '';
-                    if (m.reply_to_message) {
-                        var replyTextContent = m.reply_to_message.text || '(message)';
-                        replyHtml = '<div class="reply-indicator"><span class="reply-from">↳ ' + m.reply_to_message.from + ':</span> <span class="reply-text">' + replyTextContent + '</span></div>';
+                let all = [...msgs];
+                for (let id in deleted) {
+                    if (!all.some(m => m.id == id)) {
+                        all.push({ id: parseInt(id), isDeleted: true, ...deleted[id] });
                     }
-                    
-                    var contentHtml = '';
-                    if (isDeleted) {
-                        var deletedText = deleted[m.id] ? deleted[m.id].text : 'message';
-                        contentHtml = '<span class="deleted-indicator">[deleted: ' + deletedText + ']</span>';
-                    } else {
-                        if (m.text) {
-                            contentHtml += m.text;
-                        }
-                        if (m.photo) {
-                            contentHtml += '<img src="' + m.photo + '" class="photo" onclick="window.open(\'' + m.photo + '\',\'_blank\')" onerror="this.style.display=\'none\'">';
-                        }
-                        if (!m.text && m.hasPhoto) {
-                            contentHtml += '<span style="color:#888;">[Photo]</span>';
-                        }
-                        if (!m.text && !m.hasPhoto) {
-                            contentHtml += '<span style="color:#888;">[Media]</span>';
-                        }
-                    }
-                    
-                    var deletedBadge = isDeleted ? ' <span class="deleted-badge">deleted</span>' : '';
-                    
-                    html += '<div class="message-wrapper ' + cls + '">';
-                    html += '<div class="message-row">';
-                    if (!m.isOut) {
-                        html += avatarHtml;
-                    }
-                    html += '<div class="message-content">';
-                    if (!m.isOut) {
-                        html += '<div class="message-name">' + name + deletedBadge + '</div>';
-                    } else {
-                        html += '<div class="message-name">You' + deletedBadge + '</div>';
-                    }
-                    html += '<div class="message" data-id="' + m.id + '" data-text="' + (m.text || '').replace(/"/g, '&quot;') + '" data-from="' + name + '">';
-                    html += replyHtml;
-                    html += contentHtml;
-                    html += '<div class="meta"><span class="msg-time">' + dateStr + '</span></div>';
-                    html += '</div></div>';
-                    if (m.isOut) {
-                        html += avatarHtml;
-                    }
-                    html += '</div></div>';
                 }
+                all.sort((a,b) => a.date - b.date);
+
+                let html = '';
+                all.forEach(m => {
+                    let isDel = m.isDeleted || deleted[m.id];
+                    let isOut = m.isOut;
+                    let cls = isOut ? 'outgoing' : 'incoming';
+                    let time = new Date(m.date * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    let nameColor = getUserColor(m.from || 'User');
+                    let initials = getInitials(m.from);
+
+                    html += `<div class="message-wrapper ${cls}">`;
+                    
+                    if (!isOut) {
+                        html += `<div class="avatar" style="background: ${nameColor}">${initials}</div>`;
+                    }
+
+                    html += `<div class="message-bubble" data-id="${m.id}" data-text="${(m.text || '').replace(/"/g, '&quot;')}" data-from="${m.from}">`;
+
+                    if (!isOut) {
+                        html += `<div class="message-header">
+                            <span class="message-name" style="color: ${nameColor}">${m.from}</span>
+                            ${m.isAdmin ? '<span class="badge-admin">админ</span>' : ''}
+                        </div>`;
+                    }
+
+                    if (m.reply) {
+                        html += `<div class="reply-indicator">
+                            <div class="reply-from">${m.reply.from}</div>
+                            <div class="reply-text">${m.reply.text}</div>
+                        </div>`;
+                    }
+
+                    if (isDel) {
+                        html += `<span class="deleted-text">Сообщение удалено (${deleted[m.id]?.text || ''})</span>`;
+                    } else {
+                        if (m.text) html += `<div>${m.text}</div>`;
+                        if (m.photo) html += `<img src="${m.photo}" class="photo-attachment" onclick="window.open('${m.photo}')">`;
+                    }
+
+                    html += `<div class="meta">${time} ${isOut ? '✓' : ''}</div>`;
+                    html += `</div></div>`;
+                });
+
                 chatContainer.innerHTML = html;
 
-                var msgElements = chatContainer.querySelectorAll('.message');
-                for (var j = 0; j < msgElements.length; j++) {
-                    var el = msgElements[j];
-                    (function(element){
-                        element.addEventListener('click', function(e) {
-                            if (e.target.closest('.reply-indicator') || e.target.closest('.photo')) return;
-                            var id = parseInt(element.dataset.id);
-                            var text = element.dataset.text;
-                            var from = element.dataset.from;
-                            var isDeleted = element.querySelector('.deleted-indicator') !== null;
-                            if (!isDeleted && text) {
-                                replyTarget = { message_id: id, text: text, from: from };
-                                replyFrom.textContent = from + ':';
-                                replyText.textContent = text.substring(0, 50) + (text.length > 50 ? '...' : '');
-                                replyBar.classList.add('show');
-                                messageInput.focus();
-                            }
-                        });
-                        var touchTimer = null;
-                        element.addEventListener('touchstart', function(e) {
-                            touchTimer = setTimeout(function() {
-                                var id = parseInt(element.dataset.id);
-                                var text = element.dataset.text;
-                                var from = element.dataset.from;
-                                var isOut = element.closest('.message-wrapper').classList.contains('outgoing');
-                                currentContextMsg = { id: id, text: text, from: from, isOut: isOut };
-                                var touch = e.touches[0];
-                                contextMenu.style.display = 'block';
-                                var left = touch.clientX;
-                                var top = touch.clientY;
-                                if (left + 140 > window.innerWidth) left = window.innerWidth - 140;
-                                if (top + 80 > window.innerHeight) top = window.innerHeight - 80;
-                                contextMenu.style.left = left + 'px';
-                                contextMenu.style.top = top + 'px';
-                                if (contextMenu._hideTimer) clearTimeout(contextMenu._hideTimer);
-                                contextMenu._hideTimer = setTimeout(function() {
-                                    contextMenu.style.display = 'none';
-                                }, 3000);
-                            }, 500);
-                        });
-                        element.addEventListener('touchend', function() {
-                            if (touchTimer) clearTimeout(touchTimer);
-                        });
-                        element.addEventListener('touchmove', function() {
-                            if (touchTimer) clearTimeout(touchTimer);
-                        });
-                    })(el);
-                }
+                // Attach Long Press & Click Events
+                document.querySelectorAll('.message-bubble').forEach(el => {
+                    let touchTimer;
+                    
+                    el.addEventListener('click', (e) => {
+                        if (e.target.tagName === 'IMG') return;
+                        let id = parseInt(el.dataset.id);
+                        let text = el.dataset.text;
+                        let from = el.dataset.from;
+                        if (text) {
+                            replyTarget = { id, text, from };
+                            replyFrom.textContent = from;
+                            replyText.textContent = text;
+                            replyBar.classList.add('show');
+                            messageInput.focus();
+                        }
+                    });
+
+                    el.addEventListener('touchstart', (e) => {
+                        touchTimer = setTimeout(() => {
+                            currentContextMsg = {
+                                id: parseInt(el.dataset.id),
+                                text: el.dataset.text,
+                                from: el.dataset.from
+                            };
+                            let t = e.touches[0];
+                            contextMenu.style.display = 'block';
+                            contextMenu.style.left = Math.min(t.clientX, window.innerWidth - 130) + 'px';
+                            contextMenu.style.top = Math.min(t.clientY, window.innerHeight - 120) + 'px';
+                        }, 400);
+                    });
+
+                    el.addEventListener('touchend', () => clearTimeout(touchTimer));
+                    el.addEventListener('touchmove', () => clearTimeout(touchTimer));
+                });
             }
 
             async function sendMessage() {
-                if (!currentGroupId) {
-                    showToast('Select group');
-                    return;
-                }
-                var text = messageInput.value.trim();
-                if (!text) {
-                    showToast('Enter message');
-                    return;
-                }
-                var params = {
-                    chat_id: currentGroupId,
-                    text: text
-                };
-                if (replyTarget) {
-                    params.reply_to_message_id = replyTarget.message_id;
-                }
-                var result = await apiCall('sendMessage', params);
-                if (result.ok) {
-                    var msg = {
-                        id: result.result.message_id,
+                let text = messageInput.value.trim();
+                if (!text || !currentGroupId) return;
+
+                let params = { chat_id: currentGroupId, text: text };
+                if (replyTarget) params.reply_to_message_id = replyTarget.id;
+
+                let res = await apiCall('sendMessage', params);
+                if (res.ok) {
+                    let msg = {
+                        id: res.result.message_id,
                         text: text,
-                        from: 'You',
+                        from: 'Вы',
                         isOut: true,
                         date: Math.floor(Date.now() / 1000),
-                        reply_to_message: replyTarget ? {
-                            text: replyTarget.text,
-                            from: replyTarget.from
-                        } : null,
-                        photo: null,
-                        hasPhoto: false,
-                        isDeleted: false
+                        reply: replyTarget ? { text: replyTarget.text, from: replyTarget.from } : null
                     };
-                    if (!messages[currentGroupId]) messages[currentGroupId] = [];
+
                     messages[currentGroupId].push(msg);
                     renderMessages(currentGroupId);
-                    autoSave();
+                    saveAll();
+
                     messageInput.value = '';
-                    if (replyTarget) {
-                        replyTarget = null;
-                        replyBar.classList.remove('show');
-                    }
-                    setTimeout(function(){
-                        chatContainer.scrollTop = chatContainer.scrollHeight;
-                    }, 50);
-                    showToast('Sent');
+                    replyTarget = null;
+                    replyBar.classList.remove('show');
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
                 } else {
-                    showToast('Error');
+                    showToast('Ошибка отправки');
                 }
             }
 
             async function deleteMessage(chatId, messageId) {
-                if (!chatId || !messageId) return;
-                var msgToDelete = null;
-                if (messages[chatId]) {
-                    for (var i = 0; i < messages[chatId].length; i++) {
-                        if (messages[chatId][i].id === messageId) {
-                            msgToDelete = messages[chatId][i];
-                            break;
-                        }
-                    }
-                }
-                var result = await apiCall('deleteMessage', {
-                    chat_id: chatId,
-                    message_id: messageId
-                });
-                if (result.ok) {
-                    showToast('Deleted');
-                    if (msgToDelete) {
-                        if (!deletedMessages[chatId]) deletedMessages[chatId] = {};
-                        deletedMessages[chatId][messageId] = {
-                            text: msgToDelete.text || '(message)',
-                            from: msgToDelete.from,
-                            date: msgToDelete.date || Math.floor(Date.now() / 1000)
-                        };
-                        var newMsgs = [];
-                        for (var j = 0; j < messages[chatId].length; j++) {
-                            if (messages[chatId][j].id !== messageId) {
-                                newMsgs.push(messages[chatId][j]);
-                            }
-                        }
-                        messages[chatId] = newMsgs;
+                let res = await apiCall('deleteMessage', { chat_id: chatId, message_id: messageId });
+                if (res.ok) {
+                    let target = messages[chatId].find(m => m.id === messageId);
+                    if (target) {
+                        deletedMessages[chatId][messageId] = { text: target.text, from: target.from, date: target.date };
+                        messages[chatId] = messages[chatId].filter(m => m.id !== messageId);
                         renderMessages(chatId);
-                        autoSave();
+                        saveAll();
+                        showToast('Удалено');
                     }
                 } else {
-                    showToast('Cannot delete');
+                    showToast('Не удалось удалить');
                 }
             }
 
+            // Listeners
             sendBtn.addEventListener('click', sendMessage);
-            messageInput.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter') sendMessage();
-            });
-            cancelReply.addEventListener('click', function() {
-                replyTarget = null;
-                replyBar.classList.remove('show');
-            });
+            messageInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') sendMessage(); });
+            cancelReply.addEventListener('click', () => { replyTarget = null; replyBar.classList.remove('show'); });
 
-            ctxReply.addEventListener('click', function() {
-                if (currentContextMsg && currentContextMsg.text) {
-                    replyTarget = { message_id: currentContextMsg.id, text: currentContextMsg.text, from: currentContextMsg.from };
-                    replyFrom.textContent = currentContextMsg.from + ':';
-                    replyText.textContent = currentContextMsg.text.substring(0, 50) + (currentContextMsg.text.length > 50 ? '...' : '');
+            ctxReply.addEventListener('click', () => {
+                if (currentContextMsg) {
+                    replyTarget = currentContextMsg;
+                    replyFrom.textContent = currentContextMsg.from;
+                    replyText.textContent = currentContextMsg.text;
                     replyBar.classList.add('show');
-                    messageInput.focus();
                     contextMenu.style.display = 'none';
                 }
             });
 
-            ctxDelete.addEventListener('click', function() {
+            ctxCopy.addEventListener('click', () => {
+                if (currentContextMsg?.text) {
+                    navigator.clipboard.writeText(currentContextMsg.text);
+                    showToast('Скопировано');
+                }
+                contextMenu.style.display = 'none';
+            });
+
+            ctxDelete.addEventListener('click', () => {
                 if (currentContextMsg && currentGroupId) {
                     deleteMessage(currentGroupId, currentContextMsg.id);
-                    contextMenu.style.display = 'none';
-                }
-            });
-
-            ctxCopy.addEventListener('click', function() {
-                if (currentContextMsg && currentContextMsg.text) {
-                    navigator.clipboard.writeText(currentContextMsg.text).then(function() {
-                        showToast('Copied');
-                    }).catch(function() {
-                        showToast('Copy failed');
-                    });
                 }
                 contextMenu.style.display = 'none';
             });
 
-            document.addEventListener('click', function() {
-                contextMenu.style.display = 'none';
-            });
+            document.addEventListener('click', () => contextMenu.style.display = 'none');
 
-            addGroupBtn.addEventListener('click', function() {
-                modal.classList.add('show');
-                modalInput.value = '';
-                modalInput.focus();
-            });
-            modalCancel.addEventListener('click', function() {
-                modal.classList.remove('show');
-            });
-            modalConfirm.addEventListener('click', function() {
-                var id = modalInput.value.trim();
-                if (!id) {
-                    showToast('Enter group ID');
-                    return;
+            addGroupBtn.addEventListener('click', () => modal.classList.add('show'));
+            modalCancel.addEventListener('click', () => modal.classList.remove('show'));
+            modalConfirm.addEventListener('click', async () => {
+                let id = modalInput.value.trim();
+                if (id) {
+                    let info = await apiCall('getChat', { chat_id: id });
+                    if (info.ok) {
+                        groups.push({ id: info.result.id, title: info.result.title || 'Группа' });
+                        saveAll();
+                        renderGroups();
+                        selectGroup(info.result.id);
+                        modal.classList.remove('show');
+                        showToast('Группа добавлена');
+                    } else {
+                        showToast('Группа не найдена');
+                    }
                 }
-                modal.classList.remove('show');
-                addGroupById(id);
             });
-            modalInput.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter') modalConfirm.click();
-            });
-            modal.addEventListener('click', function(e) {
-                if (e.target === modal) modal.classList.remove('show');
-            });
-
-            setInterval(autoSave, 10000);
-
-            setInterval(function() {
-                if (currentGroupId) {
-                    apiCall('getMe', {}).then(function(r) {
-                        if (!r.ok) {
-                            setStatus('error', 'Reconnecting');
-                        } else {
-                            setStatus('online', 'Online');
-                        }
-                    });
-                }
-            }, 30000);
 
             async function init() {
-                setStatus('', 'Loading...');
-                loadGroupsFromStorage();
-                loadMessagesFromStorage();
-                loadDeletedFromStorage();
+                loadStorage();
                 await loadGroupsFromAPI();
                 renderGroups();
-                if (groups.length > 0 && !currentGroupId) {
-                    selectGroup(groups[0].id);
-                } else if (groups.length === 0) {
-                    chatContainer.innerHTML = '<div class="empty-state">No groups found</div>';
-                }
-                setStatus('online', 'Online');
+                if (groups.length > 0) selectGroup(groups[0].id);
+                statusDot.style.color = '#2ecc71';
             }
 
             init();
-
-            if ('serviceWorker' in navigator) {
-                var swCode = 'self.addEventListener("install",function(){self.skipWaiting()});self.addEventListener("activate",function(){self.clients.claim()});self.addEventListener("fetch",function(e){e.respondWith(fetch(e.request).catch(function(){return new Response("Offline",{status:503})}))});';
-                try {
-                    var blob = new Blob([swCode], { type: 'application/javascript' });
-                    var swUrl = URL.createObjectURL(blob);
-                    navigator.serviceWorker.register(swUrl).then(function() {
-                        console.log('SW registered');
-                    }).catch(function() {});
-                } catch(e) {}
-            }
-
-            console.log('Bot Manager v3.0');
         })();
     </script>
 </body>
