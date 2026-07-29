@@ -3,502 +3,405 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NFT Clicker v2.0 - Telegram Bot</title>
+    <title>Telegram Group Manager Bot</title>
     <style>
-        /* ============ СТИЛИ ============ */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #0a0a0a, #1a1a2e, #16213e);
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #0a0a0a;
             color: #fff;
             min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             padding: 20px;
         }
-        
+
         .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: rgba(255,255,255,0.05);
-            border-radius: 20px;
-            padding: 20px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.1);
+            max-width: 480px;
+            width: 100%;
+            background: linear-gradient(145deg, #1a1a2e, #16213e);
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+            border: 1px solid rgba(255,255,255,0.05);
         }
-        
-        /* ===== HEADER ===== */
+
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 20px;
-            background: rgba(0,0,0,0.3);
-            border-radius: 15px;
             margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
         }
-        
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-        
-        .user-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
+
+        .header h1 {
+            font-size: 18px;
             background: linear-gradient(135deg, #0088cc, #00d2ff);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            font-weight: bold;
-        }
-        
-        .stats {
-            display: flex;
-            gap: 30px;
-            flex-wrap: wrap;
-        }
-        
-        .stat-item {
-            text-align: center;
-        }
-        
-        .stat-value {
-            font-size: 28px;
-            font-weight: bold;
-            background: linear-gradient(135deg, #f7971e, #ffd200);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        
-        .stat-label {
+
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
             font-size: 12px;
             color: #888;
-            margin-top: 5px;
         }
-        
-        /* ===== CLICK AREA ===== */
-        .click-area {
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .status-dot.online {
+            background: #6bcb77;
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.offline {
+            background: #ff6b6b;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        /* ГРУППЫ */
+        .groups-section {
+            margin-bottom: 20px;
+        }
+
+        .groups-section h3 {
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .groups-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .group-btn {
+            padding: 8px 16px;
             background: rgba(255,255,255,0.05);
-            border-radius: 20px;
-            padding: 40px;
-            text-align: center;
-            margin: 20px 0;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 13px;
             cursor: pointer;
             transition: all 0.3s ease;
-            border: 2px solid rgba(255,255,255,0.1);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .click-area:hover {
-            transform: scale(1.02);
-            border-color: #f7971e;
-            box-shadow: 0 0 40px rgba(247, 151, 30, 0.2);
-        }
-        
-        .click-area:active {
-            transform: scale(0.95);
-        }
-        
-        .click-circle {
-            width: 200px;
-            height: 200px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #f7971e, #ffd200);
             display: flex;
             align-items: center;
-            justify-content: center;
-            margin: 0 auto;
-            font-size: 48px;
-            font-weight: bold;
-            color: #000;
-            box-shadow: 0 0 60px rgba(247, 151, 30, 0.3);
-            transition: all 0.3s ease;
-            user-select: none;
+            gap: 8px;
         }
-        
-        .click-circle:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 80px rgba(247, 151, 30, 0.5);
-        }
-        
-        .click-counter {
-            font-size: 48px;
-            margin-top: 20px;
-            font-weight: bold;
-            background: linear-gradient(135deg, #00d2ff, #3a7bd5);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        .progress-bar {
-            width: 100%;
-            height: 10px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 5px;
-            overflow: hidden;
-            margin: 15px 0;
-        }
-        
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(135deg, #f7971e, #ffd200);
-            transition: width 0.3s ease;
-            border-radius: 5px;
-        }
-        
-        /* ===== NFT GRID ===== */
-        .nft-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 15px;
-            margin: 20px 0;
-        }
-        
-        .nft-card {
-            background: rgba(255,255,255,0.05);
-            border-radius: 15px;
-            padding: 15px;
-            text-align: center;
-            border: 1px solid rgba(255,255,255,0.1);
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-        
-        .nft-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            border-color: #f7971e;
-        }
-        
-        .nft-card.legendary {
-            border-color: #ff6b6b;
-            background: linear-gradient(135deg, rgba(255,107,107,0.2), rgba(255,107,107,0.05));
-        }
-        
-        .nft-card.epic {
-            border-color: #ffd93d;
-            background: linear-gradient(135deg, rgba(255,217,61,0.2), rgba(255,217,61,0.05));
-        }
-        
-        .nft-card.rare {
-            border-color: #6bcb77;
-            background: linear-gradient(135deg, rgba(107,203,119,0.2), rgba(107,203,119,0.05));
-        }
-        
-        .nft-card.common {
-            border-color: #4d96ff;
-            background: linear-gradient(135deg, rgba(77,150,255,0.2), rgba(77,150,255,0.05));
-        }
-        
-        .nft-emoji {
-            font-size: 48px;
-            margin-bottom: 10px;
-            display: block;
-        }
-        
-        .nft-name {
-            font-size: 14px;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-        
-        .nft-price {
-            font-size: 12px;
-            color: #ffd700;
-        }
-        
-        .nft-rarity {
-            font-size: 10px;
-            padding: 2px 10px;
-            border-radius: 10px;
-            display: inline-block;
-            margin-top: 5px;
-        }
-        
-        .rarity-legendary { background: #ff6b6b; color: #fff; }
-        .rarity-epic { background: #ffd93d; color: #000; }
-        .rarity-rare { background: #6bcb77; color: #fff; }
-        .rarity-common { background: #4d96ff; color: #fff; }
-        
-        /* ===== TABS ===== */
-        .tabs {
-            display: flex;
-            gap: 10px;
-            margin: 20px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            padding-bottom: 10px;
-            flex-wrap: wrap;
-        }
-        
-        .tab {
-            padding: 10px 20px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: 1px solid transparent;
-        }
-        
-        .tab.active {
-            background: linear-gradient(135deg, #f7971e, #ffd200);
-            color: #000;
-            border-color: #f7971e;
-        }
-        
-        .tab:hover {
+
+        .group-btn:hover {
+            background: rgba(0,210,255,0.1);
+            border-color: #00d2ff;
             transform: translateY(-2px);
         }
-        
-        .hidden {
-            display: none !important;
+
+        .group-btn.active {
+            background: rgba(0,210,255,0.15);
+            border-color: #00d2ff;
+            box-shadow: 0 0 20px rgba(0,210,255,0.1);
         }
-        
-        /* ===== MARKET ===== */
-        .market-item {
+
+        .group-btn .badge {
+            background: rgba(255,255,255,0.1);
+            padding: 0 8px;
+            border-radius: 10px;
+            font-size: 10px;
+            color: #888;
+        }
+
+        .group-btn .badge.unread {
+            background: #ff6b6b;
+            color: #fff;
+            animation: pulse 1s infinite;
+        }
+
+        /* ЧАТ */
+        .chat-container {
+            background: rgba(0,0,0,0.3);
+            border-radius: 16px;
+            height: 420px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .chat-messages::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .chat-messages::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+        }
+
+        .message {
+            max-width: 85%;
+            padding: 10px 14px;
+            border-radius: 14px;
+            font-size: 14px;
+            line-height: 1.5;
+            word-wrap: break-word;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.outgoing {
+            align-self: flex-end;
+            background: linear-gradient(135deg, #0088cc, #00d2ff);
+            border-bottom-right-radius: 4px;
+            color: #fff;
+        }
+
+        .message.incoming {
+            align-self: flex-start;
+            background: rgba(255,255,255,0.05);
+            border-bottom-left-radius: 4px;
+            color: #ddd;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            position: relative;
+        }
+
+        .message.incoming:hover {
+            background: rgba(255,255,255,0.08);
+        }
+
+        .message.incoming.selected {
+            background: rgba(0,210,255,0.15);
+            border: 1px solid rgba(0,210,255,0.3);
+        }
+
+        .message .msg-meta {
+            font-size: 10px;
+            color: #666;
+            margin-top: 4px;
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            padding: 15px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 10px;
-            margin-bottom: 10px;
-            flex-wrap: wrap;
+        }
+
+        .message .msg-sender {
+            font-size: 11px;
+            color: #00d2ff;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        .message .reply-indicator {
+            font-size: 11px;
+            color: #f7971e;
+            margin-bottom: 4px;
+            padding: 2px 8px;
+            background: rgba(247,151,30,0.1);
+            border-radius: 6px;
+            border-left: 2px solid #f7971e;
+        }
+
+        /* Поле ввода */
+        .chat-input-area {
+            padding: 12px 16px;
+            background: rgba(0,0,0,0.3);
+            border-top: 1px solid rgba(255,255,255,0.05);
+            display: flex;
             gap: 10px;
+            align-items: center;
         }
-        
-        .market-item:hover {
-            background: rgba(255,255,255,0.1);
+
+        .chat-input-area input {
+            flex: 1;
+            padding: 10px 14px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.3s ease;
         }
-        
-        .buy-btn {
-            padding: 8px 20px;
-            background: linear-gradient(135deg, #00d2ff, #3a7bd5);
+
+        .chat-input-area input:focus {
+            border-color: #00d2ff;
+        }
+
+        .chat-input-area input::placeholder {
+            color: #555;
+        }
+
+        .chat-input-area .send-btn {
+            padding: 10px 18px;
+            background: linear-gradient(135deg, #0088cc, #00d2ff);
             border: none;
-            border-radius: 8px;
+            border-radius: 12px;
             color: #fff;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s ease;
+            white-space: nowrap;
         }
-        
-        .buy-btn:hover {
+
+        .chat-input-area .send-btn:hover {
             transform: scale(1.05);
             box-shadow: 0 5px 20px rgba(0,210,255,0.3);
         }
-        
-        .sell-btn {
-            padding: 5px 15px;
-            background: linear-gradient(135deg, #f7971e, #ffd200);
-            border: none;
+
+        .chat-input-area .send-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .reply-badge {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            padding: 4px 12px;
+            background: rgba(247,151,30,0.15);
             border-radius: 8px;
-            color: #000;
+            font-size: 12px;
+            color: #f7971e;
+            border-left: 2px solid #f7971e;
+        }
+
+        .reply-badge.show {
+            display: flex;
+        }
+
+        .reply-badge .cancel-reply {
+            cursor: pointer;
+            color: #ff6b6b;
             font-weight: bold;
+            margin-left: 4px;
+        }
+
+        /* Управление */
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+
+        .controls button {
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 12px;
             cursor: pointer;
             transition: all 0.3s ease;
-            font-size: 12px;
-        }
-        
-        .sell-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 5px 20px rgba(247,151,30,0.3);
-        }
-        
-        /* ===== LOGIN ===== */
-        .login-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.95);
             display: flex;
             align-items: center;
-            justify-content: center;
-            z-index: 1000;
+            gap: 6px;
         }
-        
-        .login-box {
-            background: linear-gradient(135deg, #1a1a2e, #16213e);
-            padding: 40px;
-            border-radius: 20px;
-            max-width: 450px;
-            width: 90%;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        
-        .login-box h2 {
-            text-align: center;
-            margin-bottom: 30px;
-            background: linear-gradient(135deg, #f7971e, #ffd200);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        .login-box input {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 15px;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 10px;
-            color: #fff;
-            font-size: 16px;
-            transition: border-color 0.3s ease;
-        }
-        
-        .login-box input:focus {
-            outline: none;
-            border-color: #f7971e;
-        }
-        
-        .login-btn {
-            width: 100%;
-            padding: 12px;
-            background: linear-gradient(135deg, #f7971e, #ffd200);
-            border: none;
-            border-radius: 10px;
-            color: #000;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .login-btn:hover {
-            transform: scale(1.02);
-            box-shadow: 0 5px 30px rgba(247,151,30,0.3);
-        }
-        
-        .login-btn.secondary {
+
+        .controls button:hover {
             background: rgba(255,255,255,0.1);
-            color: #fff;
-            margin-top: 10px;
+            transform: translateY(-2px);
         }
-        
-        .telegram-login {
-            text-align: center;
-            margin: 20px 0;
-            padding: 20px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 10px;
-        }
-        
-        .telegram-login .bot-link {
-            display: inline-block;
-            padding: 12px 30px;
-            background: #0088cc;
-            color: #fff;
-            text-decoration: none;
-            border-radius: 10px;
-            margin: 10px 0;
-            transition: all 0.3s ease;
-        }
-        
-        .telegram-login .bot-link:hover {
-            transform: scale(1.05);
-            box-shadow: 0 5px 30px rgba(0,136,204,0.3);
-        }
-        
-        .telegram-status {
-            margin-top: 10px;
-            padding: 8px;
-            border-radius: 8px;
-            font-size: 12px;
-        }
-        
-        .status-online {
-            background: rgba(107,203,119,0.2);
-            color: #6bcb77;
-        }
-        
-        .status-offline {
-            background: rgba(255,107,107,0.2);
+
+        .controls button.danger {
+            border-color: #ff6b6b;
             color: #ff6b6b;
         }
-        
-        /* ===== NOTIFICATIONS ===== */
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 25px;
-            background: linear-gradient(135deg, #00d2ff, #3a7bd5);
-            border-radius: 10px;
-            color: #fff;
-            font-weight: bold;
-            transform: translateX(120%);
-            transition: transform 0.5s ease;
-            z-index: 1001;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            max-width: 90%;
+
+        .controls button.danger:hover {
+            background: rgba(255,107,107,0.1);
         }
-        
-        .notification.show {
-            transform: translateX(0);
-        }
-        
-        .notification.success {
-            background: linear-gradient(135deg, #6bcb77, #2d8f47);
-        }
-        
-        .notification.error {
-            background: linear-gradient(135deg, #ff6b6b, #c0392b);
-        }
-        
-        /* ===== MODAL ===== */
+
+        /* Модалка добавления группы */
         .modal {
+            display: none;
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
             background: rgba(0,0,0,0.8);
-            display: flex;
-            align-items: center;
             justify-content: center;
+            align-items: center;
             z-index: 1000;
+            animation: fadeIn 0.3s ease;
         }
-        
+
+        .modal.show {
+            display: flex;
+        }
+
         .modal-content {
-            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            background: linear-gradient(145deg, #1a1a2e, #16213e);
             padding: 30px;
             border-radius: 20px;
-            max-width: 500px;
+            max-width: 420px;
             width: 90%;
             border: 1px solid rgba(255,255,255,0.1);
         }
-        
+
         .modal-content h3 {
-            margin-bottom: 20px;
+            margin-bottom: 16px;
             text-align: center;
         }
-        
+
         .modal-content input {
             width: 100%;
             padding: 12px;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             background: rgba(255,255,255,0.05);
             border: 1px solid rgba(255,255,255,0.1);
             border-radius: 10px;
             color: #fff;
-            font-size: 16px;
+            font-size: 14px;
         }
-        
+
+        .modal-content input:focus {
+            outline: none;
+            border-color: #00d2ff;
+        }
+
         .modal-actions {
             display: flex;
             gap: 10px;
         }
-        
+
         .modal-actions button {
             flex: 1;
             padding: 10px;
@@ -508,851 +411,750 @@
             cursor: pointer;
             transition: all 0.3s ease;
         }
-        
-        .modal-actions .confirm-btn {
-            background: linear-gradient(135deg, #f7971e, #ffd200);
-            color: #000;
-        }
-        
-        .modal-actions .cancel-btn {
-            background: rgba(255,255,255,0.1);
-            color: #fff;
-        }
-        
-        /* ===== BOT CHAT ===== */
-        .bot-chat {
-            margin-top: 20px;
-            background: rgba(0,0,0,0.3);
-            border-radius: 15px;
-            padding: 20px;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-        
-        .bot-message {
-            margin-bottom: 10px;
-            padding: 10px 15px;
-            border-radius: 10px;
-            max-width: 80%;
-        }
-        
-        .bot-message.user {
-            background: rgba(247,151,30,0.2);
-            margin-left: auto;
-            border-right: 3px solid #f7971e;
-        }
-        
-        .bot-message.bot {
-            background: rgba(0,210,255,0.1);
-            border-left: 3px solid #00d2ff;
-        }
-        
-        .bot-input-area {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        
-        .bot-input-area input {
-            flex: 1;
-            padding: 10px;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 10px;
-            color: #fff;
-        }
-        
-        .bot-input-area button {
-            padding: 10px 20px;
+
+        .modal-actions .confirm {
             background: linear-gradient(135deg, #0088cc, #00d2ff);
-            border: none;
-            border-radius: 10px;
             color: #fff;
-            font-weight: bold;
-            cursor: pointer;
         }
-        
-        /* ===== RESPONSIVE ===== */
-        @media (max-width: 768px) {
-            .header {
-                flex-direction: column;
-                gap: 15px;
+
+        .modal-actions .cancel {
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+        }
+
+        /* Уведомления */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            padding: 12px 24px;
+            background: rgba(0,0,0,0.9);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 14px;
+            opacity: 0;
+            transition: all 0.5s ease;
+            z-index: 2000;
+            max-width: 90%;
+            text-align: center;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .toast.success { border-color: #6bcb77; }
+        .toast.error { border-color: #ff6b6b; }
+        .toast.info { border-color: #00d2ff; }
+
+        /* Scrollbar для всего */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 16px;
+                border-radius: 16px;
             }
-            
-            .stats {
-                flex-wrap: wrap;
-                justify-content: center;
+
+            .chat-container {
+                height: 350px;
             }
-            
-            .click-circle {
-                width: 150px;
-                height: 150px;
-                font-size: 36px;
+
+            .group-btn {
+                font-size: 12px;
+                padding: 6px 12px;
             }
-            
-            .nft-grid {
-                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-            }
-            
-            .market-item {
-                flex-direction: column;
-                text-align: center;
+
+            .message {
+                font-size: 13px;
+                padding: 8px 12px;
             }
         }
     </style>
 </head>
 <body>
-    <!-- ===== УВЕДОМЛЕНИЯ ===== -->
-    <div id="notification" class="notification"></div>
-    
-    <!-- ===== ОКНО ВХОДА ===== -->
-    <div id="loginOverlay" class="login-overlay">
-        <div class="login-box">
-            <h2>🎮 NFT Clicker v2.0</h2>
-            <div class="telegram-login">
-                <p>🔹 Войди через Telegram</p>
-                <a href="https://t.me/NFT_CLICKER_BOT" target="_blank" class="bot-link" id="telegramBotLink">
-                    📱 Написать боту
-                </a>
-                <div id="telegramStatus" class="telegram-status status-offline">
-                    ⚠️ Бот офлайн
-                </div>
-                <p style="font-size: 12px; color: #888; margin-top: 10px;">
-                    👆 Напиши боту /start, получи код и введи его ниже
-                </p>
-            </div>
-            
-            <input type="text" id="loginCode" placeholder="🔑 Введите код из Telegram">
-            <button class="login-btn" onclick="loginWithCode()">🚀 Войти</button>
-            
-            <div style="border-top: 1px solid rgba(255,255,255,0.1); margin: 20px 0; text-align: center; padding-top: 10px; font-size: 12px; color: #888;">
-                или войди по логину/паролю
-            </div>
-            
-            <input type="text" id="loginUsername" placeholder="👤 Логин">
-            <input type="password" id="loginPassword" placeholder="🔒 Пароль">
-            <button class="login-btn" onclick="loginWithCredentials()">Войти</button>
-            <button class="login-btn secondary" onclick="registerNew()">📝 Регистрация</button>
-        </div>
-    </div>
-    
-    <!-- ===== ОСНОВНОЙ КОНТЕНТ ===== -->
-    <div id="mainContent" class="container hidden">
+
+    <div class="container">
         <!-- HEADER -->
         <div class="header">
-            <div class="user-info">
-                <div class="user-avatar" id="userAvatar">👤</div>
-                <div>
-                    <div id="userName" style="font-weight: bold;">Игрок</div>
-                    <div id="userId" style="font-size: 12px; color: #888;">ID: -</div>
+            <h1>🤖 Group Bot</h1>
+            <div class="status">
+                <span class="status-dot" id="statusDot"></span>
+                <span id="statusText">Подключение...</span>
+            </div>
+        </div>
+
+        <!-- ГРУППЫ -->
+        <div class="groups-section">
+            <h3>📋 Группы</h3>
+            <div class="groups-list" id="groupsList">
+                <button class="group-btn" onclick="showAddGroupModal()">➕ Добавить</button>
+            </div>
+        </div>
+
+        <!-- ЧАТ -->
+        <div class="chat-container">
+            <div class="chat-messages" id="chatMessages">
+                <div style="text-align: center; color: #444; padding: 40px 20px; font-size: 14px;">
+                    Выберите группу или добавьте новую<br>
+                    <span style="font-size: 12px; color: #333;">Бот будет отправлять/получать сообщения</span>
                 </div>
             </div>
-            <div class="stats">
-                <div class="stat-item">
-                    <div class="stat-value" id="crystalsDisplay">0</div>
-                    <div class="stat-label">💎 Кристаллы</div>
+
+            <div class="chat-input-area">
+                <div class="reply-badge" id="replyBadge">
+                    <span>💬 Ответ на: <span id="replyText">...</span></span>
+                    <span class="cancel-reply" onclick="cancelReply()">✕</span>
                 </div>
-                <div class="stat-item">
-                    <div class="stat-value" id="nftCount">0</div>
-                    <div class="stat-label">🖼️ NFT</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value" id="clickCount">0</div>
-                    <div class="stat-label">👆 Кликов</div>
-                </div>
+                <input type="text" id="messageInput" placeholder="Введите сообщение..." 
+                       onkeypress="if(event.key==='Enter') sendMessage()">
+                <button class="send-btn" id="sendBtn" onclick="sendMessage()">➤</button>
             </div>
         </div>
-        
-        <!-- CLICK AREA -->
-        <div class="click-area" onclick="handleClick(event)">
-            <div class="click-circle" id="clickCircle">👆</div>
-            <div class="click-counter" id="clickCounter">0</div>
-            <div style="margin-top: 10px; color: #888;">
-                кликов до NFT: <span id="clicksToNFT">100</span>
-            </div>
-            <div class="progress-bar">
-                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
-            </div>
-        </div>
-        
-        <!-- TABS -->
-        <div class="tabs">
-            <div class="tab active" onclick="switchTab('collection')">🎴 Коллекция</div>
-            <div class="tab" onclick="switchTab('market')">🏪 Рынок</div>
-            <div class="tab" onclick="switchTab('profile')">👤 Профиль</div>
-            <div class="tab" onclick="switchTab('bot')">🤖 Бот</div>
-            <div class="tab" onclick="saveAndExit()">💾 Выход</div>
-        </div>
-        
-        <!-- COLLECTION -->
-        <div id="collectionTab">
-            <div class="nft-grid" id="nftGrid"></div>
-        </div>
-        
-        <!-- MARKET -->
-        <div id="marketTab" class="hidden">
-            <div id="marketList"></div>
-        </div>
-        
-        <!-- PROFILE -->
-        <div id="profileTab" class="hidden">
-            <div style="padding: 20px; text-align: center;">
-                <h3>👤 Профиль</h3>
-                <p><strong>Логин:</strong> <span id="profileLogin"></span></p>
-                <p><strong>Всего NFT:</strong> <span id="profileNftCount"></span></p>
-                <p><strong>Всего кликов:</strong> <span id="profileClicks"></span></p>
-                <p><strong>Кристаллов:</strong> <span id="profileCrystals"></span></p>
-                <button class="login-btn secondary" onclick="logout()" style="margin-top: 20px;">🚪 Выйти</button>
-            </div>
-        </div>
-        
-        <!-- BOT CHAT -->
-        <div id="botTab" class="hidden">
-            <div style="margin-bottom: 15px;">
-                <span style="font-size: 18px;">🤖 Встроенный Telegram Бот</span>
-                <span id="botStatus" style="margin-left: 10px; font-size: 12px; color: #6bcb77;">● Онлайн</span>
-            </div>
-            <div class="bot-chat" id="botChat"></div>
-            <div class="bot-input-area">
-                <input type="text" id="botInput" placeholder="Напишите боту..." onkeypress="if(event.key==='Enter') sendBotMessage()">
-                <button onclick="sendBotMessage()">📤 Отправить</button>
-            </div>
+
+        <!-- КНОПКИ УПРАВЛЕНИЯ -->
+        <div class="controls">
+            <button onclick="refreshGroups()">🔄 Обновить</button>
+            <button onclick="clearChat()">🗑️ Очистить</button>
+            <button class="danger" onclick="leaveGroup()">🚪 Выйти из группы</button>
+            <button onclick="showAddGroupModal()">➕ Добавить группу</button>
         </div>
     </div>
-    
-    <!-- ===== МОДАЛКА ПРОДАЖИ ===== -->
-    <div id="sellModal" class="modal hidden">
+
+    <!-- МОДАЛКА ДОБАВЛЕНИЯ ГРУППЫ -->
+    <div class="modal" id="addGroupModal">
         <div class="modal-content">
-            <h3>💰 Продать NFT</h3>
-            <p id="sellNftName" style="text-align: center; margin: 10px 0;"></p>
-            <input type="number" id="sellPrice" placeholder="Цена в кристаллах" min="1">
+            <h3>➕ Добавить группу</h3>
+            <input type="text" id="groupChatId" placeholder="ID группы (например: -1001234567890)">
+            <input type="text" id="groupName" placeholder="Название группы (по желанию)">
             <div class="modal-actions">
-                <button class="confirm-btn" onclick="confirmSell()">Продать</button>
-                <button class="cancel-btn" onclick="closeSellModal()">Отмена</button>
+                <button class="confirm" onclick="addGroup()">Добавить</button>
+                <button class="cancel" onclick="closeModal('addGroupModal')">Отмена</button>
             </div>
         </div>
     </div>
-    
+
+    <!-- ТОСТ -->
+    <div class="toast" id="toast"></div>
+
     <script>
         // ============================================================
-        // ============ КОНФИГУРАЦИЯ TELEGRAM БОТА ============
+        // ============ КОНФИГУРАЦИЯ ============
         // ============================================================
         const BOT_TOKEN = '8998947312:AAGyGHIyi4cSqUzKmeIhQzSLJLXXH3kkmXg';
-        const BOT_USERNAME = 'NFT_CLICKER_BOT';
         const BOT_API_URL = `https://api.telegram.org/bot${BOT_TOKEN}`;
-        
+        const USER_ID = '5645726673';
+
         // ============================================================
-        // ============ NFT DATA ============
+        // ============ СОСТОЯНИЕ ============
         // ============================================================
-        const NFT_EMOJIS = ['🎨','🖼️','🎭','🎪','🎠','🎡','🎢','🎨','🖌️','🖍️','✏️','🖋️','🖊️','🔮','💎','👑','🌟','⭐','🌙','☀️','🔥','💫','✨','🌈','🎯','🎰','🎲','🎳','🎮','🎵','🎶','🎤','🎧','🎼','🎹','🎸','🎺','🎷','🎻','🥁','🎬','📸','📹','🎥','📽️','🎞️','📺','📻','📱','💻','🖥️','⌨️','🖱️','🖨️','💿','📀','💾','📼','🔋','🔌','💡','🔦','🕯️','📡','📯','🔭','🔬','🔮','🧪','🧫','🧬','💊','💉','🌿','🍀','🌺','🌸','🌹','🌷','🌻','🌼','💐','🍄','🌾','🌵','🎄','🌲','🌳','🌴','🌱','🌿','☘️','🍂','🍁','🌊','🌋','🏔️','⛰️','🌄','🌅','🌇','🌆','🏙️','🌃','🌌'];
-        
-        function generateAllNFTs() {
-            const nfts = [];
-            // 90 обычных NFT (цена 10-100 кристаллов)
-            for (let i = 0; i < 90; i++) {
-                const price = Math.floor(Math.random() * 91) + 10;
-                nfts.push({
-                    id: i + 1,
-                    name: `NFT #${i+1}`,
-                    emoji: NFT_EMOJIS[i % NFT_EMOJIS.length],
-                    rarity: 'common',
-                    price: price,
-                    salePrice: price + Math.floor(price * 0.3)
-                });
-            }
-            // 5 NFT по 1000 кристаллов
-            for (let i = 0; i < 5; i++) {
-                nfts.push({
-                    id: 91 + i,
-                    name: `Редкий NFT #${91+i}`,
-                    emoji: NFT_EMOJIS[(90 + i) % NFT_EMOJIS.length],
-                    rarity: 'rare',
-                    price: 1000,
-                    salePrice: 1300
-                });
-            }
-            // 5 NFT по 6000 кристаллов
-            for (let i = 0; i < 5; i++) {
-                nfts.push({
-                    id: 96 + i,
-                    name: `Легендарный NFT #${96+i}`,
-                    emoji: NFT_EMOJIS[(95 + i) % NFT_EMOJIS.length],
-                    rarity: 'legendary',
-                    price: 6000,
-                    salePrice: 7800
-                });
-            }
-            return nfts;
-        }
-        
-        const ALL_NFTS = generateAllNFTs();
-        
-        // ============================================================
-        // ============ GAME STATE ============
-        // ============================================================
-        let gameState = {
-            user: null,
-            clicks: 0,
-            crystals: 0,
-            nfts: [],
-            market: [],
-            clickMultiplier: 1
+        let state = {
+            groups: [],
+            currentGroup: null,
+            messages: [],
+            replyTo: null,
+            updateId: 0,
+            isPolling: false,
+            processing: false
         };
-        
+
         // ============================================================
-        // ============ TELEGRAM BOT API ============
+        // ============ ЗАГРУЗКА/СОХРАНЕНИЕ ============
         // ============================================================
-        let telegramUpdateId = 0;
-        let botChatMessages = [];
-        
-        async function checkTelegramUpdates() {
+        function loadState() {
             try {
-                const url = `${BOT_API_URL}/getUpdates?offset=${telegramUpdateId + 1}&timeout=30`;
-                const response = await fetch(url);
-                const data = await response.json();
-                
-                if (data.ok && data.result.length > 0) {
-                    for (const update of data.result) {
-                        telegramUpdateId = update.update_id;
-                        if (update.message && update.message.text) {
-                            handleBotMessage(update.message);
-                        }
-                    }
+                const saved = localStorage.getItem('tg_bot_state');
+                if (saved) {
+                    const data = JSON.parse(saved);
+                    state.groups = data.groups || [];
+                    state.currentGroup = data.currentGroup || null;
+                    state.messages = data.messages || [];
+                    state.updateId = data.updateId || 0;
                 }
-            } catch (error) {
-                console.log('⚠️ Ошибка Telegram API:', error);
-                document.getElementById('botStatus').textContent = '⚠️ Офлайн';
-                document.getElementById('botStatus').style.color = '#ff6b6b';
+            } catch (e) {
+                console.warn('Ошибка загрузки:', e);
             }
         }
-        
-        async function sendToTelegram(chatId, text) {
+
+        function saveState() {
             try {
-                const url = `${BOT_API_URL}/sendMessage`;
+                localStorage.setItem('tg_bot_state', JSON.stringify({
+                    groups: state.groups,
+                    currentGroup: state.currentGroup,
+                    messages: state.messages,
+                    updateId: state.updateId
+                }));
+            } catch (e) {
+                console.warn('Ошибка сохранения:', e);
+            }
+        }
+
+        // ============================================================
+        // ============ TELEGRAM API ============
+        // ============================================================
+        async function apiCall(method, data = {}) {
+            try {
+                const url = `${BOT_API_URL}/${method}`;
                 const response = await fetch(url, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        chat_id: chatId,
-                        text: text,
-                        parse_mode: 'HTML'
-                    })
+                    body: JSON.stringify(data)
                 });
                 return await response.json();
             } catch (error) {
-                console.error('❌ Ошибка отправки:', error);
+                console.error('API Error:', error);
+                return { ok: false, error: error.message };
+            }
+        }
+
+        async function sendMessageToGroup(chatId, text, replyToMessageId = null) {
+            const data = {
+                chat_id: chatId,
+                text: text,
+                parse_mode: 'HTML'
+            };
+            if (replyToMessageId) {
+                data.reply_to_message_id = replyToMessageId;
+            }
+            const result = await apiCall('sendMessage', data);
+            if (result.ok) {
+                showToast('✅ Сообщение отправлено', 'success');
+                return result.result;
+            } else {
+                showToast('❌ Ошибка: ' + (result.description || 'Неизвестная ошибка'), 'error');
                 return null;
             }
         }
-        
-        function handleBotMessage(message) {
-            const text = message.text;
-            const chatId = message.chat.id;
-            const username = message.from.username || 'Аноним';
-            
-            // Добавляем в чат
-            addBotMessage('user', `${username}: ${text}`);
-            
-            // Обработка команд
-            if (text === '/start') {
-                const code = generateAuthCode();
-                const response = `🔐 <b>Добро пожаловать в NFT Clicker!</b>\n\n` +
-                    `🎮 Твой код для входа:\n<code>${code}</code>\n\n` +
-                    `📋 Логин: ${code.split(':')[0]}\n` +
-                    `🔑 Пароль: ${code.split(':')[1]}\n\n` +
-                    `1. Скопируй код\n` +
-                    `2. Вставь на сайте\n` +
-                    `3. Наслаждайся игрой! 🎮`;
-                sendToTelegram(chatId, response);
-                addBotMessage('bot', `✅ Отправлен код: ${code}`);
-            } else if (text === '/help') {
-                const help = `🎮 <b>NFT Clicker Bot</b>\n\n` +
-                    `<b>Команды:</b>\n` +
-                    `/start - Получить код для входа\n` +
-                    `/help - Эта справка\n` +
-                    `/mycodes - Мои коды\n` +
-                    `/delete - Удалить данные\n\n` +
-                    `<b>💰 Система:</b>\n` +
-                    `• Каждые 100 кликов - NFT\n` +
-                    `• 90 обычных (10-100💎)\n` +
-                    `• 5 редких (1000💎)\n` +
-                    `• 5 легендарных (6000💎)\n` +
-                    `• Рынок для торговли`;
-                sendToTelegram(chatId, help);
-                addBotMessage('bot', '📖 Справка отправлена');
-            } else if (text === '/mycodes') {
-                showUserCodes(chatId);
-            } else if (text === '/delete') {
-                sendToTelegram(chatId, '⚠️ Твои данные удалены! Напиши /start заново.');
-                addBotMessage('bot', '🗑️ Данные удалены');
-            } else {
-                // Обычное сообщение
-                const response = `🤖 Привет! Я бот NFT Clicker.\n` +
-                    `Напиши /start чтобы получить код для входа.\n` +
-                    `Или /help для справки.`;
-                sendToTelegram(chatId, response);
-                addBotMessage('bot', response);
-            }
+
+        async function getUpdates(offset = 0) {
+            const result = await apiCall('getUpdates', {
+                offset: offset,
+                timeout: 30,
+                allowed_updates: ['message']
+            });
+            return result;
         }
-        
-        function generateAuthCode() {
-            const login = 'user_' + Math.random().toString(36).substring(2, 10);
-            const password = Math.random().toString(36).substring(2, 12);
-            const code = `${login}:${password}`;
-            
-            // Сохраняем в localStorage
-            const codes = JSON.parse(localStorage.getItem('telegram_codes') || '{}');
-            codes[code] = {
-                login: login,
-                password: password,
-                used: false,
-                created: new Date().toISOString()
-            };
-            localStorage.setItem('telegram_codes', JSON.stringify(codes));
-            
-            return code;
+
+        async function getChat(chatId) {
+            const result = await apiCall('getChat', { chat_id: chatId });
+            return result;
         }
-        
-        function showUserCodes(chatId) {
-            const codes = JSON.parse(localStorage.getItem('telegram_codes') || '{}');
-            const entries = Object.entries(codes);
-            
-            if (entries.length === 0) {
-                sendToTelegram(chatId, '📭 У тебя пока нет кодов. Напиши /start');
+
+        async function leaveChat(chatId) {
+            const result = await apiCall('leaveChat', { chat_id: chatId });
+            return result;
+        }
+
+        async function getMe() {
+            const result = await apiCall('getMe');
+            return result;
+        }
+
+        // ============================================================
+        // ============ ПОЛЛИНГ СООБЩЕНИЙ ============
+        // ============================================================
+        let pollingInterval = null;
+        let isPollingActive = false;
+
+        async function startPolling() {
+            if (isPollingActive) return;
+            isPollingActive = true;
+            updateStatus(true);
+
+            // Проверяем бота
+            const me = await getMe();
+            if (!me.ok) {
+                showToast('❌ Бот не доступен. Проверьте токен.', 'error');
+                isPollingActive = false;
+                updateStatus(false);
                 return;
             }
-            
-            let response = '📋 <b>Твои коды:</b>\n\n';
-            for (const [code, data] of entries.slice(-5)) {
-                const status = data.used ? '✅ Использован' : '🔄 Активен';
-                response += `🔑 <code>${code}</code>\n`;
-                response += `📌 Статус: ${status}\n\n`;
+            console.log('✅ Бот запущен:', me.result.username);
+
+            // Запускаем цикл поллинга
+            pollingLoop();
+        }
+
+        async function pollingLoop() {
+            if (!isPollingActive) return;
+
+            try {
+                const result = await getUpdates(state.updateId + 1);
+                
+                if (result.ok && result.result.length > 0) {
+                    for (const update of result.result) {
+                        state.updateId = update.update_id;
+                        await processUpdate(update);
+                    }
+                    saveState();
+                }
+
+                // Обновляем UI
+                updateUI();
+
+            } catch (error) {
+                console.error('Polling error:', error);
             }
-            sendToTelegram(chatId, response);
+
+            // Планируем следующий цикл
+            if (isPollingActive) {
+                setTimeout(pollingLoop, 2000);
+            }
         }
-        
-        function addBotMessage(type, text) {
-            const chat = document.getElementById('botChat');
-            const div = document.createElement('div');
-            div.className = `bot-message ${type}`;
-            div.textContent = text.replace(/<[^>]*>/g, '');
-            chat.appendChild(div);
-            chat.scrollTop = chat.scrollHeight;
+
+        async function processUpdate(update) {
+            if (!update.message) return;
+
+            const msg = update.message;
+            const chatId = String(msg.chat.id);
+
+            // Проверяем, отслеживаем ли мы эту группу
+            const group = state.groups.find(g => String(g.id) === chatId);
+            if (!group) return;
+
+            // Проверяем, не от бота ли сообщение
+            if (msg.from && msg.from.id === (await getMe()).result.id) return;
+
+            // Добавляем сообщение в историю
+            const messageData = {
+                id: msg.message_id,
+                chatId: chatId,
+                text: msg.text || msg.caption || '[Медиа]',
+                from: msg.from ? {
+                    id: msg.from.id,
+                    username: msg.from.username || msg.from.first_name || 'Unknown'
+                } : { id: 0, username: 'Unknown' },
+                date: msg.date,
+                isOutgoing: false,
+                isReply: !!msg.reply_to_message,
+                replyToId: msg.reply_to_message ? msg.reply_to_message.message_id : null
+            };
+
+            // Если это ответ на наше сообщение
+            if (msg.reply_to_message) {
+                const replyTo = msg.reply_to_message;
+                // Проверяем, от бота ли сообщение
+                const botInfo = await getMe();
+                if (replyTo.from && replyTo.from.id === botInfo.result.id) {
+                    messageData.isReplyToBot = true;
+                    // Находим исходное сообщение в истории
+                    const original = state.messages.find(m => 
+                        m.id === replyTo.message_id && m.chatId === chatId
+                    );
+                    if (original) {
+                        messageData.replyToText = original.text;
+                    }
+                }
+            }
+
+            state.messages.push(messageData);
+
+            // Если это текущая группа - показываем уведомление
+            if (String(state.currentGroup) === chatId) {
+                showToast(`📩 ${messageData.from.username}: ${messageData.text.substring(0, 50)}`, 'info');
+            } else {
+                // Увеличиваем счетчик непрочитанных
+                group.unread = (group.unread || 0) + 1;
+                showToast(`📩 Новое сообщение в ${group.name || group.id}`, 'info');
+            }
+
+            // Обновляем группы
+            const groupIndex = state.groups.findIndex(g => String(g.id) === chatId);
+            if (groupIndex !== -1) {
+                state.groups[groupIndex].lastMessage = {
+                    text: messageData.text,
+                    from: messageData.from.username,
+                    date: messageData.date
+                };
+            }
+
+            saveState();
         }
-        
-        async function sendBotMessage() {
-            const input = document.getElementById('botInput');
+
+        // ============================================================
+        // ============ ОТПРАВКА СООБЩЕНИЙ ============
+        // ============================================================
+        async function sendMessage() {
+            if (!state.currentGroup) {
+                showToast('❌ Выберите группу', 'error');
+                return;
+            }
+
+            const input = document.getElementById('messageInput');
             const text = input.value.trim();
             if (!text) return;
-            
+
             input.value = '';
-            addBotMessage('user', `Вы: ${text}`);
-            
-            // Отправляем в Telegram (имитация)
-            if (text === '/start') {
-                const code = generateAuthCode();
-                addBotMessage('bot', `✅ Твой код: ${code}`);
-                showNotification(`🔑 Код: ${code}`, 'success');
-            } else if (text === '/help') {
-                addBotMessage('bot', '📖 Справка: /start - получить код, /help - справка');
-            } else {
-                addBotMessage('bot', '🤖 Напиши /start для входа или /help для справки');
+            document.getElementById('sendBtn').disabled = true;
+
+            try {
+                const replyId = state.replyTo ? state.replyTo.id : null;
+                const result = await sendMessageToGroup(state.currentGroup, text, replyId);
+
+                if (result) {
+                    // Добавляем сообщение в историю
+                    state.messages.push({
+                        id: result.message_id,
+                        chatId: state.currentGroup,
+                        text: text,
+                        from: { id: 'bot', username: 'Вы (бот)' },
+                        date: Math.floor(Date.now() / 1000),
+                        isOutgoing: true,
+                        replyToId: replyId
+                    });
+
+                    // Сбрасываем reply
+                    cancelReply();
+                    saveState();
+                    updateUI();
+                }
+            } catch (error) {
+                showToast('❌ Ошибка отправки', 'error');
             }
+
+            document.getElementById('sendBtn').disabled = false;
+            document.getElementById('messageInput').focus();
         }
-        
+
         // ============================================================
-        // ============ AUTH ============
+        // ============ ГРУППЫ ============
         // ============================================================
-        function loginWithCode() {
-            const code = document.getElementById('loginCode').value.trim();
-            if (!code) {
-                showNotification('❌ Введите код из Telegram', 'error');
+        function showAddGroupModal() {
+            document.getElementById('addGroupModal').classList.add('show');
+            document.getElementById('groupChatId').focus();
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('show');
+        }
+
+        async function addGroup() {
+            const chatId = document.getElementById('groupChatId').value.trim();
+            const name = document.getElementById('groupName').value.trim() || chatId;
+
+            if (!chatId) {
+                showToast('❌ Введите ID группы', 'error');
                 return;
             }
-            
-            const codes = JSON.parse(localStorage.getItem('telegram_codes') || '{}');
-            if (!codes[code]) {
-                showNotification('❌ Неверный код', 'error');
+
+            // Проверяем группу
+            const result = await getChat(chatId);
+            if (!result.ok) {
+                showToast('❌ Группа не найдена. Проверьте ID', 'error');
                 return;
             }
-            
-            const data = codes[code];
-            data.used = true;
-            codes[code] = data;
-            localStorage.setItem('telegram_codes', JSON.stringify(codes));
-            
-            registerUser(data.login, data.password);
-            showNotification('✅ Вход выполнен!', 'success');
-        }
-        
-        function loginWithCredentials() {
-            const login = document.getElementById('loginUsername').value.trim();
-            const password = document.getElementById('loginPassword').value.trim();
-            if (!login || !password) {
-                showNotification('❌ Введите логин и пароль', 'error');
+
+            // Проверяем, не добавлена ли уже
+            if (state.groups.find(g => String(g.id) === chatId)) {
+                showToast('⚠️ Группа уже добавлена', 'info');
+                closeModal('addGroupModal');
                 return;
             }
-            loginUser(login, password);
-        }
-        
-        function registerNew() {
-            const login = document.getElementById('loginUsername').value.trim();
-            const password = document.getElementById('loginPassword').value.trim();
-            if (!login || !password) {
-                showNotification('❌ Введите логин и пароль', 'error');
-                return;
-            }
-            registerUser(login, password);
-        }
-        
-        function loginUser(login, password) {
-            const users = JSON.parse(localStorage.getItem('nft_users') || '{}');
-            if (users[login] && users[login].password === password) {
-                gameState.user = users[login];
-                loadGame();
-                document.getElementById('loginOverlay').classList.add('hidden');
-                document.getElementById('mainContent').classList.remove('hidden');
-                updateUI();
-                showNotification('✅ Добро пожаловать!', 'success');
-            } else if (users[login]) {
-                showNotification('❌ Неверный пароль', 'error');
-            } else {
-                showNotification('❌ Пользователь не найден', 'error');
-            }
-        }
-        
-        function registerUser(login, password) {
-            const users = JSON.parse(localStorage.getItem('nft_users') || '{}');
-            if (users[login]) {
-                showNotification('❌ Пользователь уже существует', 'error');
-                return;
-            }
-            
-            const newUser = {
-                login: login,
-                password: password,
-                clicks: 0,
-                crystals: 0,
-                nfts: [],
-                market: []
-            };
-            
-            users[login] = newUser;
-            localStorage.setItem('nft_users', JSON.stringify(users));
-            
-            gameState.user = newUser;
-            saveGame();
-            document.getElementById('loginOverlay').classList.add('hidden');
-            document.getElementById('mainContent').classList.remove('hidden');
-            updateUI();
-            showNotification('✅ Регистрация успешна!', 'success');
-        }
-        
-        // ============================================================
-        // ============ GAME SAVE/LOAD ============
-        // ============================================================
-        function saveGame() {
-            if (!gameState.user) return;
-            const users = JSON.parse(localStorage.getItem('nft_users') || '{}');
-            gameState.user.clicks = gameState.clicks;
-            gameState.user.crystals = gameState.crystals;
-            gameState.user.nfts = gameState.nfts;
-            gameState.user.market = gameState.market;
-            users[gameState.user.login] = gameState.user;
-            localStorage.setItem('nft_users', JSON.stringify(users));
-        }
-        
-        function loadGame() {
-            if (!gameState.user) return;
-            gameState.clicks = gameState.user.clicks || 0;
-            gameState.crystals = gameState.user.crystals || 0;
-            gameState.nfts = gameState.user.nfts || [];
-            gameState.market = gameState.user.market || [];
-        }
-        
-        function saveAndExit() {
-            saveGame();
-            showNotification('💾 Прогресс сохранен!', 'success');
-            setTimeout(() => {
-                document.getElementById('mainContent').classList.add('hidden');
-                document.getElementById('loginOverlay').classList.remove('hidden');
-            }, 500);
-        }
-        
-        function logout() {
-            saveGame();
-            gameState.user = null;
-            document.getElementById('mainContent').classList.add('hidden');
-            document.getElementById('loginOverlay').classList.remove('hidden');
-            showNotification('👋 До встречи!', 'success');
-        }
-        
-        // ============================================================
-        // ============ CLICK SYSTEM ============
-        // ============================================================
-        function handleClick(e) {
-            if (!gameState.user) return;
-            
-            gameState.clicks++;
-            const clicksToNFT = 100 / gameState.clickMultiplier;
-            const progress = ((gameState.clicks % clicksToNFT) / clicksToNFT) * 100;
-            
-            document.getElementById('clickCounter').textContent = gameState.clicks;
-            document.getElementById('progressFill').style.width = progress + '%';
-            document.getElementById('clicksToNFT').textContent = Math.floor(clicksToNFT - (gameState.clicks % clicksToNFT));
-            
-            // Анимация
-            const circle = document.getElementById('clickCircle');
-            circle.style.transform = 'scale(0.9)';
-            setTimeout(() => circle.style.transform = 'scale(1)', 100);
-            
-            // Проверка на получение NFT
-            if (gameState.clicks % clicksToNFT === 0) {
-                const nft = getRandomNFT();
-                gameState.nfts.push(nft);
-                showNotification(`🎉 Получен NFT: ${nft.emoji} ${nft.name} (${nft.price}💎)`, 'success');
-                saveGame();
-                updateUI();
-            }
-            
-            if (gameState.clicks % 10 === 0) saveGame();
-            updateUI();
-        }
-        
-        function getRandomNFT() {
-            const rand = Math.random() * 100;
-            let nft;
-            if (rand < 5) {
-                nft = ALL_NFTS.filter(n => n.rarity === 'legendary')[Math.floor(Math.random() * 5)];
-            } else if (rand < 10) {
-                nft = ALL_NFTS.filter(n => n.rarity === 'rare')[Math.floor(Math.random() * 5)];
-            } else {
-                nft = ALL_NFTS.filter(n => n.rarity === 'common')[Math.floor(Math.random() * 90)];
-            }
-            return { ...nft, uniqueId: Date.now() + '_' + Math.random().toString(36).substring(7) };
-        }
-        
-        // ============================================================
-        // ============ MARKET ============
-        // ============================================================
-        function listForSale(index) {
-            const nft = gameState.nfts[index];
-            if (!nft) return;
-            document.getElementById('sellNftName').textContent = `${nft.emoji} ${nft.name}`;
-            document.getElementById('sellPrice').value = nft.price;
-            document.getElementById('sellModal').dataset.nftIndex = index;
-            document.getElementById('sellModal').classList.remove('hidden');
-        }
-        
-        function confirmSell() {
-            const price = parseInt(document.getElementById('sellPrice').value);
-            if (isNaN(price) || price < 1) {
-                showNotification('❌ Введите корректную цену', 'error');
-                return;
-            }
-            
-            const index = parseInt(document.getElementById('sellModal').dataset.nftIndex);
-            const nft = gameState.nfts[index];
-            if (!nft) return;
-            
-            gameState.market.push({
-                id: Date.now(),
-                sellerLogin: gameState.user.login,
-                nft: nft,
-                price: price,
-                listedAt: new Date().toISOString()
+
+            state.groups.push({
+                id: chatId,
+                name: name,
+                title: result.result.title || name,
+                unread: 0,
+                lastMessage: null
             });
-            gameState.nfts.splice(index, 1);
-            closeSellModal();
-            saveGame();
+
+            closeModal('addGroupModal');
+            document.getElementById('groupChatId').value = '';
+            document.getElementById('groupName').value = '';
+
+            // Выбираем группу
+            selectGroup(chatId);
+            saveState();
             updateUI();
-            showNotification(`✅ NFT выставлен на продажу за ${price}💎`, 'success');
+            showToast(`✅ Группа "${name}" добавлена`, 'success');
         }
-        
-        function closeSellModal() {
-            document.getElementById('sellModal').classList.add('hidden');
-        }
-        
-        function buyNFT(listingId) {
-            const index = gameState.market.findIndex(m => m.id === listingId);
-            if (index === -1) return;
+
+        function selectGroup(chatId) {
+            state.currentGroup = chatId;
+            state.replyTo = null;
             
-            const listing = gameState.market[index];
-            if (gameState.crystals < listing.price) {
-                showNotification('❌ Недостаточно кристаллов', 'error');
+            // Сбрасываем непрочитанные
+            const group = state.groups.find(g => String(g.id) === chatId);
+            if (group) group.unread = 0;
+
+            // Фильтруем сообщения для этой группы
+            const chatMessages = state.messages.filter(m => String(m.chatId) === chatId);
+            renderMessages(chatMessages);
+
+            saveState();
+            updateUI();
+            document.getElementById('messageInput').focus();
+        }
+
+        async function refreshGroups() {
+            showToast('🔄 Обновление...', 'info');
+            // Проверяем все группы
+            for (const group of state.groups) {
+                try {
+                    const result = await getChat(group.id);
+                    if (result.ok) {
+                        group.title = result.result.title || group.name;
+                    }
+                } catch (e) {
+                    console.warn('Не удалось обновить группу:', group.id);
+                }
+            }
+            saveState();
+            updateUI();
+            showToast('✅ Обновлено', 'success');
+        }
+
+        async function leaveGroup() {
+            if (!state.currentGroup) {
+                showToast('❌ Выберите группу', 'error');
                 return;
             }
-            if (gameState.user.login === listing.sellerLogin) {
-                showNotification('❌ Нельзя купить свой NFT', 'error');
-                return;
+
+            if (!confirm(`Выйти из группы "${getGroupName(state.currentGroup)}"?`)) return;
+
+            const result = await leaveChat(state.currentGroup);
+            if (result.ok) {
+                state.groups = state.groups.filter(g => String(g.id) !== state.currentGroup);
+                state.messages = state.messages.filter(m => String(m.chatId) !== state.currentGroup);
+                state.currentGroup = state.groups.length > 0 ? state.groups[0].id : null;
+                state.replyTo = null;
+                saveState();
+                updateUI();
+                showToast('✅ Вы вышли из группы', 'success');
+            } else {
+                showToast('❌ Ошибка: ' + (result.description || 'Неизвестная ошибка'), 'error');
             }
-            
-            gameState.crystals -= listing.price;
-            gameState.nfts.push({ ...listing.nft, uniqueId: Date.now() + '_' + Math.random().toString(36).substring(7) });
-            
-            // Увеличиваем кристаллы продавца
-            const users = JSON.parse(localStorage.getItem('nft_users') || '{}');
-            if (users[listing.sellerLogin]) {
-                users[listing.sellerLogin].crystals += listing.price;
-                localStorage.setItem('nft_users', JSON.stringify(users));
-            }
-            
-            gameState.market.splice(index, 1);
-            saveGame();
-            updateUI();
-            showNotification(`✅ Куплен NFT: ${listing.nft.emoji} ${listing.nft.name}`, 'success');
         }
-        
-        function removeFromMarket(listingId) {
-            const index = gameState.market.findIndex(m => m.id === listingId);
-            if (index === -1) return;
-            
-            const listing = gameState.market[index];
-            if (gameState.user.login !== listing.sellerLogin) {
-                showNotification('❌ Это не ваш NFT', 'error');
-                return;
-            }
-            
-            gameState.nfts.push({ ...listing.nft, uniqueId: Date.now() + '_' + Math.random().toString(36).substring(7) });
-            gameState.market.splice(index, 1);
-            saveGame();
-            updateUI();
-            showNotification('✅ NFT возвращен в коллекцию', 'success');
+
+        function getGroupName(chatId) {
+            const group = state.groups.find(g => String(g.id) === chatId);
+            return group ? (group.title || group.name || group.id) : chatId;
         }
-        
+
+        // ============================================================
+        // ============ ОТВЕТЫ ============
+        // ============================================================
+        function setReply(messageId) {
+            const msg = state.messages.find(m => m.id === messageId && String(m.chatId) === state.currentGroup);
+            if (!msg) return;
+
+            state.replyTo = msg;
+            
+            const badge = document.getElementById('replyBadge');
+            badge.classList.add('show');
+            document.getElementById('replyText').textContent = msg.text.substring(0, 50) + (msg.text.length > 50 ? '...' : '');
+
+            // Подсвечиваем сообщение
+            document.querySelectorAll('.message.incoming').forEach(el => el.classList.remove('selected'));
+            const msgEl = document.querySelector(`.message[data-id="${messageId}"]`);
+            if (msgEl) msgEl.classList.add('selected');
+
+            showToast('💬 Ответ на сообщение', 'info');
+        }
+
+        function cancelReply() {
+            state.replyTo = null;
+            document.getElementById('replyBadge').classList.remove('show');
+            document.querySelectorAll('.message.incoming').forEach(el => el.classList.remove('selected'));
+        }
+
         // ============================================================
         // ============ UI ============
         // ============================================================
         function updateUI() {
-            document.getElementById('crystalsDisplay').textContent = gameState.crystals;
-            document.getElementById('clickCount').textContent = gameState.clicks;
-            document.getElementById('nftCount').textContent = gameState.nfts.length;
-            document.getElementById('clickCounter').textContent = gameState.clicks;
-            
-            if (gameState.user) {
-                document.getElementById('userName').textContent = gameState.user.login;
-                document.getElementById('userId').textContent = 'ID: ' + gameState.user.login;
-                document.getElementById('profileLogin').textContent = gameState.user.login;
-                document.getElementById('profileNftCount').textContent = gameState.nfts.length;
-                document.getElementById('profileClicks').textContent = gameState.clicks;
-                document.getElementById('profileCrystals').textContent = gameState.crystals;
-            }
-            
-            // Коллекция
-            const grid = document.getElementById('nftGrid');
-            grid.innerHTML = '';
-            if (gameState.nfts.length === 0) {
-                grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #888;">У вас пока нет NFT. Продолжайте кликать! 🎯</div>';
-            } else {
-                gameState.nfts.forEach((nft, index) => {
-                    const card = document.createElement('div');
-                    card.className = `nft-card ${nft.rarity}`;
-                    card.innerHTML = `
-                        <span class="nft-emoji">${nft.emoji}</span>
-                        <div class="nft-name">${nft.name}</div>
-                        <div class="nft-price">💰 ${nft.price}💎</div>
-                        <span class="nft-rarity rarity-${nft.rarity}">${nft.rarity.toUpperCase()}</span>
-                        <br>
-                        <button class="sell-btn" onclick="listForSale(${index})">📤 Продать</button>
-                    `;
-                    grid.appendChild(card);
-                });
-            }
-            
-            // Рынок
-            const marketList = document.getElementById('marketList');
-            marketList.innerHTML = '';
-            if (gameState.market.length === 0) {
-                marketList.innerHTML = '<div style="text-align: center; padding: 40px; color: #888;">На рынке пока ничего нет 📭</div>';
-            } else {
-                gameState.market.forEach(listing => {
-                    const item = document.createElement('div');
-                    item.className = 'market-item';
-                    const isOwner = listing.sellerLogin === gameState.user.login;
-                    item.innerHTML = `
-                        <div>
-                            <span style="font-size: 24px;">${listing.nft.emoji}</span>
-                            <strong>${listing.nft.name}</strong>
-                            <span style="color: #888; font-size: 12px;">(${listing.nft.rarity})</span>
-                            <div style="font-size: 12px; color: #888;">Продавец: ${listing.sellerLogin}</div>
-                        </div>
-                        <div>
-                            <span style="color: #ffd700; font-weight: bold;">💰 ${listing.price}💎</span>
-                            ${isOwner ? 
-                                `<button class="buy-btn" onclick="removeFromMarket(${listing.id})" style="background: #ff6b6b; margin-left: 10px;">❌ Снять</button>` :
-                                `<button class="buy-btn" onclick="buyNFT(${listing.id})" style="margin-left: 10px;">Купить</button>`
-                            }
-                        </div>
-                    `;
-                    marketList.appendChild(item);
-                });
-            }
+            // Группы
+            const groupsList = document.getElementById('groupsList');
+            groupsList.innerHTML = '';
+
+            state.groups.forEach(group => {
+                const btn = document.createElement('button');
+                btn.className = `group-btn${String(state.currentGroup) === String(group.id) ? ' active' : ''}`;
+                
+                const unreadBadge = group.unread > 0 ? `<span class="badge unread">${group.unread}</span>` : '';
+                btn.innerHTML = `
+                    📱 ${group.title || group.name || group.id}
+                    ${unreadBadge}
+                `;
+                btn.onclick = () => selectGroup(group.id);
+                groupsList.appendChild(btn);
+            });
+
+            // Кнопка добавления
+            const addBtn = document.createElement('button');
+            addBtn.className = 'group-btn';
+            addBtn.textContent = '➕ Добавить';
+            addBtn.onclick = showAddGroupModal;
+            groupsList.appendChild(addBtn);
+
+            // Статус
+            updateStatus(isPollingActive);
+
+            // Кнопка отправки
+            document.getElementById('sendBtn').disabled = !state.currentGroup;
+
+            // Инпут
+            document.getElementById('messageInput').placeholder = state.currentGroup ? 
+                `Сообщение в ${getGroupName(state.currentGroup)}` : 
+                'Выберите группу';
         }
-        
-        function switchTab(tab) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('[id$="Tab"]').forEach(t => t.classList.add('hidden'));
-            
-            const tabs = {
-                collection: { el: 'collectionTab', idx: 0 },
-                market: { el: 'marketTab', idx: 1 },
-                profile: { el: 'profileTab', idx: 2 },
-                bot: { el: 'botTab', idx: 3 }
-            };
-            
-            if (tabs[tab]) {
-                document.querySelectorAll('.tab')[tabs[tab].idx].classList.add('active');
-                document.getElementById(tabs[tab].el).classList.remove('hidden');
-                if (tab === 'market') updateUI();
-                if (tab === 'profile') updateUI();
-                if (tab === 'bot') {
-                    document.getElementById('botChat').innerHTML = '';
-                    addBotMessage('bot', '🤖 Бот готов! Напиши /start для входа или /help для справки.');
+
+        function renderMessages(messages) {
+            const container = document.getElementById('chatMessages');
+            container.innerHTML = '';
+
+            if (!messages || messages.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; color: #444; padding: 40px 20px; font-size: 14px;">
+                        Нет сообщений в этой группе<br>
+                        <span style="font-size: 12px; color: #333;">Отправьте первое сообщение</span>
+                    </div>
+                `;
+                return;
+            }
+
+            // Сортируем по дате
+            const sorted = [...messages].sort((a, b) => (a.date || 0) - (b.date || 0));
+
+            sorted.forEach(msg => {
+                const div = document.createElement('div');
+                div.className = `message ${msg.isOutgoing ? 'outgoing' : 'incoming'}`;
+                div.dataset.id = msg.id;
+
+                if (msg.isReply && msg.replyToText) {
+                    const replyDiv = document.createElement('div');
+                    replyDiv.className = 'reply-indicator';
+                    replyDiv.textContent = `↩️ ${msg.replyToText.substring(0, 40)}...`;
+                    div.appendChild(replyDiv);
                 }
+
+                if (!msg.isOutgoing) {
+                    const sender = document.createElement('div');
+                    sender.className = 'msg-sender';
+                    sender.textContent = msg.from.username || 'Unknown';
+                    div.appendChild(sender);
+                }
+
+                const text = document.createElement('div');
+                text.textContent = msg.text || '[Пустое сообщение]';
+                div.appendChild(text);
+
+                const meta = document.createElement('div');
+                meta.className = 'msg-meta';
+                const time = msg.date ? new Date(msg.date * 1000).toLocaleTimeString() : '--:--';
+                meta.innerHTML = `
+                    <span>${time}</span>
+                    ${msg.isOutgoing ? '✅ Отправлено' : '👤 Получено'}
+                `;
+                div.appendChild(meta);
+
+                // Клик для ответа (только входящие)
+                if (!msg.isOutgoing) {
+                    div.style.cursor = 'pointer';
+                    div.onclick = () => setReply(msg.id);
+                    div.title = 'Нажмите для ответа';
+                }
+
+                container.appendChild(div);
+            });
+
+            // Прокрутка вниз
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function updateStatus(online) {
+            const dot = document.getElementById('statusDot');
+            const text = document.getElementById('statusText');
+            
+            if (online) {
+                dot.className = 'status-dot online';
+                text.textContent = 'Онлайн';
+            } else {
+                dot.className = 'status-dot offline';
+                text.textContent = 'Офлайн';
             }
         }
-        
-        function showNotification(msg, type = 'info') {
-            const el = document.getElementById('notification');
-            el.textContent = msg;
-            el.className = 'notification show';
-            if (type === 'success') el.classList.add('success');
-            if (type === 'error') el.classList.add('error');
-            setTimeout(() => el.classList.remove('show'), 4000);
+
+        function clearChat() {
+            if (!state.currentGroup) return;
+            if (!confirm('Очистить историю сообщений для этой группы?')) return;
+            
+            state.messages = state.messages.filter(m => String(m.chatId) !== state.currentGroup);
+            renderMessages([]);
+            saveState();
+            showToast('🗑️ История очищена', 'info');
         }
-        
+
         // ============================================================
-        // ============ INIT ============
+        // ============ ТОСТЫ ============
         // ============================================================
-        // Проверка сохраненного пользователя
-        const savedUsers = localStorage.getItem('nft_users');
-        if (savedUsers) {
-            const users = JSON.parse(savedUsers);
-            const lastUser = localStorage.getItem('nft_last_user');
-            if (lastUser && users[lastUser]) {
-                gameState.user = users[lastUser];
-                loadGame();
-                document.getElementById('loginOverlay').classList.add('hidden');
-                document.getElementById('mainContent').classList.remove('hidden');
-                updateUI();
+        let toastTimeout = null;
+
+        function showToast(text, type = 'info') {
+            const toast = document.getElementById('toast');
+            toast.textContent = text;
+            toast.className = `toast ${type} show`;
+            
+            if (toastTimeout) clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // ============================================================
+        // ============ ИНИЦИАЛИЗАЦИЯ ============
+        // ============================================================
+        async function init() {
+            loadState();
+            
+            // Проверяем бота
+            const me = await getMe();
+            if (me.ok) {
+                console.log('✅ Бот подключен:', me.result.username);
+                showToast('🚀 Бот готов к работе', 'success');
+                startPolling();
+            } else {
+                showToast('❌ Ошибка подключения к боту', 'error');
+                updateStatus(false);
             }
+
+            // Если есть группы - выбираем первую
+            if (state.groups.length > 0 && state.currentGroup) {
+                selectGroup(state.currentGroup);
+            } else if (state.groups.length > 0) {
+                selectGroup(state.groups[0].id);
+            }
+
+            updateUI();
+
+            // Сохраняем состояние при выходе
+            window.addEventListener('beforeunload', () => {
+                saveState();
+                isPollingActive = false;
+            });
         }
-        
-        // Запуск Telegram polling
-        setInterval(checkTelegramUpdates, 5000);
-        checkTelegramUpdates();
-        
-        // Автосохранение
-        setInterval(() => { if (gameState.user) saveGame(); }, 30000);
-        
-        // Закрытие модалки
-        document.getElementById('sellModal').addEventListener('click', function(e) {
-            if (e.target === this) closeSellModal();
-        });
-        
-        console.log('🎮 NFT Clicker v2.0 с Telegram ботом загружен!');
-        console.log('🤖 Бот: @' + BOT_USERNAME);
-        console.log('📱 Токен: ' + BOT_TOKEN);
+
+        // Запуск
+        document.addEventListener('DOMContentLoaded', init);
+
+        console.log('🤖 Group Bot Manager v1.0');
+        console.log('📱 Бот токен:', BOT_TOKEN);
+        console.log('👤 Ваш ID:', USER_ID);
     </script>
+
 </body>
 </html>
