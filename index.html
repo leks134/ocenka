@@ -2,17 +2,29 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Telegram Bot Manager</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
         
+        html {
+            height: 100%;
+            overflow: hidden;
+        }
+
         body {
             background-color: #0d0d12;
             background-image: radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 0);
             background-size: 20px 20px;
             color: #ffffff;
-            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+            height: 100dvh;
             overflow: hidden;
             display: flex;
             flex-direction: column;
@@ -118,6 +130,7 @@
             display: flex;
             flex-direction: column;
             gap: 8px;
+            -webkit-overflow-scrolling: touch;
         }
 
         /* Message Structure */
@@ -237,6 +250,7 @@
             border-top: 1px solid rgba(255, 255, 255, 0.05);
             align-items: center;
             justify-content: space-between;
+            flex-shrink: 0;
         }
         #reply-bar.show { display: flex; }
         .reply-bar-info { border-left: 2px solid #8e52ec; padding-left: 8px; }
@@ -248,10 +262,12 @@
         #input-area {
             background: #16161c;
             padding: 8px 10px;
+            padding-bottom: calc(8px + env(safe-area-inset-bottom));
             display: flex;
             align-items: center;
             gap: 8px;
             border-top: 1px solid rgba(255, 255, 255, 0.05);
+            flex-shrink: 0;
         }
 
         .input-icon {
@@ -487,6 +503,18 @@
             const chatTitle = document.getElementById('chat-title');
             const statusDot = document.getElementById('status-dot');
 
+            // Авто-исправление смещения Viewport при закрытии клавиатуры на iOS/Android
+            messageInput.addEventListener('blur', () => {
+                window.scrollTo(0, 0);
+                document.body.scrollTop = 0;
+            });
+
+            if (window.visualViewport) {
+                window.visualViewport.addEventListener('resize', () => {
+                    window.scrollTo(0, 0);
+                });
+            }
+
             function showToast(text) {
                 toast.textContent = text;
                 toast.classList.add('show');
@@ -614,7 +642,6 @@
                             };
                         }
 
-                        // Собираем полное имя отправителя
                         let senderName = 'Пользователь';
                         if (msg.from) {
                             senderName = msg.from.first_name || '';
@@ -676,13 +703,9 @@
                     let initials = getInitials(displayName);
 
                     html += `<div class="message-wrapper ${cls}">`;
-                    
-                    // Аватар выводится всегда
                     html += `<div class="avatar" style="background: ${nameColor}">${initials}</div>`;
-
                     html += `<div class="message-bubble" data-id="${m.id}" data-text="${(m.text || '').replace(/"/g, '&quot;')}" data-from="${displayName}">`;
 
-                    // Имя выводится в каждом сообщении всегда
                     html += `<div class="message-header">
                         <span class="message-name" style="color: ${nameColor}">${displayName}</span>
                         ${m.isAdmin ? '<span class="badge-admin">админ</span>' : ''}
@@ -708,7 +731,6 @@
 
                 chatContainer.innerHTML = html;
 
-                // Bind events
                 document.querySelectorAll('.message-bubble').forEach(el => {
                     let touchTimer;
                     
