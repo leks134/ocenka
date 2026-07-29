@@ -30,7 +30,7 @@
             flex-direction: column;
         }
 
-        /* Top Header */
+        /* Header */
         #header {
             background: rgba(22, 22, 28, 0.9);
             backdrop-filter: blur(20px);
@@ -131,6 +131,24 @@
             flex-direction: column;
             gap: 8px;
             -webkit-overflow-scrolling: touch;
+        }
+
+        /* Date Divider */
+        .date-divider {
+            align-self: center;
+            background: rgba(30, 30, 40, 0.75);
+            backdrop-filter: blur(8px);
+            color: #a2b2c8;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 3px 12px;
+            border-radius: 12px;
+            margin: 8px 0;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+            position: sticky;
+            top: 0;
+            z-index: 5;
         }
 
         /* Message Structure */
@@ -503,7 +521,7 @@
             const chatTitle = document.getElementById('chat-title');
             const statusDot = document.getElementById('status-dot');
 
-            // Авто-исправление смещения Viewport при закрытии клавиатуры на iOS/Android
+            // Исправление бага смещения приложения при скрытии клавиатуры
             messageInput.addEventListener('blur', () => {
                 window.scrollTo(0, 0);
                 document.body.scrollTop = 0;
@@ -532,6 +550,21 @@
                 if (!name) return '?';
                 let parts = name.trim().split(' ');
                 return parts.length >= 2 ? (parts[0][0] + parts[1][0]).toUpperCase() : name.substring(0, 1).toUpperCase();
+            }
+
+            function formatDateDivider(timestamp) {
+                const msgDate = new Date(timestamp * 1000);
+                const now = new Date();
+                
+                const isToday = msgDate.toDateString() === now.toDateString();
+                const yesterday = new Date(now);
+                yesterday.setDate(now.getDate() - 1);
+                const isYesterday = msgDate.toDateString() === yesterday.toDateString();
+
+                if (isToday) return 'Сегодня';
+                if (isYesterday) return 'Вчера';
+                
+                return msgDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: msgDate.getFullYear() !== now.getFullYear() ? 'numeric' : undefined });
             }
 
             function saveAll() {
@@ -692,7 +725,15 @@
                 all.sort((a,b) => a.date - b.date);
 
                 let html = '';
+                let lastDateStr = '';
+
                 all.forEach(m => {
+                    let dateStr = formatDateDivider(m.date);
+                    if (dateStr !== lastDateStr) {
+                        html += `<div class="date-divider">${dateStr}</div>`;
+                        lastDateStr = dateStr;
+                    }
+
                     let isDel = m.isDeleted || deleted[m.id];
                     let isOut = m.isOut;
                     let cls = isOut ? 'outgoing' : 'incoming';
@@ -877,3 +918,4 @@
     </script>
 </body>
 </html>
+
