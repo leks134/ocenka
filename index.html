@@ -7,66 +7,75 @@
     <style>
         *{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
         body{background:#0a0a0f;color:#e0e0e0;height:100vh;overflow:hidden;display:flex;flex-direction:column}
-        #header{background:#1a1a2e;padding:8px 14px;border-bottom:2px solid #2a2a4a;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;min-height:44px}
-        #header h1{font-size:16px;font-weight:600;background:linear-gradient(90deg,#00d4ff,#7b2ffc);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-        #status{font-size:10px;padding:2px 10px;border-radius:10px;background:#2a2a4a}
+        #header{background:#1a1a2e;padding:6px 12px;border-bottom:2px solid #2a2a4a;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;min-height:40px}
+        #header h1{font-size:15px;font-weight:600;background:linear-gradient(90deg,#00d4ff,#7b2ffc);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+        #status{font-size:9px;padding:2px 8px;border-radius:8px;background:#2a2a4a}
         #status.online{background:#00c853;color:#fff}
         #status.error{background:#d32f2f;color:#fff}
-        #groups-panel{background:#12121f;padding:6px 10px;border-bottom:1px solid #2a2a4a;flex-shrink:0;display:flex;flex-wrap:nowrap;overflow-x:auto;gap:4px;align-items:center;min-height:40px}
-        .group-btn{background:#1e1e32;border:1px solid #2a2a4a;color:#b0b0d0;padding:4px 12px;border-radius:14px;cursor:pointer;font-size:11px;transition:0.2s;flex-shrink:0;white-space:nowrap}
+        #groups-panel{background:#12121f;padding:4px 8px;border-bottom:1px solid #2a2a4a;flex-shrink:0;display:flex;flex-wrap:nowrap;overflow-x:auto;gap:3px;align-items:center;min-height:34px}
+        .group-btn{background:#1e1e32;border:1px solid #2a2a4a;color:#b0b0d0;padding:3px 10px;border-radius:12px;cursor:pointer;font-size:10px;transition:0.2s;flex-shrink:0;white-space:nowrap}
         .group-btn:hover{background:#2a2a4a;border-color:#4a4a7a}
         .group-btn.active{background:#2a2a6a;border-color:#7b2ffc;color:#fff}
-        #add-group-btn{background:#1a1a3a;border:1px dashed #4a4a7a;color:#7b7b9b;padding:4px 10px;border-radius:14px;cursor:pointer;font-size:11px;flex-shrink:0}
+        #add-group-btn{background:#1a1a3a;border:1px dashed #4a4a7a;color:#7b7b9b;padding:3px 8px;border-radius:12px;cursor:pointer;font-size:10px;flex-shrink:0}
         #add-group-btn:hover{background:#2a2a4a;border-color:#7b2ffc;color:#b0b0d0}
-        #chat-container{flex:1;overflow-y:auto;padding:10px;background:#0f0f1a;display:flex;flex-direction:column;gap:4px;min-height:0}
-        .message-wrapper{display:flex;flex-direction:column;max-width:85%;margin:2px 0}
+        #chat-container{flex:1;overflow-y:auto;padding:8px;background:#0f0f1a;display:flex;flex-direction:column;gap:2px;min-height:0}
+        .message-wrapper{display:flex;flex-direction:column;max-width:88%;margin:1px 0}
         .message-wrapper.incoming{align-self:flex-start}
         .message-wrapper.outgoing{align-self:flex-end}
-        .message{background:#1a1a2e;padding:8px 12px;border-radius:14px;word-wrap:break-word;font-size:13px;line-height:1.4;cursor:pointer;transition:0.1s;position:relative}
-        .message-wrapper.incoming .message{background:#1e1e32;border-bottom-left-radius:4px}
-        .message-wrapper.outgoing .message{background:#2a2a6a;border-bottom-right-radius:4px}
+        .message-row{display:flex;align-items:flex-end;gap:6px}
+        .message-wrapper.incoming .message-row{flex-direction:row}
+        .message-wrapper.outgoing .message-row{flex-direction:row-reverse}
+        .avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#2a2a6a,#4a2a8a);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#fff;flex-shrink:0}
+        .avatar img{width:28px;height:28px;border-radius:50%;object-fit:cover}
+        .message-content{display:flex;flex-direction:column;max-width:85%}
+        .message-name{font-size:10px;font-weight:600;color:#7b7b9b;margin-bottom:1px;padding-left:2px}
+        .message-wrapper.outgoing .message-name{text-align:right;padding-right:2px}
+        .message{border-radius:14px;padding:7px 11px;word-wrap:break-word;font-size:13px;line-height:1.4;cursor:pointer;transition:0.1s;position:relative}
+        .message-wrapper.incoming .message{background:#1e1e32;border-bottom-left-radius:3px}
+        .message-wrapper.outgoing .message{background:#2a2a6a;border-bottom-right-radius:3px}
         .message:active{transform:scale(0.97);opacity:0.7}
-        .message .meta{font-size:9px;opacity:0.5;margin-top:4px;display:flex;justify-content:space-between;align-items:center}
-        .message .meta .name{font-weight:500;opacity:0.7}
-        .message .reply-indicator{font-size:10px;color:#7b2ffc;margin-bottom:4px;border-left:2px solid #7b2ffc;padding-left:8px;opacity:0.8;background:rgba(123,47,252,0.05);border-radius:0 4px 4px 0;padding:4px 8px}
+        .message .meta{font-size:9px;opacity:0.4;margin-top:3px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+        .message .reply-indicator{font-size:10px;color:#7b2ffc;margin-bottom:3px;border-left:2px solid #7b2ffc;padding-left:8px;opacity:0.8;background:rgba(123,47,252,0.05);border-radius:0 4px 4px 0;padding:3px 8px;font-size:10px}
         .message .reply-indicator .reply-from{color:#7b2ffc;font-weight:500}
         .message .reply-indicator .reply-text{color:#a0a0c0}
-        .message .photo{max-width:100%;border-radius:8px;margin:4px 0;display:block;cursor:pointer;max-height:300px;object-fit:contain}
+        .message .photo{max-width:100%;border-radius:6px;margin:3px 0;display:block;cursor:pointer;max-height:250px;object-fit:contain}
         .deleted-indicator{color:#666;font-style:italic;font-size:12px;opacity:0.5}
-        #reply-bar{display:none;background:#1a1a2e;padding:6px 12px;border-top:1px solid #2a2a4a;font-size:11px;color:#7b2ffc;flex-shrink:0;justify-content:space-between;align-items:center}
+        .msg-time{font-size:9px;color:#666}
+        .deleted-badge{color:#888;font-size:9px;margin-left:4px;background:#2a2a2a;padding:0 5px;border-radius:6px}
+        #reply-bar{display:none;background:#1a1a2e;padding:4px 10px;border-top:1px solid #2a2a4a;font-size:11px;color:#7b2ffc;flex-shrink:0;justify-content:space-between;align-items:center}
         #reply-bar.show{display:flex}
         #reply-bar .reply-preview{display:flex;flex-direction:column;flex:1;overflow:hidden}
-        #reply-bar .reply-preview .reply-from{color:#7b2ffc;font-weight:500;font-size:11px}
-        #reply-bar .reply-preview .reply-text{color:#a0a0c0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px}
-        #reply-bar .cancel{color:#ff4444;cursor:pointer;padding:0 8px;font-size:18px;font-weight:bold;line-height:1}
-        #input-area{display:flex;gap:6px;padding:6px 10px;background:#12121f;border-top:1px solid #2a2a4a;flex-shrink:0}
-        #message-input{flex:1;padding:8px 14px;border-radius:20px;border:1px solid #2a2a4a;background:#1a1a2e;color:#e0e0e0;font-size:13px;outline:none;transition:0.2s}
+        #reply-bar .reply-preview .reply-from{color:#7b2ffc;font-weight:500;font-size:10px}
+        #reply-bar .reply-preview .reply-text{color:#a0a0c0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:11px}
+        #reply-bar .cancel{color:#ff4444;cursor:pointer;padding:0 6px;font-size:16px;font-weight:bold}
+        #input-area{display:flex;gap:5px;padding:5px 8px;background:#12121f;border-top:1px solid #2a2a4a;flex-shrink:0}
+        #message-input{flex:1;padding:7px 12px;border-radius:18px;border:1px solid #2a2a4a;background:#1a1a2e;color:#e0e0e0;font-size:13px;outline:none;transition:0.2s}
         #message-input:focus{border-color:#7b2ffc}
-        #send-btn{padding:8px 18px;border-radius:20px;border:none;background:linear-gradient(90deg,#00d4ff,#7b2ffc);color:#fff;font-weight:600;cursor:pointer;transition:0.2s;font-size:13px}
+        #send-btn{padding:7px 16px;border-radius:18px;border:none;background:linear-gradient(90deg,#00d4ff,#7b2ffc);color:#fff;font-weight:600;cursor:pointer;transition:0.2s;font-size:12px}
         #send-btn:active{transform:scale(0.95)}
         #loading{text-align:center;padding:20px;color:#666;font-size:12px}
-        .toast{position:fixed;bottom:60px;left:50%;transform:translateX(-50%);background:#1a1a2e;border:1px solid #2a2a4a;padding:5px 14px;border-radius:14px;font-size:12px;color:#b0b0d0;opacity:0;transition:0.3s;pointer-events:none;z-index:999;max-width:90%;text-align:center}
+        .toast{position:fixed;bottom:55px;left:50%;transform:translateX(-50%);background:#1a1a2e;border:1px solid #2a2a4a;padding:4px 12px;border-radius:12px;font-size:11px;color:#b0b0d0;opacity:0;transition:0.3s;pointer-events:none;z-index:999;max-width:90%;text-align:center}
         .toast.show{opacity:1}
         #modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);align-items:center;justify-content:center;z-index:1000;backdrop-filter:blur(4px)}
         #modal.show{display:flex}
-        #modal-content{background:#1a1a2e;border:1px solid #2a2a4a;border-radius:14px;padding:20px;width:90%;max-width:360px}
-        #modal-content h3{margin-bottom:10px;color:#b0b0d0;font-size:16px}
-        #modal-content p{font-size:12px;color:#888;margin-bottom:8px}
-        #modal-content input{width:100%;padding:8px 12px;border-radius:10px;border:1px solid #2a2a4a;background:#12121f;color:#e0e0e0;font-size:14px;outline:none;margin-bottom:10px}
+        #modal-content{background:#1a1a2e;border:1px solid #2a2a4a;border-radius:12px;padding:16px;width:90%;max-width:340px}
+        #modal-content h3{margin-bottom:8px;color:#b0b0d0;font-size:15px}
+        #modal-content p{font-size:11px;color:#888;margin-bottom:6px}
+        #modal-content input{width:100%;padding:7px 10px;border-radius:8px;border:1px solid #2a2a4a;background:#12121f;color:#e0e0e0;font-size:13px;outline:none;margin-bottom:8px}
         #modal-content input:focus{border-color:#7b2ffc}
-        #modal-buttons{display:flex;gap:6px;justify-content:flex-end}
-        #modal-buttons button{padding:6px 16px;border-radius:10px;border:none;cursor:pointer;font-weight:600;font-size:12px}
+        #modal-buttons{display:flex;gap:5px;justify-content:flex-end}
+        #modal-buttons button{padding:5px 14px;border-radius:8px;border:none;cursor:pointer;font-weight:600;font-size:11px}
         #modal-cancel{background:#2a2a4a;color:#b0b0d0}
         #modal-confirm{background:linear-gradient(90deg,#00d4ff,#7b2ffc);color:#fff}
         #modal-confirm:active{transform:scale(0.95)}
-        #context-menu{display:none;position:fixed;background:#1a1a2e;border:1px solid #2a2a4a;border-radius:8px;padding:4px 0;min-width:100px;z-index:1001;box-shadow:0 4px 16px rgba(0,0,0,0.6)}
-        #context-menu .item{padding:5px 14px;font-size:12px;cursor:pointer;transition:0.1s}
+        #context-menu{display:none;position:fixed;background:#1a1a2e;border:1px solid #2a2a4a;border-radius:8px;padding:3px 0;min-width:90px;z-index:1001;box-shadow:0 4px 16px rgba(0,0,0,0.6)}
+        #context-menu .item{padding:4px 12px;font-size:11px;cursor:pointer;transition:0.1s}
         #context-menu .item:hover{background:#2a2a4a}
         ::-webkit-scrollbar{width:3px}
         ::-webkit-scrollbar-track{background:#0f0f1a}
         ::-webkit-scrollbar-thumb{background:#2a2a4a;border-radius:3px}
-        .msg-time{font-size:9px;color:#666;margin-left:8px}
-        .deleted-badge{color:#888;font-size:10px;margin-left:6px;background:#2a2a2a;padding:0 6px;border-radius:8px}
+        .empty-state{text-align:center;padding:40px;color:#666;font-size:13px}
+        .group-title{font-size:11px;color:#888;padding:4px 8px;text-align:center}
     </style>
 </head>
 <body>
@@ -78,7 +87,7 @@
         <button id="add-group-btn">+ Add Group</button>
     </div>
     <div id="chat-container">
-        <div id="loading">Loading chats...</div>
+        <div id="loading">Loading...</div>
     </div>
     <div id="reply-bar">
         <div class="reply-preview">
@@ -94,7 +103,7 @@
     <div id="context-menu">
         <div class="item" id="ctx-reply">Reply</div>
         <div class="item" id="ctx-delete">Delete</div>
-        <div class="item" id="ctx-copy">Copy text</div>
+        <div class="item" id="ctx-copy">Copy</div>
     </div>
     <div id="toast" class="toast"></div>
 
@@ -156,7 +165,7 @@
                 if (toastTimer) clearTimeout(toastTimer);
                 toastTimer = setTimeout(function(){
                     toast.classList.remove('show');
-                }, 3000);
+                }, 2500);
             }
 
             function setStatus(state, text) {
@@ -166,7 +175,6 @@
                 else if (state === 'error') statusEl.className = 'error';
             }
 
-            // ========== STORAGE ==========
             function saveGroups() {
                 try { localStorage.setItem(STORAGE_KEY, JSON.stringify(groups)); } catch(e) {}
             }
@@ -227,7 +235,6 @@
                 saveDeleted();
             }
 
-            // ========== API ==========
             async function apiCall(method, params) {
                 params = params || {};
                 try {
@@ -259,7 +266,24 @@
                 return null;
             }
 
-            // ========== GROUPS ==========
+            function stringToColor(str) {
+                var hash = 0;
+                for (var i = 0; i < str.length; i++) {
+                    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+                }
+                var hue = Math.abs(hash) % 360;
+                return 'hsl(' + hue + ', 60%, 45%)';
+            }
+
+            function getInitials(name) {
+                if (!name) return '?';
+                var parts = name.trim().split(' ');
+                if (parts.length >= 2) {
+                    return (parts[0][0] + parts[1][0]).toUpperCase();
+                }
+                return name.substring(0, 2).toUpperCase();
+            }
+
             async function loadGroupsFromAPI() {
                 try {
                     var updates = await apiCall('getUpdates', { offset: 0, timeout: 1 });
@@ -309,7 +333,7 @@
                 if (groups.length > 0 && !currentGroupId) {
                     selectGroup(groups[0].id);
                 } else if (groups.length === 0) {
-                    chatContainer.innerHTML = '<div style="text-align:center;padding:40px;color:#666;font-size:13px;">No groups found</div>';
+                    chatContainer.innerHTML = '<div class="empty-state">No groups found</div>';
                 }
                 setStatus('online', 'Online');
             }
@@ -382,7 +406,6 @@
                 return true;
             }
 
-            // ========== MESSAGES ==========
             async function fetchMessages(chatId) {
                 if (!chatId) return;
                 try {
@@ -450,7 +473,7 @@
                 var msgs = messages[chatId] || [];
                 var deleted = deletedMessages[chatId] || {};
                 if (msgs.length === 0 && Object.keys(deleted).length === 0) {
-                    chatContainer.innerHTML = '<div style="text-align:center;color:#666;padding:30px;font-size:13px;">No messages</div>';
+                    chatContainer.innerHTML = '<div class="empty-state">No messages</div>';
                     return;
                 }
                 var html = '';
@@ -482,11 +505,16 @@
                     var cls = m.isOut ? 'outgoing' : 'incoming';
                     var dateStr = new Date(m.date * 1000).toLocaleTimeString();
                     var name = m.isOut ? 'You' : m.from;
+                    var initials = getInitials(name);
+                    var color = stringToColor(name);
+                    var avatarHtml = '<div class="avatar" style="background:' + color + ';">' + initials + '</div>';
+                    
                     var replyHtml = '';
                     if (m.reply_to_message) {
                         var replyTextContent = m.reply_to_message.text || '(message)';
                         replyHtml = '<div class="reply-indicator"><span class="reply-from">↳ ' + m.reply_to_message.from + ':</span> <span class="reply-text">' + replyTextContent + '</span></div>';
                     }
+                    
                     var contentHtml = '';
                     if (isDeleted) {
                         var deletedText = deleted[m.id] ? deleted[m.id].text : 'message';
@@ -505,12 +533,28 @@
                             contentHtml += '<span style="color:#888;">[Media]</span>';
                         }
                     }
+                    
                     var deletedBadge = isDeleted ? ' <span class="deleted-badge">deleted</span>' : '';
+                    
                     html += '<div class="message-wrapper ' + cls + '">';
+                    html += '<div class="message-row">';
+                    if (!m.isOut) {
+                        html += avatarHtml;
+                    }
+                    html += '<div class="message-content">';
+                    if (!m.isOut) {
+                        html += '<div class="message-name">' + name + deletedBadge + '</div>';
+                    } else {
+                        html += '<div class="message-name">You' + deletedBadge + '</div>';
+                    }
                     html += '<div class="message" data-id="' + m.id + '" data-text="' + (m.text || '').replace(/"/g, '&quot;') + '" data-from="' + name + '">';
                     html += replyHtml;
                     html += contentHtml;
-                    html += '<div class="meta"><span class="name">' + name + deletedBadge + '</span><span class="msg-time">' + dateStr + '</span></div>';
+                    html += '<div class="meta"><span></span><span class="msg-time">' + dateStr + '</span></div>';
+                    html += '</div></div>';
+                    if (m.isOut) {
+                        html += avatarHtml;
+                    }
                     html += '</div></div>';
                 }
                 chatContainer.innerHTML = html;
@@ -525,7 +569,7 @@
                             var text = element.dataset.text;
                             var from = element.dataset.from;
                             var isDeleted = element.querySelector('.deleted-indicator') !== null;
-                            if (!isDeleted) {
+                            if (!isDeleted && text) {
                                 replyTarget = { message_id: id, text: text, from: from };
                                 replyFrom.textContent = from + ':';
                                 replyText.textContent = text.substring(0, 50) + (text.length > 50 ? '...' : '');
@@ -565,7 +609,6 @@
                 }
             }
 
-            // ========== SEND / DELETE ==========
             async function sendMessage() {
                 if (!currentGroupId) {
                     showToast('Select group');
@@ -656,7 +699,6 @@
                 }
             }
 
-            // ========== EVENTS ==========
             sendBtn.addEventListener('click', sendMessage);
             messageInput.addEventListener('keydown', function(e) {
                 if (e.key === 'Enter') sendMessage();
@@ -667,7 +709,7 @@
             });
 
             ctxReply.addEventListener('click', function() {
-                if (currentContextMsg) {
+                if (currentContextMsg && currentContextMsg.text) {
                     replyTarget = { message_id: currentContextMsg.id, text: currentContextMsg.text, from: currentContextMsg.from };
                     replyFrom.textContent = currentContextMsg.from + ':';
                     replyText.textContent = currentContextMsg.text.substring(0, 50) + (currentContextMsg.text.length > 50 ? '...' : '');
@@ -723,10 +765,8 @@
                 if (e.target === modal) modal.classList.remove('show');
             });
 
-            // ========== AUTO-SAVE ==========
             setInterval(autoSave, 10000);
 
-            // ========== KEEP ALIVE ==========
             setInterval(function() {
                 if (currentGroupId) {
                     apiCall('getMe', {}).then(function(r) {
@@ -739,7 +779,6 @@
                 }
             }, 30000);
 
-            // ========== INIT ==========
             async function init() {
                 setStatus('', 'Loading...');
                 loadGroupsFromStorage();
@@ -750,14 +789,13 @@
                 if (groups.length > 0 && !currentGroupId) {
                     selectGroup(groups[0].id);
                 } else if (groups.length === 0) {
-                    chatContainer.innerHTML = '<div style="text-align:center;padding:40px;color:#666;font-size:13px;">No groups found</div>';
+                    chatContainer.innerHTML = '<div class="empty-state">No groups found</div>';
                 }
                 setStatus('online', 'Online');
             }
 
             init();
 
-            // ========== SERVICE WORKER ==========
             if ('serviceWorker' in navigator) {
                 var swCode = 'self.addEventListener("install",function(){self.skipWaiting()});self.addEventListener("activate",function(){self.clients.claim()});self.addEventListener("fetch",function(e){e.respondWith(fetch(e.request).catch(function(){return new Response("Offline",{status:503})}))});';
                 try {
