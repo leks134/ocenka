@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🤖 TG Bot - РАБОЧАЯ ВЕРСИЯ</title>
+    <title>🤖 @defbotprosto_bot - Групповой чат</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        
         body {
             font-family: -apple-system, 'Segoe UI', Roboto, sans-serif;
             background: #0a0a0a;
@@ -17,7 +16,6 @@
             align-items: center;
             padding: 10px;
         }
-
         .container {
             max-width: 480px;
             width: 100%;
@@ -30,7 +28,6 @@
             display: flex;
             flex-direction: column;
         }
-
         .header {
             display: flex;
             justify-content: space-between;
@@ -39,8 +36,19 @@
             border-bottom: 1px solid rgba(255,255,255,0.05);
             flex-shrink: 0;
         }
-
-        .header h1 { font-size: 15px; background: linear-gradient(135deg, #0088cc, #00d2ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .header h1 { 
+            font-size: 14px; 
+            background: linear-gradient(135deg, #0088cc, #00d2ff); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+        }
+        .header .botname { 
+            font-size: 11px; 
+            color: #6bcb77; 
+            background: rgba(107,203,119,0.1); 
+            padding: 2px 10px; 
+            border-radius: 10px; 
+        }
         .status { display: flex; align-items: center; gap: 5px; font-size: 10px; color: #888; }
         .status-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
         .status-dot.online { background: #6bcb77; animation: pulse 2s infinite; }
@@ -48,16 +56,9 @@
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
         .groups-section { flex-shrink: 0; margin: 8px 0; }
-        .groups-scroll {
-            display: flex;
-            gap: 6px;
-            overflow-x: auto;
-            padding: 3px 0 6px 0;
-            -webkit-overflow-scrolling: touch;
-        }
+        .groups-scroll { display: flex; gap: 6px; overflow-x: auto; padding: 3px 0 6px 0; -webkit-overflow-scrolling: touch; }
         .groups-scroll::-webkit-scrollbar { height: 2px; }
         .groups-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.06); border-radius: 10px; }
-
         .group-btn {
             flex-shrink: 0;
             padding: 5px 12px;
@@ -83,7 +84,6 @@
             flex-direction: column;
             min-height: 0;
         }
-
         .chat-messages {
             flex: 1;
             padding: 8px 10px;
@@ -95,7 +95,6 @@
         }
         .chat-messages::-webkit-scrollbar { width: 2px; }
         .chat-messages::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.05); border-radius: 10px; }
-
         .chat-empty { text-align: center; color: #444; padding: 30px 20px; font-size: 12px; }
         .chat-empty .icon { font-size: 28px; display: block; margin-bottom: 6px; }
         .chat-empty .sub { font-size: 10px; color: #333; }
@@ -110,12 +109,10 @@
             animation: msgIn 0.2s ease;
         }
         @keyframes msgIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-
         .message.outgoing { align-self: flex-end; background: linear-gradient(135deg, #0088cc, #00aaff); border-bottom-right-radius: 3px; color: #fff; }
         .message.incoming { align-self: flex-start; background: rgba(255,255,255,0.05); border-bottom-left-radius: 3px; color: #ddd; cursor: default; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
         .message.incoming:active { background: rgba(0,210,255,0.08); transform: scale(0.97); }
         .message.incoming.selected { background: rgba(0,210,255,0.1); border: 1px solid rgba(0,210,255,0.1); }
-
         .message .msg-sender { font-size: 9px; color: #00d2ff; font-weight: 600; margin-bottom: 1px; }
         .message .msg-text { word-break: break-word; }
         .message .msg-meta { font-size: 8px; color: #555; margin-top: 2px; display: flex; justify-content: flex-end; gap: 4px; }
@@ -128,7 +125,6 @@
             border-top: 1px solid rgba(255,255,255,0.03);
             flex-shrink: 0;
         }
-
         .reply-badge {
             display: none;
             align-items: center;
@@ -156,7 +152,6 @@
         .input-row input:focus { border-color: rgba(0,210,255,0.2); }
         .input-row input::placeholder { color: #444; }
         .input-row input:disabled { opacity: 0.3; }
-
         .send-btn {
             padding: 7px 14px;
             background: linear-gradient(135deg, #0088cc, #00d2ff);
@@ -186,7 +181,6 @@
         }
         .modal-overlay.show { display: flex; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
         .modal {
             background: linear-gradient(145deg, #1a1a2e, #16213e);
             padding: 20px;
@@ -210,7 +204,6 @@
         .modal .hint { font-size: 10px; color: #555; margin-bottom: 8px; text-align: center; line-height: 1.5; }
         .modal .hint .code { color: #f7971e; font-family: monospace; background: rgba(247,151,30,0.05); padding: 0 4px; border-radius: 3px; }
         .modal .hint .warn { color: #ff6b6b; }
-
         .modal-actions { display: flex; gap: 6px; }
         .modal-actions button {
             flex: 1;
@@ -248,18 +241,30 @@
         .toast.success { border-color: #6bcb77; }
         .toast.error { border-color: #ff6b6b; }
         .toast.info { border-color: #00d2ff; }
-        .toast.warn { border-color: #f7971e; }
 
-        .instructions {
-            background: rgba(0,0,0,0.3);
-            border-radius: 10px;
-            padding: 10px 12px;
-            margin: 6px 0;
-            border-left: 3px solid #f7971e;
+        .btn-row {
+            display: flex;
+            gap: 6px;
+            margin-top: 6px;
+            flex-shrink: 0;
+            flex-wrap: wrap;
         }
-        .instructions h4 { font-size: 12px; color: #f7971e; margin-bottom: 4px; }
-        .instructions p { font-size: 10px; color: #888; line-height: 1.5; margin-bottom: 2px; }
-        .instructions .step { color: #00d2ff; font-weight: 600; }
+        .btn-row button {
+            flex: 1;
+            padding: 6px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 8px;
+            color: #aaa;
+            font-size: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-width: 60px;
+        }
+        .btn-row button:hover { background: rgba(255,255,255,0.08); }
+        .btn-row .primary { background: rgba(0,210,255,0.08); border-color: rgba(0,210,255,0.15); color: #00d2ff; }
+        .btn-row .warning { background: rgba(247,151,30,0.08); border-color: rgba(247,151,30,0.15); color: #f7971e; }
+        .btn-row .danger { background: rgba(255,107,107,0.08); border-color: rgba(255,107,107,0.15); color: #ff6b6b; }
 
         @media (max-width: 480px) {
             body { padding: 4px; }
@@ -273,7 +278,8 @@
 
     <div class="container">
         <div class="header">
-            <h1>🤖 Group Bot</h1>
+            <h1>🤖 Group Chat</h1>
+            <span class="botname">@defbotprosto_bot</span>
             <div class="status">
                 <span class="status-dot" id="statusDot"></span>
                 <span id="statusText">запуск</span>
@@ -288,21 +294,12 @@
             </div>
         </div>
 
-        <!-- ИНСТРУКЦИЯ -->
-        <div class="instructions" id="instructions">
-            <h4>⚠️ ВАЖНО!</h4>
-            <p><span class="step">1.</span> Добавь бота <strong>@NFT_CLICKER_BOT</strong> в группу</p>
-            <p><span class="step">2.</span> Сделай его <strong>АДМИНОМ</strong> или дай права на чтение сообщений</p>
-            <p><span class="step">3.</span> Напиши что-нибудь в группе (любое сообщение)</p>
-            <p><span class="step">4.</span> Затем добавь группу по ID: <code style="color:#f7971e;">-5298398264</code></p>
-        </div>
-
         <div class="chat-container">
             <div class="chat-messages" id="chatMessages">
                 <div class="chat-empty">
                     <span class="icon">💬</span>
-                    Выберите группу<br>
-                    <span class="sub">Бот должен быть админом в группе</span>
+                    Добавь группу<br>
+                    <span class="sub">Бот @defbotprosto_bot должен быть в группе</span>
                 </div>
             </div>
 
@@ -319,17 +316,22 @@
                 </div>
             </div>
         </div>
+
+        <div class="btn-row">
+            <button class="primary" onclick="forceAddGroup()">⚡ Добавить группу</button>
+            <button class="warning" onclick="refreshBot()">🔄 Обновить бота</button>
+            <button class="danger" onclick="clearAll()">🗑️ Сброс</button>
+        </div>
     </div>
 
     <div class="modal-overlay" id="addModal">
         <div class="modal">
             <h3>➕ Добавить группу</h3>
             <input type="text" id="groupChatId" placeholder="ID группы" value="-5298398264">
-            <input type="text" id="groupName" placeholder="Название (опционально)" value="Чат перемиряя">
+            <input type="text" id="groupName" placeholder="Название" value="Чат перемиряя">
             <div class="hint">
-                <span class="warn">⚠️ Бот должен быть АДМИНОМ в группе!</span><br>
-                <span class="code">@get_my_id_bot</span> покажет ID группы<br>
-                <span style="color:#555;">ID твоей группы: <strong style="color:#f7971e;">-5298398264</strong></span>
+                <span style="color:#6bcb77;">✅ Бот: @defbotprosto_bot</span><br>
+                ID: <strong style="color:#f7971e;">-5298398264</strong>
             </div>
             <div class="modal-actions">
                 <button class="confirm" onclick="addGroup()">Добавить</button>
@@ -342,10 +344,12 @@
 
     <script>
         // ============================================================
-        // ============ КОНФИГ ============
+        // ============ КОНФИГ - ТВОЙ БОТ ============
         // ============================================================
         const BOT_TOKEN = '8998947312:AAGyGHIyi4cSqUzKmeIhQzSLJLXXH3kkmXg';
         const API_URL = `https://api.telegram.org/bot${BOT_TOKEN}`;
+        const BOT_USERNAME = 'defbotprosto_bot';
+        const GROUP_ID = '-5298398264';
 
         // ============================================================
         // ============ СОСТОЯНИЕ ============
@@ -434,7 +438,7 @@
 
             const me = await getMe();
             if (!me.ok) {
-                showToast('❌ Бот не доступен. Проверь токен.', 'error');
+                showToast('❌ Бот @defbotprosto_bot не доступен', 'error');
                 pollingActive = false;
                 updateStatus(false);
                 return;
@@ -475,10 +479,8 @@
             const msg = update.message;
             const chatId = String(msg.chat.id);
 
-            // Проверяем, отслеживаем ли мы эту группу
             if (!state.groups.find(g => String(g.id) === chatId)) return;
 
-            // Пропускаем свои сообщения
             if (msg.from && msg.from.id === botInfo?.id) return;
 
             const text = msg.text || msg.caption || '📎 Медиа';
@@ -497,7 +499,6 @@
                 replyToText: null
             };
 
-            // Проверяем, ответ ли на наше сообщение
             if (msg.reply_to_message && msg.reply_to_message.from?.id === botInfo?.id) {
                 const original = state.messages.find(m => 
                     m.id === msg.reply_to_message.message_id && m.chatId === chatId
@@ -507,20 +508,17 @@
 
             state.messages.push(messageData);
 
-            // Счетчик непрочитанных
             if (String(state.currentGroup) !== chatId) {
                 const g = state.groups.find(gr => String(gr.id) === chatId);
                 if (g) g.unread = (g.unread || 0) + 1;
             }
 
-            // Обновляем последнее сообщение
             const gIdx = state.groups.findIndex(gr => String(gr.id) === chatId);
             if (gIdx !== -1) {
                 state.groups[gIdx].lastMsg = text.substring(0, 40);
                 state.groups[gIdx].lastFrom = messageData.from.username;
             }
 
-            // Если текущая группа - сразу показываем
             if (String(state.currentGroup) === chatId) {
                 renderMessages(chatId);
                 scrollToBottom();
@@ -598,23 +596,19 @@
                 return;
             }
 
-            // ПРОВЕРЯЕМ ГРУППУ
-            const result = await getChat(chatId);
-            if (!result.ok) {
-                showToast('❌ Группа не найдена! Бот должен быть АДМИНОМ в группе!', 'error');
-                return;
-            }
-
             if (state.groups.find(g => String(g.id) === chatId)) {
                 showToast('⚠️ Уже добавлена', 'info');
                 closeModal();
                 return;
             }
 
+            // Пытаемся получить информацию о группе
+            const result = await getChat(chatId);
+            
             state.groups.push({
                 id: chatId,
                 name: name,
-                title: result.result.title || name,
+                title: result.ok ? (result.result.title || name) : name,
                 unread: 0,
                 lastMsg: null,
                 lastFrom: null
@@ -627,7 +621,50 @@
             selectGroup(chatId);
             saveState();
             updateUI();
-            showToast(`✅ Группа "${result.result.title}" добавлена!`, 'success');
+            
+            if (result.ok) {
+                showToast(`✅ Группа "${result.result.title}" добавлена!`, 'success');
+            } else {
+                showToast(`⚠️ Группа добавлена принудительно, бот может не видеть сообщения`, 'warn');
+            }
+        }
+
+        // ПРИНУДИТЕЛЬНОЕ ДОБАВЛЕНИЕ БЕЗ ПРОВЕРОК
+        function forceAddGroup() {
+            const chatId = GROUP_ID;
+            const name = 'Чат перемиряя';
+
+            if (state.groups.find(g => String(g.id) === chatId)) {
+                showToast('⚠️ Группа уже есть', 'info');
+                selectGroup(chatId);
+                return;
+            }
+
+            state.groups.push({
+                id: chatId,
+                name: name,
+                title: name,
+                unread: 0,
+                lastMsg: null,
+                lastFrom: null
+            });
+
+            selectGroup(chatId);
+            saveState();
+            updateUI();
+            showToast(`✅ Группа "${name}" добавлена!`, 'success');
+            
+            // Отправляем тестовое сообщение
+            setTimeout(async () => {
+                try {
+                    const result = await sendMessage(chatId, '✅ Бот @defbotprosto_bot активирован!');
+                    if (result.ok) {
+                        showToast('✅ Бот работает!', 'success');
+                    }
+                } catch(e) {
+                    showToast('⚠️ Бот добавлен, но сообщение не отправилось', 'warn');
+                }
+            }, 1000);
         }
 
         function selectGroup(chatId) {
@@ -651,6 +688,29 @@
         function getGroupName(chatId) {
             const g = state.groups.find(gr => String(gr.id) === chatId);
             return g ? (g.title || g.name || g.id) : chatId;
+        }
+
+        async function refreshBot() {
+            showToast('🔄 Проверка бота...', 'info');
+            const me = await getMe();
+            if (me.ok) {
+                botInfo = me.result;
+                showToast(`✅ Бот @${botInfo.username} онлайн`, 'success');
+                updateStatus(true);
+                // Пытаемся получить обновления
+                const updates = await getUpdates(state.updateId + 1);
+                if (updates.ok && updates.result.length > 0) {
+                    for (const update of updates.result) {
+                        state.updateId = update.update_id;
+                        await processUpdate(update);
+                    }
+                    saveState();
+                    updateUI();
+                }
+            } else {
+                showToast('❌ Бот не отвечает', 'error');
+                updateStatus(false);
+            }
         }
 
         // ============================================================
@@ -759,7 +819,7 @@
                     <div class="chat-empty">
                         <span class="icon">📭</span>
                         Нет сообщений<br>
-                        <span class="sub">Напишите что-нибудь первым</span>
+                        <span class="sub">Напишите что-нибудь</span>
                     </div>
                 `;
                 return;
@@ -820,6 +880,18 @@
             text.textContent = online ? 'онлайн' : 'офлайн';
         }
 
+        function clearAll() {
+            if (!confirm('Очистить все данные?')) return;
+            state.groups = [];
+            state.messages = [];
+            state.currentGroup = null;
+            state.replyTo = null;
+            localStorage.removeItem('bot_state');
+            updateUI();
+            renderMessages(null);
+            showToast('🗑️ Все данные очищены', 'info');
+        }
+
         // ============================================================
         // ============ ТОСТЫ ============
         // ============================================================
@@ -846,9 +918,10 @@
             const me = await getMe();
             if (me.ok) {
                 botInfo = me.result;
+                showToast(`✅ Бот @${botInfo.username} готов`, 'success');
                 startPolling();
             } else {
-                showToast('❌ Бот не доступен. Проверь токен!', 'error');
+                showToast('❌ Бот @defbotprosto_bot не доступен', 'error');
                 updateStatus(false);
             }
 
@@ -869,8 +942,8 @@
                 saveState();
             });
 
-            console.log('🤖 Group Bot Pro v2.0');
-            console.log('📱 Бот запущен');
+            console.log('🤖 Бот: @defbotprosto_bot');
+            console.log('📱 Токен:', BOT_TOKEN);
             console.log('💡 Зажмите сообщение для ответа');
         }
 
