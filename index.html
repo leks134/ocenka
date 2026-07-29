@@ -18,27 +18,27 @@
         .group-btn.active{background:#2a2a6a;border-color:#7b2ffc;color:#fff}
         #add-group-btn{background:#1a1a3a;border:1px dashed #4a4a7a;color:#7b7b9b;padding:3px 8px;border-radius:12px;cursor:pointer;font-size:10px;flex-shrink:0}
         #add-group-btn:hover{background:#2a2a4a;border-color:#7b2ffc;color:#b0b0d0}
-        #chat-container{flex:1;overflow-y:auto;padding:8px;background:#0f0f1a;display:flex;flex-direction:column;gap:2px;min-height:0}
-        .message-wrapper{display:flex;flex-direction:column;max-width:90%;margin:2px 0}
+        #chat-container{flex:1;overflow-y:auto;padding:8px;background:#0f0f1a;display:flex;flex-direction:column;gap:4px;min-height:0}
+        .message-wrapper{display:flex;flex-direction:column;max-width:85%;margin:2px 0}
         .message-wrapper.incoming{align-self:flex-start}
         .message-wrapper.outgoing{align-self:flex-end}
         .message-row{display:flex;align-items:flex-end;gap:6px}
         .message-wrapper.incoming .message-row{flex-direction:row}
         .message-wrapper.outgoing .message-row{flex-direction:row-reverse}
-        .avatar{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#fff;flex-shrink:0}
-        .avatar img{width:30px;height:30px;border-radius:50%;object-fit:cover}
+        .avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;border:2px solid #2a2a4a}
+        .avatar img{width:32px;height:32px;border-radius:50%;object-fit:cover}
         .message-content{display:flex;flex-direction:column;max-width:85%}
-        .message-name{font-size:10px;font-weight:600;color:#7b7b9b;margin-bottom:1px;padding-left:2px}
+        .message-name{font-size:10px;font-weight:600;color:#8b8b9b;margin-bottom:2px;padding-left:2px}
         .message-wrapper.outgoing .message-name{text-align:right;padding-right:2px;color:#7b2ffc}
-        .message{border-radius:14px;padding:7px 11px;word-wrap:break-word;font-size:13px;line-height:1.4;cursor:pointer;transition:0.1s;position:relative}
-        .message-wrapper.incoming .message{background:#1e1e32;border-bottom-left-radius:3px}
-        .message-wrapper.outgoing .message{background:#2a2a6a;border-bottom-right-radius:3px}
+        .message{border-radius:14px;padding:8px 12px;word-wrap:break-word;font-size:13px;line-height:1.4;cursor:pointer;transition:0.1s;position:relative}
+        .message-wrapper.incoming .message{background:#1e1e32;border-bottom-left-radius:4px}
+        .message-wrapper.outgoing .message{background:#2a2a6a;border-bottom-right-radius:4px}
         .message:active{transform:scale(0.97);opacity:0.7}
-        .message .meta{font-size:9px;opacity:0.4;margin-top:3px;display:flex;justify-content:flex-end;gap:6px}
-        .message .reply-indicator{font-size:10px;color:#7b2ffc;margin-bottom:3px;border-left:2px solid #7b2ffc;padding-left:8px;opacity:0.8;background:rgba(123,47,252,0.05);border-radius:0 4px 4px 0;padding:3px 8px}
+        .message .meta{font-size:9px;opacity:0.4;margin-top:4px;display:flex;justify-content:flex-end;gap:6px}
+        .message .reply-indicator{font-size:10px;color:#7b2ffc;margin-bottom:4px;border-left:2px solid #7b2ffc;padding-left:8px;opacity:0.8;background:rgba(123,47,252,0.05);border-radius:0 4px 4px 0;padding:3px 8px}
         .message .reply-indicator .reply-from{color:#7b2ffc;font-weight:500}
         .message .reply-indicator .reply-text{color:#a0a0c0}
-        .message .photo{max-width:100%;border-radius:6px;margin:3px 0;display:block;cursor:pointer;max-height:250px;object-fit:contain}
+        .message .photo{max-width:100%;border-radius:6px;margin:4px 0;display:block;cursor:pointer;max-height:250px;object-fit:contain}
         .deleted-indicator{color:#666;font-style:italic;font-size:12px;opacity:0.5}
         .msg-time{font-size:9px;color:#666}
         .deleted-badge{color:#888;font-size:9px;margin-left:4px;background:#2a2a2a;padding:0 5px;border-radius:6px}
@@ -271,7 +271,7 @@
                     hash = str.charCodeAt(i) + ((hash << 5) - hash);
                 }
                 var hue = Math.abs(hash) % 360;
-                return 'hsl(' + hue + ', 60%, 45%)';
+                return 'hsl(' + hue + ', 55%, 45%)';
             }
 
             function getInitials(name) {
