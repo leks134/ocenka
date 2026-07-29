@@ -2,953 +2,643 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🤖 @defbotprosto_bot - Групповой чат</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Telegram Bot Manager</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
         body {
-            font-family: -apple-system, 'Segoe UI', Roboto, sans-serif;
-            background: #0a0a0a;
-            color: #fff;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 10px;
-        }
-        .container {
-            max-width: 480px;
-            width: 100%;
-            background: linear-gradient(145deg, #1a1a2e, #16213e);
-            border-radius: 22px;
-            padding: 14px;
-            border: 1px solid rgba(255,255,255,0.05);
-            height: 95vh;
-            max-height: 820px;
-            display: flex;
-            flex-direction: column;
-        }
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-bottom: 8px;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            flex-shrink: 0;
-        }
-        .header h1 { 
-            font-size: 14px; 
-            background: linear-gradient(135deg, #0088cc, #00d2ff); 
-            -webkit-background-clip: text; 
-            -webkit-text-fill-color: transparent; 
-        }
-        .header .botname { 
-            font-size: 11px; 
-            color: #6bcb77; 
-            background: rgba(107,203,119,0.1); 
-            padding: 2px 10px; 
-            border-radius: 10px; 
-        }
-        .status { display: flex; align-items: center; gap: 5px; font-size: 10px; color: #888; }
-        .status-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
-        .status-dot.online { background: #6bcb77; animation: pulse 2s infinite; }
-        .status-dot.offline { background: #ff6b6b; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-
-        .groups-section { flex-shrink: 0; margin: 8px 0; }
-        .groups-scroll { display: flex; gap: 6px; overflow-x: auto; padding: 3px 0 6px 0; -webkit-overflow-scrolling: touch; }
-        .groups-scroll::-webkit-scrollbar { height: 2px; }
-        .groups-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.06); border-radius: 10px; }
-        .group-btn {
-            flex-shrink: 0;
-            padding: 5px 12px;
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 10px;
-            color: #aaa;
-            font-size: 11px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            white-space: nowrap;
-        }
-        .group-btn.active { background: rgba(0,210,255,0.1); border-color: #00d2ff; color: #fff; }
-        .group-btn .badge.unread { background: #ff6b6b; color: #fff; padding: 0 5px; border-radius: 6px; font-size: 9px; margin-left: 3px; }
-        .group-btn .add-btn { color: #00d2ff; }
-
-        .chat-container {
-            flex: 1;
-            background: rgba(0,0,0,0.2);
-            border-radius: 12px;
+            background: #0a0a0f;
+            color: #e0e0e0;
+            height: 100vh;
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            min-height: 0;
         }
-        .chat-messages {
+        #header {
+            background: #1a1a2e;
+            padding: 12px 16px;
+            border-bottom: 2px solid #2a2a4a;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        #header h1 {
+            font-size: 18px;
+            font-weight: 600;
+            background: linear-gradient(90deg, #00d4ff, #7b2ffc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        #status {
+            font-size: 12px;
+            padding: 4px 12px;
+            border-radius: 12px;
+            background: #2a2a4a;
+        }
+        #status.online {
+            background: #00c853;
+            color: #fff;
+        }
+        #groups-panel {
+            background: #12121f;
+            padding: 10px 16px;
+            border-bottom: 1px solid #2a2a4a;
+            flex-shrink: 0;
+            overflow-x: auto;
+            white-space: nowrap;
+            display: flex;
+            gap: 8px;
+        }
+        .group-btn {
+            background: #1e1e32;
+            border: 1px solid #2a2a4a;
+            color: #b0b0d0;
+            padding: 6px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: 0.2s;
+            flex-shrink: 0;
+        }
+        .group-btn:hover {
+            background: #2a2a4a;
+            border-color: #4a4a7a;
+        }
+        .group-btn.active {
+            background: #2a2a6a;
+            border-color: #7b2ffc;
+            color: #fff;
+        }
+        #chat-container {
             flex: 1;
-            padding: 8px 10px;
             overflow-y: auto;
+            padding: 16px;
+            background: #0f0f1a;
             display: flex;
             flex-direction: column;
-            gap: 3px;
-            -webkit-overflow-scrolling: touch;
+            gap: 6px;
+            min-height: 0;
         }
-        .chat-messages::-webkit-scrollbar { width: 2px; }
-        .chat-messages::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.05); border-radius: 10px; }
-        .chat-empty { text-align: center; color: #444; padding: 30px 20px; font-size: 12px; }
-        .chat-empty .icon { font-size: 28px; display: block; margin-bottom: 6px; }
-        .chat-empty .sub { font-size: 10px; color: #333; }
-
         .message {
-            max-width: 88%;
-            padding: 5px 10px;
-            border-radius: 12px;
-            font-size: 12px;
-            line-height: 1.4;
+            max-width: 80%;
+            padding: 10px 14px;
+            border-radius: 16px;
             word-wrap: break-word;
-            animation: msgIn 0.2s ease;
+            font-size: 14px;
+            line-height: 1.5;
+            position: relative;
+            cursor: pointer;
+            transition: 0.1s;
+            user-select: none;
         }
-        @keyframes msgIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-        .message.outgoing { align-self: flex-end; background: linear-gradient(135deg, #0088cc, #00aaff); border-bottom-right-radius: 3px; color: #fff; }
-        .message.incoming { align-self: flex-start; background: rgba(255,255,255,0.05); border-bottom-left-radius: 3px; color: #ddd; cursor: default; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
-        .message.incoming:active { background: rgba(0,210,255,0.08); transform: scale(0.97); }
-        .message.incoming.selected { background: rgba(0,210,255,0.1); border: 1px solid rgba(0,210,255,0.1); }
-        .message .msg-sender { font-size: 9px; color: #00d2ff; font-weight: 600; margin-bottom: 1px; }
-        .message .msg-text { word-break: break-word; }
-        .message .msg-meta { font-size: 8px; color: #555; margin-top: 2px; display: flex; justify-content: flex-end; gap: 4px; }
-        .message .msg-meta .check { color: #6bcb77; font-size: 10px; }
-        .message .reply-indicator { font-size: 9px; color: #f7971e; padding: 1px 6px; background: rgba(247,151,30,0.06); border-radius: 4px; border-left: 2px solid #f7971e; margin-bottom: 2px; }
-
-        .chat-input-area {
-            padding: 6px 8px 8px 8px;
-            background: rgba(0,0,0,0.12);
-            border-top: 1px solid rgba(255,255,255,0.03);
-            flex-shrink: 0;
+        .message:active {
+            transform: scale(0.98);
+            opacity: 0.7;
         }
-        .reply-badge {
-            display: none;
-            align-items: center;
-            gap: 5px;
-            padding: 2px 8px 4px 8px;
+        .message.incoming {
+            background: #1a1a2e;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+        .message.outgoing {
+            background: #2a2a6a;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+        .message .meta {
             font-size: 10px;
-            color: #f7971e;
-            animation: msgIn 0.2s ease;
+            opacity: 0.5;
+            margin-top: 4px;
+            display: flex;
+            justify-content: space-between;
         }
-        .reply-badge.show { display: flex; }
-        .reply-badge .reply-text { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; opacity: 0.7; }
-        .reply-badge .cancel-reply { cursor: pointer; color: #ff6b6b; font-weight: bold; padding: 0 3px; }
-
-        .input-row { display: flex; gap: 6px; align-items: center; }
-        .input-row input {
-            flex: 1;
-            padding: 7px 10px;
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 10px;
-            color: #fff;
-            font-size: 12px;
-            outline: none;
+        .message .reply-indicator {
+            font-size: 11px;
+            color: #7b2ffc;
+            margin-bottom: 4px;
+            border-left: 2px solid #7b2ffc;
+            padding-left: 8px;
+            opacity: 0.7;
         }
-        .input-row input:focus { border-color: rgba(0,210,255,0.2); }
-        .input-row input::placeholder { color: #444; }
-        .input-row input:disabled { opacity: 0.3; }
-        .send-btn {
-            padding: 7px 14px;
-            background: linear-gradient(135deg, #0088cc, #00d2ff);
-            border: none;
-            border-radius: 10px;
-            color: #fff;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 12px;
-            flex-shrink: 0;
-            min-width: 45px;
-            transition: all 0.2s ease;
-        }
-        .send-btn:active { transform: scale(0.95); }
-        .send-btn:disabled { opacity: 0.3; cursor: not-allowed; }
-
-        .modal-overlay {
+        #reply-bar {
             display: none;
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.85);
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            padding: 20px;
-            animation: fadeIn 0.2s ease;
-        }
-        .modal-overlay.show { display: flex; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .modal {
-            background: linear-gradient(145deg, #1a1a2e, #16213e);
-            padding: 20px;
-            border-radius: 18px;
-            max-width: 380px;
-            width: 100%;
-            border: 1px solid rgba(255,255,255,0.06);
-        }
-        .modal h3 { text-align: center; margin-bottom: 12px; font-size: 16px; }
-        .modal input {
-            width: 100%;
-            padding: 9px;
-            margin-bottom: 6px;
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 8px;
-            color: #fff;
+            background: #1a1a2e;
+            padding: 6px 16px;
+            border-top: 1px solid #2a2a4a;
             font-size: 12px;
+            color: #7b2ffc;
+            flex-shrink: 0;
+            justify-content: space-between;
         }
-        .modal input:focus { outline: none; border-color: rgba(0,210,255,0.2); }
-        .modal .hint { font-size: 10px; color: #555; margin-bottom: 8px; text-align: center; line-height: 1.5; }
-        .modal .hint .code { color: #f7971e; font-family: monospace; background: rgba(247,151,30,0.05); padding: 0 4px; border-radius: 3px; }
-        .modal .hint .warn { color: #ff6b6b; }
-        .modal-actions { display: flex; gap: 6px; }
-        .modal-actions button {
+        #reply-bar.show {
+            display: flex;
+        }
+        #reply-bar .cancel {
+            color: #ff4444;
+            cursor: pointer;
+            padding: 0 8px;
+        }
+        #input-area {
+            display: flex;
+            gap: 8px;
+            padding: 12px 16px;
+            background: #12121f;
+            border-top: 1px solid #2a2a4a;
+            flex-shrink: 0;
+        }
+        #message-input {
             flex: 1;
-            padding: 8px;
+            padding: 10px 16px;
+            border-radius: 24px;
+            border: 1px solid #2a2a4a;
+            background: #1a1a2e;
+            color: #e0e0e0;
+            font-size: 14px;
+            outline: none;
+            transition: 0.2s;
+        }
+        #message-input:focus {
+            border-color: #7b2ffc;
+        }
+        #send-btn {
+            padding: 10px 24px;
+            border-radius: 24px;
             border: none;
-            border-radius: 8px;
+            background: linear-gradient(90deg, #00d4ff, #7b2ffc);
+            color: #fff;
             font-weight: 600;
             cursor: pointer;
-            font-size: 12px;
-            transition: all 0.2s ease;
+            transition: 0.2s;
         }
-        .modal-actions .confirm { background: linear-gradient(135deg, #0088cc, #00d2ff); color: #fff; }
-        .modal-actions .cancel { background: rgba(255,255,255,0.05); color: #888; }
-
+        #send-btn:active {
+            transform: scale(0.95);
+        }
+        #loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 13px;
+        }
         .toast {
             position: fixed;
-            bottom: 15px;
+            bottom: 80px;
             left: 50%;
-            transform: translateX(-50%) translateY(70px);
-            padding: 7px 16px;
-            background: rgba(0,0,0,0.92);
-            border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 10px;
-            color: #fff;
-            font-size: 11px;
+            transform: translateX(-50%);
+            background: #1a1a2e;
+            border: 1px solid #2a2a4a;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 13px;
+            color: #b0b0d0;
             opacity: 0;
-            transition: all 0.3s ease;
-            z-index: 2000;
-            max-width: 90%;
-            text-align: center;
-            backdrop-filter: blur(10px);
+            transition: 0.3s;
             pointer-events: none;
+            z-index: 999;
         }
-        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-        .toast.success { border-color: #6bcb77; }
-        .toast.error { border-color: #ff6b6b; }
-        .toast.info { border-color: #00d2ff; }
-
-        .btn-row {
-            display: flex;
-            gap: 6px;
-            margin-top: 6px;
-            flex-shrink: 0;
-            flex-wrap: wrap;
+        .toast.show {
+            opacity: 1;
         }
-        .btn-row button {
-            flex: 1;
-            padding: 6px;
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 8px;
-            color: #aaa;
-            font-size: 10px;
+        #context-menu {
+            display: none;
+            position: fixed;
+            background: #1a1a2e;
+            border: 1px solid #2a2a4a;
+            border-radius: 12px;
+            padding: 6px 0;
+            min-width: 140px;
+            z-index: 1000;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+        }
+        #context-menu .item {
+            padding: 8px 20px;
+            font-size: 13px;
             cursor: pointer;
-            transition: all 0.2s ease;
-            min-width: 60px;
+            transition: 0.1s;
         }
-        .btn-row button:hover { background: rgba(255,255,255,0.08); }
-        .btn-row .primary { background: rgba(0,210,255,0.08); border-color: rgba(0,210,255,0.15); color: #00d2ff; }
-        .btn-row .warning { background: rgba(247,151,30,0.08); border-color: rgba(247,151,30,0.15); color: #f7971e; }
-        .btn-row .danger { background: rgba(255,107,107,0.08); border-color: rgba(255,107,107,0.15); color: #ff6b6b; }
-
-        @media (max-width: 480px) {
-            body { padding: 4px; }
-            .container { padding: 10px; border-radius: 16px; height: 98vh; }
-            .message { font-size: 11px; padding: 4px 8px; max-width: 92%; }
-            .group-btn { font-size: 10px; padding: 4px 10px; }
+        #context-menu .item:hover {
+            background: #2a2a4a;
+        }
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f0f1a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2a2a4a;
+            border-radius: 4px;
         }
     </style>
 </head>
 <body>
-
-    <div class="container">
-        <div class="header">
-            <h1>🤖 Group Chat</h1>
-            <span class="botname">@defbotprosto_bot</span>
-            <div class="status">
-                <span class="status-dot" id="statusDot"></span>
-                <span id="statusText">запуск</span>
-            </div>
-        </div>
-
-        <div class="groups-section">
-            <div class="groups-scroll" id="groupsList">
-                <button class="group-btn" onclick="showAddModal()">
-                    <span class="add-btn">➕</span> Добавить
-                </button>
-            </div>
-        </div>
-
-        <div class="chat-container">
-            <div class="chat-messages" id="chatMessages">
-                <div class="chat-empty">
-                    <span class="icon">💬</span>
-                    Добавь группу<br>
-                    <span class="sub">Бот @defbotprosto_bot должен быть в группе</span>
-                </div>
-            </div>
-
-            <div class="chat-input-area">
-                <div class="reply-badge" id="replyBadge">
-                    <span>↩️</span>
-                    <span class="reply-text" id="replyText">Ответ</span>
-                    <span class="cancel-reply" onclick="cancelReply()">✕</span>
-                </div>
-                <div class="input-row">
-                    <input type="text" id="messageInput" placeholder="Сообщение..." 
-                           onkeypress="if(event.key==='Enter') sendMessage()">
-                    <button class="send-btn" id="sendBtn" onclick="sendMessage()">➤</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="btn-row">
-            <button class="primary" onclick="forceAddGroup()">⚡ Добавить группу</button>
-            <button class="warning" onclick="refreshBot()">🔄 Обновить бота</button>
-            <button class="danger" onclick="clearAll()">🗑️ Сброс</button>
-        </div>
+    <div id="header">
+        <h1>🤖 Bot Manager</h1>
+        <span id="status">● Offline</span>
     </div>
-
-    <div class="modal-overlay" id="addModal">
-        <div class="modal">
-            <h3>➕ Добавить группу</h3>
-            <input type="text" id="groupChatId" placeholder="ID группы" value="-5298398264">
-            <input type="text" id="groupName" placeholder="Название" value="Чат перемиряя">
-            <div class="hint">
-                <span style="color:#6bcb77;">✅ Бот: @defbotprosto_bot</span><br>
-                ID: <strong style="color:#f7971e;">-5298398264</strong>
-            </div>
-            <div class="modal-actions">
-                <button class="confirm" onclick="addGroup()">Добавить</button>
-                <button class="cancel" onclick="closeModal()">Отмена</button>
-            </div>
-        </div>
+    <div id="groups-panel"></div>
+    <div id="chat-container">
+        <div id="loading">Загрузка чатов...</div>
     </div>
-
-    <div class="toast" id="toast"></div>
+    <div id="reply-bar">
+        <span>Ответ на: <span id="reply-text">...</span></span>
+        <span class="cancel" id="cancel-reply">✕</span>
+    </div>
+    <div id="input-area">
+        <input type="text" id="message-input" placeholder="Введите сообщение..." autocomplete="off">
+        <button id="send-btn">➤</button>
+    </div>
+    <div id="context-menu">
+        <div class="item" id="ctx-reply">💬 Ответить</div>
+    </div>
+    <div id="toast" class="toast"></div>
 
     <script>
-        // ============================================================
-        // ============ КОНФИГ - ТВОЙ БОТ ============
-        // ============================================================
-        const BOT_TOKEN = '8998947312:AAGyGHIyi4cSqUzKmeIhQzSLJLXXH3kkmXg';
-        const API_URL = `https://api.telegram.org/bot${BOT_TOKEN}`;
-        const BOT_USERNAME = 'defbotprosto_bot';
-        const GROUP_ID = '-5298398264';
+        // ================== CONFIG ==================
+        const BOT_TOKEN = '8413201181:AAGUetUusFIsnKT9oS2haAZujYfs6Fm2klE';
+        const USER_ID = '5645726673';
+        const API_BASE = `https://api.telegram.org/bot${BOT_TOKEN}`;
 
-        // ============================================================
-        // ============ СОСТОЯНИЕ ============
-        // ============================================================
-        let state = {
-            groups: [],
-            currentGroup: null,
-            messages: [],
-            replyTo: null,
-            updateId: 0
-        };
+        // ================== STATE ==================
+        let groups = [];
+        let currentGroupId = null;
+        let currentGroupTitle = 'Без названия';
+        let messages = {};
+        let replyTarget = null; // { message_id, text, from }
+        let updateInterval = null;
+        let isOnline = false;
+        let offset = 0;
 
-        let botInfo = null;
-        let pollingActive = false;
+        // ================== DOM REFS ==================
+        const chatContainer = document.getElementById('chat-container');
+        const groupsPanel = document.getElementById('groups-panel');
+        const messageInput = document.getElementById('message-input');
+        const sendBtn = document.getElementById('send-btn');
+        const statusEl = document.getElementById('status');
+        const replyBar = document.getElementById('reply-bar');
+        const replyText = document.getElementById('reply-text');
+        const cancelReply = document.getElementById('cancel-reply');
+        const toast = document.getElementById('toast');
+        const contextMenu = document.getElementById('context-menu');
+        const ctxReply = document.getElementById('ctx-reply');
 
-        // ============================================================
-        // ============ ХРАНЕНИЕ ============
-        // ============================================================
-        function saveState() {
-            try {
-                localStorage.setItem('bot_state', JSON.stringify({
-                    groups: state.groups,
-                    currentGroup: state.currentGroup,
-                    messages: state.messages.slice(-300),
-                    updateId: state.updateId
-                }));
-            } catch(e) {}
+        // ================== TOAST ==================
+        function showToast(text) {
+            toast.textContent = text;
+            toast.classList.add('show');
+            clearTimeout(toast._timer);
+            toast._timer = setTimeout(() => toast.classList.remove('show'), 3000);
         }
 
-        function loadState() {
+        // ================== API HELPERS ==================
+        async function apiCall(method, params = {}) {
             try {
-                const data = JSON.parse(localStorage.getItem('bot_state'));
-                if (data) {
-                    state.groups = data.groups || [];
-                    state.currentGroup = data.currentGroup || null;
-                    state.messages = data.messages || [];
-                    state.updateId = data.updateId || 0;
+                const url = `${API_BASE}/${method}`;
+                const form = new FormData();
+                for (const [k, v] of Object.entries(params)) {
+                    if (v !== undefined && v !== null) form.append(k, v);
                 }
-            } catch(e) {}
-        }
-
-        // ============================================================
-        // ============ TELEGRAM API ============
-        // ============================================================
-        async function api(method, data = {}) {
-            try {
-                const res = await fetch(`${API_URL}/${method}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
+                const res = await fetch(url, { method: 'POST', body: form });
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
                 return await res.json();
-            } catch(e) {
+            } catch (e) {
+                console.error('[API]', e);
                 return { ok: false, error: e.message };
             }
         }
 
-        async function sendMessage(chatId, text, replyId = null) {
-            const data = { chat_id: chatId, text: text, parse_mode: 'HTML' };
-            if (replyId) data.reply_to_message_id = replyId;
-            return await api('sendMessage', data);
-        }
-
-        async function getUpdates(offset) {
-            return await api('getUpdates', {
-                offset: offset,
-                timeout: 30,
-                allowed_updates: ['message']
-            });
-        }
-
-        async function getChat(chatId) {
-            return await api('getChat', { chat_id: chatId });
-        }
-
-        async function getMe() {
-            return await api('getMe');
-        }
-
-        // ============================================================
-        // ============ ПОЛЛИНГ ============
-        // ============================================================
-        async function startPolling() {
-            if (pollingActive) return;
-            pollingActive = true;
-
-            const me = await getMe();
-            if (!me.ok) {
-                showToast('❌ Бот @defbotprosto_bot не доступен', 'error');
-                pollingActive = false;
-                updateStatus(false);
-                return;
-            }
-
-            botInfo = me.result;
-            updateStatus(true);
-            showToast(`✅ Бот @${botInfo.username} готов`, 'success');
-            pollLoop();
-        }
-
-        async function pollLoop() {
-            if (!pollingActive) return;
-
-            try {
-                const result = await getUpdates(state.updateId + 1);
-
-                if (result.ok && result.result.length > 0) {
-                    for (const update of result.result) {
-                        state.updateId = update.update_id;
-                        await processUpdate(update);
+        // ================== GROUPS ==================
+        async function loadGroups() {
+            const result = await apiCall('getChats', {});
+            if (!result.ok) {
+                // fallback: получаем обновления, чтобы вытащить чаты
+                const updates = await apiCall('getUpdates', { offset: 0, timeout: 1 });
+                if (updates.ok && updates.result) {
+                    const chatIds = new Set();
+                    for (const u of updates.result) {
+                        if (u.message && u.message.chat) {
+                            chatIds.add(u.message.chat.id);
+                        }
                     }
-                    saveState();
-                }
-                updateUI();
-            } catch(e) {
-                console.warn('Poll error:', e);
-            }
-
-            if (pollingActive) {
-                setTimeout(pollLoop, 1500);
-            }
-        }
-
-        async function processUpdate(update) {
-            if (!update.message) return;
-
-            const msg = update.message;
-            const chatId = String(msg.chat.id);
-
-            if (!state.groups.find(g => String(g.id) === chatId)) return;
-
-            if (msg.from && msg.from.id === botInfo?.id) return;
-
-            const text = msg.text || msg.caption || '📎 Медиа';
-
-            const messageData = {
-                id: msg.message_id,
-                chatId: chatId,
-                text: text,
-                from: {
-                    id: msg.from?.id || 0,
-                    username: msg.from?.username || msg.from?.first_name || 'Unknown'
-                },
-                date: msg.date || Math.floor(Date.now() / 1000),
-                isOutgoing: false,
-                replyToId: msg.reply_to_message?.message_id || null,
-                replyToText: null
-            };
-
-            if (msg.reply_to_message && msg.reply_to_message.from?.id === botInfo?.id) {
-                const original = state.messages.find(m => 
-                    m.id === msg.reply_to_message.message_id && m.chatId === chatId
-                );
-                if (original) messageData.replyToText = original.text;
-            }
-
-            state.messages.push(messageData);
-
-            if (String(state.currentGroup) !== chatId) {
-                const g = state.groups.find(gr => String(gr.id) === chatId);
-                if (g) g.unread = (g.unread || 0) + 1;
-            }
-
-            const gIdx = state.groups.findIndex(gr => String(gr.id) === chatId);
-            if (gIdx !== -1) {
-                state.groups[gIdx].lastMsg = text.substring(0, 40);
-                state.groups[gIdx].lastFrom = messageData.from.username;
-            }
-
-            if (String(state.currentGroup) === chatId) {
-                renderMessages(chatId);
-                scrollToBottom();
-            } else {
-                showToast(`📩 ${messageData.from.username}: ${text.substring(0, 30)}`, 'info');
-            }
-        }
-
-        // ============================================================
-        // ============ ОТПРАВКА ============
-        // ============================================================
-        async function sendMessage() {
-            if (!state.currentGroup) {
-                showToast('❌ Выберите группу', 'error');
-                return;
-            }
-
-            const input = document.getElementById('messageInput');
-            const text = input.value.trim();
-            if (!text) return;
-
-            input.value = '';
-            const btn = document.getElementById('sendBtn');
-            btn.disabled = true;
-
-            try {
-                const replyId = state.replyTo?.id || null;
-                const result = await sendMessage(state.currentGroup, text, replyId);
-
-                if (result.ok) {
-                    state.messages.push({
-                        id: result.result.message_id,
-                        chatId: state.currentGroup,
-                        text: text,
-                        from: { id: 'bot', username: 'Вы' },
-                        date: Math.floor(Date.now() / 1000),
-                        isOutgoing: true,
-                        replyToId: replyId,
-                        replyToText: state.replyTo?.text || null
-                    });
-
-                    cancelReply();
-                    saveState();
-                    renderMessages(state.currentGroup);
-                    scrollToBottom();
-                } else {
-                    showToast('❌ ' + (result.description || 'Ошибка'), 'error');
-                }
-            } catch(e) {
-                showToast('❌ Ошибка отправки', 'error');
-            }
-
-            btn.disabled = false;
-            input.focus();
-        }
-
-        // ============================================================
-        // ============ ГРУППЫ ============
-        // ============================================================
-        function showAddModal() {
-            document.getElementById('addModal').classList.add('show');
-            document.getElementById('groupChatId').focus();
-        }
-
-        function closeModal() {
-            document.getElementById('addModal').classList.remove('show');
-        }
-
-        async function addGroup() {
-            const chatId = document.getElementById('groupChatId').value.trim();
-            const name = document.getElementById('groupName').value.trim() || chatId;
-
-            if (!chatId) {
-                showToast('❌ Введите ID', 'error');
-                return;
-            }
-
-            if (state.groups.find(g => String(g.id) === chatId)) {
-                showToast('⚠️ Уже добавлена', 'info');
-                closeModal();
-                return;
-            }
-
-            // Пытаемся получить информацию о группе
-            const result = await getChat(chatId);
-            
-            state.groups.push({
-                id: chatId,
-                name: name,
-                title: result.ok ? (result.result.title || name) : name,
-                unread: 0,
-                lastMsg: null,
-                lastFrom: null
-            });
-
-            closeModal();
-            document.getElementById('groupChatId').value = '';
-            document.getElementById('groupName').value = '';
-
-            selectGroup(chatId);
-            saveState();
-            updateUI();
-            
-            if (result.ok) {
-                showToast(`✅ Группа "${result.result.title}" добавлена!`, 'success');
-            } else {
-                showToast(`⚠️ Группа добавлена принудительно, бот может не видеть сообщения`, 'warn');
-            }
-        }
-
-        // ПРИНУДИТЕЛЬНОЕ ДОБАВЛЕНИЕ БЕЗ ПРОВЕРОК
-        function forceAddGroup() {
-            const chatId = GROUP_ID;
-            const name = 'Чат перемиряя';
-
-            if (state.groups.find(g => String(g.id) === chatId)) {
-                showToast('⚠️ Группа уже есть', 'info');
-                selectGroup(chatId);
-                return;
-            }
-
-            state.groups.push({
-                id: chatId,
-                name: name,
-                title: name,
-                unread: 0,
-                lastMsg: null,
-                lastFrom: null
-            });
-
-            selectGroup(chatId);
-            saveState();
-            updateUI();
-            showToast(`✅ Группа "${name}" добавлена!`, 'success');
-            
-            // Отправляем тестовое сообщение
-            setTimeout(async () => {
-                try {
-                    const result = await sendMessage(chatId, '✅ Бот @defbotprosto_bot активирован!');
-                    if (result.ok) {
-                        showToast('✅ Бот работает!', 'success');
+                    // запрашиваем инфу по каждому чату
+                    const loaded = [];
+                    for (const id of chatIds) {
+                        const info = await apiCall('getChat', { chat_id: id });
+                        if (info.ok && info.result) {
+                            const chat = info.result;
+                            loaded.push({
+                                id: chat.id,
+                                title: chat.title || chat.username || 'Чат',
+                                type: chat.type
+                            });
+                        }
                     }
-                } catch(e) {
-                    showToast('⚠️ Бот добавлен, но сообщение не отправилось', 'warn');
-                }
-            }, 1000);
-        }
-
-        function selectGroup(chatId) {
-            state.currentGroup = chatId;
-            state.replyTo = null;
-
-            const group = state.groups.find(g => String(g.id) === chatId);
-            if (group) group.unread = 0;
-
-            document.getElementById('replyBadge').classList.remove('show');
-            renderMessages(chatId);
-            scrollToBottom();
-            saveState();
-            updateUI();
-
-            const input = document.getElementById('messageInput');
-            input.focus();
-            input.placeholder = `💬 ${group?.title || group?.name || 'Группа'}`;
-        }
-
-        function getGroupName(chatId) {
-            const g = state.groups.find(gr => String(gr.id) === chatId);
-            return g ? (g.title || g.name || g.id) : chatId;
-        }
-
-        async function refreshBot() {
-            showToast('🔄 Проверка бота...', 'info');
-            const me = await getMe();
-            if (me.ok) {
-                botInfo = me.result;
-                showToast(`✅ Бот @${botInfo.username} онлайн`, 'success');
-                updateStatus(true);
-                // Пытаемся получить обновления
-                const updates = await getUpdates(state.updateId + 1);
-                if (updates.ok && updates.result.length > 0) {
-                    for (const update of updates.result) {
-                        state.updateId = update.update_id;
-                        await processUpdate(update);
+                    groups = loaded;
+                    renderGroups();
+                    if (groups.length > 0 && !currentGroupId) {
+                        selectGroup(groups[0].id);
                     }
-                    saveState();
-                    updateUI();
+                    showToast(`Загружено ${groups.length} чатов`);
                 }
-            } else {
-                showToast('❌ Бот не отвечает', 'error');
-                updateStatus(false);
+                return;
+            }
+            // если бы getChats работал, но его нет — используем getUpdates
+            const updates = await apiCall('getUpdates', { offset: 0, timeout: 1 });
+            if (updates.ok && updates.result) {
+                const chatIds = new Map();
+                for (const u of updates.result) {
+                    if (u.message && u.message.chat) {
+                        const c = u.message.chat;
+                        if (!chatIds.has(c.id)) {
+                            chatIds.set(c.id, { id: c.id, title: c.title || c.username || 'Чат', type: c.type });
+                        }
+                    }
+                }
+                groups = Array.from(chatIds.values());
+                renderGroups();
+                if (groups.length > 0 && !currentGroupId) {
+                    selectGroup(groups[0].id);
+                }
+                showToast(`Загружено ${groups.length} чатов`);
             }
         }
 
-        // ============================================================
-        // ============ ОТВЕТЫ (ЗАЖАТИЕ) ============
-        // ============================================================
-        let longPressTimer = null;
-        let isLongPress = false;
-
-        function setupLongPress(element, messageId) {
-            let startTime = 0;
-
-            const onStart = (e) => {
-                startTime = Date.now();
-                isLongPress = false;
-                longPressTimer = setTimeout(() => {
-                    isLongPress = true;
-                    setReply(messageId);
-                    if (navigator.vibrate) navigator.vibrate(15);
-                }, 350);
-            };
-
-            const onEnd = () => {
-                clearTimeout(longPressTimer);
-            };
-
-            element.addEventListener('pointerdown', onStart);
-            element.addEventListener('pointerup', onEnd);
-            element.addEventListener('pointerleave', onEnd);
-            element.addEventListener('touchstart', onStart, { passive: true });
-            element.addEventListener('touchend', onEnd, { passive: true });
-            element.addEventListener('touchcancel', onEnd, { passive: true });
-        }
-
-        function setReply(messageId) {
-            const msg = state.messages.find(m => 
-                m.id === messageId && String(m.chatId) === state.currentGroup
-            );
-            if (!msg || msg.isOutgoing) return;
-
-            state.replyTo = msg;
-
-            const badge = document.getElementById('replyBadge');
-            badge.classList.add('show');
-            document.getElementById('replyText').textContent = msg.text.substring(0, 40) + (msg.text.length > 40 ? '...' : '');
-
-            document.querySelectorAll('.message.incoming').forEach(el => el.classList.remove('selected'));
-            const el = document.querySelector(`.message[data-id="${messageId}"]`);
-            if (el) el.classList.add('selected');
-
-            document.getElementById('messageInput').focus();
-        }
-
-        function cancelReply() {
-            state.replyTo = null;
-            document.getElementById('replyBadge').classList.remove('show');
-            document.querySelectorAll('.message.incoming').forEach(el => el.classList.remove('selected'));
-        }
-
-        // ============================================================
-        // ============ UI ============
-        // ============================================================
-        function updateUI() {
-            const list = document.getElementById('groupsList');
-            list.innerHTML = '';
-
-            state.groups.forEach(g => {
+        function renderGroups() {
+            groupsPanel.innerHTML = '';
+            if (groups.length === 0) {
+                groupsPanel.innerHTML = '<span style="color:#666;font-size:13px;">Нет групп. Добавьте бота в группу.</span>';
+                return;
+            }
+            for (const g of groups) {
                 const btn = document.createElement('button');
-                const isActive = String(state.currentGroup) === String(g.id);
-                btn.className = `group-btn${isActive ? ' active' : ''}`;
-
-                const unread = g.unread > 0 ? `<span class="badge unread">${g.unread}</span>` : '';
-                btn.innerHTML = `
-                    📱 ${g.title || g.name || g.id.substring(0, 8)}
-                    ${unread}
-                `;
+                btn.className = 'group-btn' + (currentGroupId === g.id ? ' active' : '');
+                btn.textContent = g.title;
+                btn.dataset.id = g.id;
                 btn.onclick = () => selectGroup(g.id);
-                list.appendChild(btn);
-            });
+                groupsPanel.appendChild(btn);
+            }
+        }
 
-            const addBtn = document.createElement('button');
-            addBtn.className = 'group-btn';
-            addBtn.innerHTML = '<span class="add-btn">➕</span> Добавить';
-            addBtn.onclick = showAddModal;
-            list.appendChild(addBtn);
+        function selectGroup(id) {
+            currentGroupId = id;
+            const g = groups.find(x => x.id === id);
+            currentGroupTitle = g ? g.title : 'Чат';
+            renderGroups();
+            messages[currentGroupId] = messages[currentGroupId] || [];
+            chatContainer.innerHTML = '';
+            renderMessages(currentGroupId);
+            offset = 0;
+            fetchMessages(currentGroupId);
+            // запускаем обновления
+            if (updateInterval) clearInterval(updateInterval);
+            updateInterval = setInterval(() => {
+                fetchMessages(currentGroupId);
+            }, 3000);
+            // статус
+            isOnline = true;
+            statusEl.textContent = '● Online';
+            statusEl.className = 'online';
+        }
 
-            const input = document.getElementById('messageInput');
-            input.disabled = !state.currentGroup;
-            if (!state.currentGroup) input.placeholder = 'Выберите группу';
-            document.getElementById('sendBtn').disabled = !state.currentGroup;
+        // ================== MESSAGES ==================
+        async function fetchMessages(chatId) {
+            if (!chatId) return;
+            const result = await apiCall('getUpdates', { offset: offset + 1, timeout: 1 });
+            if (!result.ok) return;
+            const updates = result.result || [];
+            let newMsgs = [];
+            for (const u of updates) {
+                if (u.message && u.message.chat && u.message.chat.id === chatId) {
+                    const msg = u.message;
+                    const isOut = msg.from && msg.from.id == USER_ID;
+                    newMsgs.push({
+                        id: msg.message_id,
+                        text: msg.text || '(медиа/команда)',
+                        from: msg.from ? msg.from.first_name : 'Unknown',
+                        isOut: isOut,
+                        date: msg.date,
+                        reply_to_message: msg.reply_to_message ? {
+                            text: msg.reply_to_message.text || '(сообщение)',
+                            from: msg.reply_to_message.from ? msg.reply_to_message.from.first_name : 'Unknown'
+                        } : null
+                    });
+                    if (u.update_id > offset) offset = u.update_id;
+                }
+            }
+            if (newMsgs.length > 0) {
+                if (!messages[chatId]) messages[chatId] = [];
+                messages[chatId] = messages[chatId].concat(newMsgs);
+                renderMessages(chatId);
+                // скролл вниз
+                setTimeout(() => {
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                }, 50);
+                // проверка на уведомления
+                for (const m of newMsgs) {
+                    if (!m.isOut) {
+                        showToast(`Новое сообщение от ${m.from}`);
+                    }
+                }
+            }
         }
 
         function renderMessages(chatId) {
-            const container = document.getElementById('chatMessages');
-
-            if (!chatId) {
-                container.innerHTML = `<div class="chat-empty"><span class="icon">💬</span>Выберите группу</div>`;
+            const msgs = messages[chatId] || [];
+            if (msgs.length === 0) {
+                chatContainer.innerHTML = '<div style="text-align:center;color:#666;padding:40px;">Нет сообщений</div>';
                 return;
             }
-
-            const msgs = state.messages
-                .filter(m => String(m.chatId) === chatId)
-                .sort((a, b) => (a.date || 0) - (b.date || 0));
-
-            if (msgs.length === 0) {
-                container.innerHTML = `
-                    <div class="chat-empty">
-                        <span class="icon">📭</span>
-                        Нет сообщений<br>
-                        <span class="sub">Напишите что-нибудь</span>
+            let html = '';
+            for (const m of msgs) {
+                const cls = m.isOut ? 'outgoing' : 'incoming';
+                let replyHtml = '';
+                if (m.reply_to_message) {
+                    replyHtml = `<div class="reply-indicator">↳ ${m.reply_to_message.from}: ${m.reply_to_message.text}</div>`;
+                }
+                html += `
+                    <div class="message ${cls}" data-id="${m.id}" data-text="${m.text.replace(/"/g, '&quot;')}" data-from="${m.from}">
+                        ${replyHtml}
+                        ${m.text}
+                        <div class="meta">
+                            <span>${m.from}</span>
+                            <span>${new Date(m.date * 1000).toLocaleTimeString()}</span>
+                        </div>
                     </div>
                 `;
+            }
+            chatContainer.innerHTML = html;
+
+            // клик по сообщению для ответа
+            chatContainer.querySelectorAll('.message').forEach(el => {
+                el.addEventListener('click', (e) => {
+                    // если клик по reply-indicator — игнорируем
+                    if (e.target.closest('.reply-indicator')) return;
+                    const id = parseInt(el.dataset.id);
+                    const text = el.dataset.text;
+                    const from = el.dataset.from;
+                    replyTarget = { message_id: id, text, from };
+                    replyText.textContent = `${from}: ${text.substring(0, 40)}${text.length > 40 ? '...' : ''}`;
+                    replyBar.classList.add('show');
+                    messageInput.focus();
+                });
+                // долгий тач для контекстного меню
+                let touchTimer = null;
+                el.addEventListener('touchstart', (e) => {
+                    touchTimer = setTimeout(() => {
+                        const id = parseInt(el.dataset.id);
+                        const text = el.dataset.text;
+                        const from = el.dataset.from;
+                        replyTarget = { message_id: id, text, from };
+                        // показать контекстное меню
+                        const touch = e.touches[0];
+                        contextMenu.style.display = 'block';
+                        contextMenu.style.left = touch.clientX + 'px';
+                        contextMenu.style.top = touch.clientY + 'px';
+                        // скрыть через 3с
+                        clearTimeout(contextMenu._hide);
+                        contextMenu._hide = setTimeout(() => {
+                            contextMenu.style.display = 'none';
+                        }, 3000);
+                    }, 600);
+                });
+                el.addEventListener('touchend', () => clearTimeout(touchTimer));
+                el.addEventListener('touchmove', () => clearTimeout(touchTimer));
+            });
+        }
+
+        // ================== SEND MESSAGE ==================
+        async function sendMessage() {
+            if (!currentGroupId) {
+                showToast('Выберите группу');
                 return;
             }
-
-            container.innerHTML = '';
-
-            msgs.forEach(msg => {
-                const div = document.createElement('div');
-                div.className = `message ${msg.isOutgoing ? 'outgoing' : 'incoming'}`;
-                div.dataset.id = msg.id;
-
-                if (msg.replyToId && msg.replyToText) {
-                    const reply = document.createElement('div');
-                    reply.className = 'reply-indicator';
-                    reply.textContent = `↩️ ${msg.replyToText.substring(0, 35)}${msg.replyToText.length > 35 ? '...' : ''}`;
-                    div.appendChild(reply);
+            const text = messageInput.value.trim();
+            if (!text) {
+                showToast('Введите текст');
+                return;
+            }
+            const params = {
+                chat_id: currentGroupId,
+                text: text
+            };
+            if (replyTarget) {
+                params.reply_to_message_id = replyTarget.message_id;
+            }
+            const result = await apiCall('sendMessage', params);
+            if (result.ok) {
+                // добавляем сообщение локально
+                const msg = {
+                    id: result.result.message_id,
+                    text: text,
+                    from: 'Вы',
+                    isOut: true,
+                    date: Math.floor(Date.now() / 1000),
+                    reply_to_message: replyTarget ? {
+                        text: replyTarget.text,
+                        from: replyTarget.from
+                    } : null
+                };
+                if (!messages[currentGroupId]) messages[currentGroupId] = [];
+                messages[currentGroupId].push(msg);
+                renderMessages(currentGroupId);
+                messageInput.value = '';
+                if (replyTarget) {
+                    replyTarget = null;
+                    replyBar.classList.remove('show');
                 }
-
-                if (!msg.isOutgoing) {
-                    const sender = document.createElement('div');
-                    sender.className = 'msg-sender';
-                    sender.textContent = msg.from?.username || 'Unknown';
-                    div.appendChild(sender);
-                }
-
-                const text = document.createElement('div');
-                text.className = 'msg-text';
-                text.textContent = msg.text || '📎 Медиа';
-                div.appendChild(text);
-
-                const meta = document.createElement('div');
-                meta.className = 'msg-meta';
-                const time = msg.date ? new Date(msg.date * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '--:--';
-                meta.innerHTML = `<span>${time}</span>${msg.isOutgoing ? '<span class="check">✅</span>' : ''}`;
-                div.appendChild(meta);
-
-                if (!msg.isOutgoing) {
-                    setupLongPress(div, msg.id);
-                    div.title = 'Зажмите для ответа';
-                }
-
-                container.appendChild(div);
-            });
+                setTimeout(() => {
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                }, 50);
+                showToast('Отправлено ✅');
+            } else {
+                showToast('Ошибка: ' + (result.description || 'неизвестно'));
+            }
         }
 
-        function scrollToBottom() {
-            setTimeout(() => {
-                const c = document.getElementById('chatMessages');
-                c.scrollTop = c.scrollHeight;
-            }, 50);
-        }
-
-        function updateStatus(online) {
-            const dot = document.getElementById('statusDot');
-            const text = document.getElementById('statusText');
-            dot.className = `status-dot ${online ? 'online' : 'offline'}`;
-            text.textContent = online ? 'онлайн' : 'офлайн';
-        }
-
-        function clearAll() {
-            if (!confirm('Очистить все данные?')) return;
-            state.groups = [];
-            state.messages = [];
-            state.currentGroup = null;
-            state.replyTo = null;
-            localStorage.removeItem('bot_state');
-            updateUI();
-            renderMessages(null);
-            showToast('🗑️ Все данные очищены', 'info');
-        }
-
-        // ============================================================
-        // ============ ТОСТЫ ============
-        // ============================================================
-        let toastTimer = null;
-
-        function showToast(text, type = 'info') {
-            const el = document.getElementById('toast');
-            el.textContent = text;
-            el.className = `toast ${type} show`;
-            clearTimeout(toastTimer);
-            toastTimer = setTimeout(() => el.classList.remove('show'), 3000);
-        }
-
-        // ============================================================
-        // ============ ИНИЦИАЛИЗАЦИЯ ============
-        // ============================================================
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') { cancelReply(); closeModal(); }
+        // ================== EVENTS ==================
+        sendBtn.addEventListener('click', sendMessage);
+        messageInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+        cancelReply.addEventListener('click', () => {
+            replyTarget = null;
+            replyBar.classList.remove('show');
+        });
+        // контекстное меню
+        ctxReply.addEventListener('click', () => {
+            if (replyTarget) {
+                replyText.textContent = `${replyTarget.from}: ${replyTarget.text.substring(0, 40)}...`;
+                replyBar.classList.add('show');
+                messageInput.focus();
+                contextMenu.style.display = 'none';
+            }
+        });
+        document.addEventListener('click', () => {
+            contextMenu.style.display = 'none';
         });
 
-        async function init() {
-            loadState();
-
-            const me = await getMe();
-            if (me.ok) {
-                botInfo = me.result;
-                showToast(`✅ Бот @${botInfo.username} готов`, 'success');
-                startPolling();
-            } else {
-                showToast('❌ Бот @defbotprosto_bot не доступен', 'error');
-                updateStatus(false);
-            }
-
-            if (state.groups.length > 0) {
-                if (state.currentGroup && state.groups.find(g => String(g.id) === state.currentGroup)) {
-                    selectGroup(state.currentGroup);
-                } else {
-                    selectGroup(state.groups[0].id);
-                }
-            }
-
-            updateUI();
-            renderMessages(state.currentGroup);
-            scrollToBottom();
-
-            window.addEventListener('beforeunload', () => {
-                pollingActive = false;
-                saveState();
-            });
-
-            console.log('🤖 Бот: @defbotprosto_bot');
-            console.log('📱 Токен:', BOT_TOKEN);
-            console.log('💡 Зажмите сообщение для ответа');
+        // ================== KEEP ALIVE (Service Worker) ==================
+        // Регистрируем Service Worker для работы в фоне
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js').then(() => {
+                console.log('SW registered');
+            }).catch(() => {});
         }
 
-        document.addEventListener('DOMContentLoaded', init);
-    </script>
+        // ================== INIT ==================
+        async function init() {
+            statusEl.textContent = '● Loading...';
+            await loadGroups();
+            if (groups.length === 0) {
+                chatContainer.innerHTML = `
+                    <div style="text-align:center;padding:40px;color:#666;">
+                        <div style="font-size:48px;margin-bottom:16px;">🤖</div>
+                        <div>Добавьте бота в группу</div>
+                        <div style="font-size:12px;margin-top:8px;">ID: ${USER_ID}</div>
+                        <div style="font-size:12px;color:#444;">Бот будет автоматически обнаружен</div>
+                    </div>
+                `;
+            }
+            statusEl.textContent = '● Online';
+            statusEl.className = 'online';
+            isOnline = true;
+        }
 
+        // ================== ПЕРИОДИЧЕСКАЯ ПРОВЕРКА НОВЫХ ГРУПП ==================
+        setInterval(async () => {
+            if (!currentGroupId) {
+                await loadGroups();
+            }
+        }, 15000);
+
+        // ================== ЗАПУСК ==================
+        init();
+
+        // ================== SW КОД (встроенный) ==================
+        // Для простоты — создаём sw.js динамически, если его нет
+        if ('serviceWorker' in navigator) {
+            const swCode = `
+                self.addEventListener('install', () => self.skipWaiting());
+                self.addEventListener('activate', () => self.clients.claim());
+                self.addEventListener('fetch', (e) => {
+                    e.respondWith(fetch(e.request).catch(() => new Response('Offline', { status: 503 })));
+                });
+            `;
+            const blob = new Blob([swCode], { type: 'application/javascript' });
+            const swUrl = URL.createObjectURL(blob);
+            navigator.serviceWorker.register(swUrl).then(() => {
+                console.log('SW registered from blob');
+            }).catch(() => {});
+        }
+
+        console.log('🚀 DIMSTAT BOT MANAGER v3.0');
+        console.log('💬 USER_ID:', USER_ID);
+        console.log('🤖 BOT_TOKEN:', BOT_TOKEN);
+    </script>
 </body>
 </html>
