@@ -206,7 +206,7 @@
             margin-top: 4px; display: block;
         }
 
-        .deleted-text { font-style: italic; color: #ff6b6b; opacity: 0.85; font-size: 13px; }
+        .deleted-text { font-style: italic; color: #ff6b6b; opacity: 0.85; font-size: 12px; font-weight: 600; }
 
         /* Reply Bar */
         #reply-bar {
@@ -316,7 +316,7 @@
         <button class="header-btn">‹</button>
         <div class="header-center">
             <div class="header-title" id="chat-title">Telegram Менеджер</div>
-            <div class="header-subtitle" id="chat-status">Выберите группу</div>
+            <div class="header-subtitle" id="chat-status">Загрузка...</div>
         </div>
         <div class="header-btn" style="font-size: 11px;" id="status-dot">●</div>
     </div>
@@ -339,7 +339,7 @@
 
     <div id="input-area">
         <div class="input-wrapper">
-            <input type="text" id="message-input" placeholder="Сообщение" autocomplete="off">
+            <input type="text" id="message-input" placeholder="Сообщение..." autocomplete="off">
         </div>
         <button class="send-btn" id="send-btn">➤</button>
     </div>
@@ -367,12 +367,12 @@
     <script>
         (function(){
             const BOT_TOKEN = '8413201181:AAGUetUusFIsnKT9oS2haAZujYfs6Fm2klE';
-            const BOT_ID = BOT_TOKEN.split(':')[0]; // ID Вашего бота
+            const BOT_ID = BOT_TOKEN.split(':')[0]; 
             const API_BASE = 'https://api.telegram.org/bot' + BOT_TOKEN;
             
-            const KEYS = ['tg_groups_v6'];
-            const MSG_KEYS = ['tg_messages_v6'];
-            const DEL_KEYS = ['tg_deleted_v6'];
+            const KEYS = ['tg_groups_v7'];
+            const MSG_KEYS = ['tg_messages_v7'];
+            const DEL_KEYS = ['tg_deleted_v7'];
 
             const NAME_COLORS = ['#ff8e8e', '#f39c12', '#a882f4', '#2ecc71', '#3498db', '#e84393', '#00cec9', '#ff5959'];
 
@@ -429,13 +429,10 @@
             function formatDateDivider(timestamp) {
                 const msgDate = new Date(timestamp * 1000);
                 const now = new Date();
-                const isToday = msgDate.toDateString() === now.toDateString();
+                if (msgDate.toDateString() === now.toDateString()) return 'Сегодня';
                 const yesterday = new Date(now);
                 yesterday.setDate(now.getDate() - 1);
-                const isYesterday = msgDate.toDateString() === yesterday.toDateString();
-
-                if (isToday) return 'Сегодня';
-                if (isYesterday) return 'Вчера';
+                if (msgDate.toDateString() === yesterday.toDateString()) return 'Вчера';
                 return msgDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' });
             }
 
@@ -476,7 +473,7 @@
                 return null;
             }
 
-            async function renderGroups() {
+            function renderGroups() {
                 const addBtn = document.getElementById('add-group-btn');
                 groupsPanel.innerHTML = '';
                 groupsPanel.appendChild(addBtn);
@@ -502,11 +499,11 @@
                 renderMessages(currentGroupId);
                 await fetchUpdates();
                 
-                updateInterval = setInterval(fetchUpdates, 2000);
+                updateInterval = setInterval(fetchUpdates, 1500);
             }
 
             async function fetchUpdates() {
-                let result = await apiCall('getUpdates', { offset: offset, timeout: 1 });
+                let result = await apiCall('getUpdates', { offset: offset, timeout: 0, allowed_updates: JSON.stringify(["message", "edited_message"]) });
                 if (!result.ok || !result.result) return;
 
                 statusDot.style.color = '#2ecc71';
@@ -519,7 +516,6 @@
                     if (msg && msg.chat) {
                         let chatId = msg.chat.id;
 
-                        // Авто-добавление группы
                         if (!groups.some(g => g.id === chatId) && (msg.chat.type === 'group' || msg.chat.type === 'supergroup')) {
                             groups.push({ id: chatId, title: msg.chat.title || 'Группа' });
                             renderGroups();
@@ -557,7 +553,7 @@
 
                         let newMsg = {
                             id: msg.message_id,
-                            text: msg.text || (photoUrl ? '' : 'Сообщение'),
+                            text: msg.text || (photoUrl ? '' : ''),
                             from: senderName,
                             isOut: isFromBot,
                             date: msg.date,
@@ -596,10 +592,7 @@
 
                 let allMap = new Map();
 
-                // Добавляем обычные сообщения
                 msgs.forEach(m => allMap.set(m.id, { ...m, isDeleted: false }));
-
-                // Накладываем удалённые сообщения
                 for (let id in deleted) {
                     allMap.set(parseInt(id), { ...deleted[id], id: parseInt(id), isDeleted: true });
                 }
@@ -607,7 +600,7 @@
                 let all = Array.from(allMap.values()).sort((a,b) => a.date - b.date);
 
                 if (all.length === 0) {
-                    chatContainer.innerHTML = '<div class="empty-state">Сообщений в этом чате пока нет</div>';
+                    chatContainer.innerHTML = '<div class="empty-state">Сообщений пока нет</div>';
                     return;
                 }
 
@@ -648,7 +641,7 @@
 
                     if (isDel) {
                         html += `<div class="deleted-text">🚫 Сообщение удалено</div>`;
-                        if (m.text) html += `<div style="opacity:0.75; font-size:13px; margin-top:2px;">${m.text}</div>`;
+                        if (m.text) html += `<div style="opacity:0.8; font-size:13px; margin-top:2px;">${m.text}</div>`;
                     } else {
                         if (m.text) html += `<div>${m.text}</div>`;
                         if (m.photo) html += `<img src="${m.photo}" class="photo-attachment" onclick="window.open('${m.photo}')">`;
@@ -730,10 +723,8 @@
             async function deleteMessage(chatId, messageId) {
                 let target = (messages[chatId] || []).find(m => m.id === messageId);
                 
-                // Пробуем удалить в самом Telegram
                 await apiCall('deleteMessage', { chat_id: chatId, message_id: messageId });
 
-                // В любом случае сохраняем его в истории удалённых
                 if (target) {
                     if (!deletedMessages[chatId]) deletedMessages[chatId] = {};
                     deletedMessages[chatId][messageId] = { ...target };
@@ -741,7 +732,7 @@
                     
                     renderMessages(chatId);
                     saveAll();
-                    showToast('Сообщение сохранено в удалённых');
+                    showToast('Сообщение перенесено в удалённые');
                 }
             }
 
@@ -802,9 +793,9 @@
             async function init() {
                 loadStorage();
                 
-                // Сбрасываем Webhook, чтобы работали мгновенные обновления
+                // Удаляем вебхук и сбрасываем offset до актуального состояния
                 await apiCall('deleteWebhook', { drop_pending_updates: false });
-
+                
                 renderGroups();
                 await fetchUpdates();
 
